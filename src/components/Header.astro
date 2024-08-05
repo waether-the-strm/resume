@@ -23,7 +23,7 @@ const { name, title, description } = Astro.props;
         <p
           set:html={para.replaceAll(
             /<strong>/g,
-            '<strong class="text-slate-300 print:text-slate-700">'
+            '<strong class="text-slate-300/90 print:text-slate-700">'
           )}
           class="mb-5"
         />

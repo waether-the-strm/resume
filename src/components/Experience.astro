@@ -18,28 +18,25 @@ const { records } = Astro.props;
 
 <section class="mb-5">
   <h2 class={classes.h2}>Experience</h2>
-  {
-    records.map(({ period, company, title, tools, description }) => (
-      <div class="mb-5">
-        <p class="mb-3">{period}</p>
-        <h3
-          class={
-            classes.h3 +
-            " !text-lg !text-slate-100 print:!text-slate-950 !font-bold mb-5"
-          }
-        >
-          {company} <br />
-          <small class="font-normal text-slate-500">
-            <em>{title}</em>
-          </small>
-        </h3>
-        <p class="mb-5" set:html={description} />
-        {tools && (
-          <p class="text-blue-400">
-            <small>{tools}</small>
-          </p>
-        )}
-      </div>
-    ))
-  }
+  <ol reversed class={"lg:grid grid-cols-2 pl-8 gap-8" + classes.marker}>
+    {
+      records.map(({ period, company, title, tools, description }) => (
+        <li class="mb-5">
+          <p class="mb-3">{period}</p>
+          <h3 class={classes.h3}>
+            {company} <br />
+            <small class="font-normal text-slate-500">
+              <em>{title}</em>
+            </small>
+          </h3>
+          <p class="mb-5" set:html={description} />
+          {tools && (
+            <p class="text-blue-400">
+              <small>{tools}</small>
+            </p>
+          )}
+        </li>
+      ))
+    }
+  </ol>
 </section>

@@ -19,18 +19,18 @@ const { records } = Astro.props;
     {
       records.map(({ title, items }) => (
         <li>
-          <article class="md:grid print:inline-block print:m-0 print:p-0 grid-cols-6 group cursor-default ml-4 p-3 hover:bg-slate-900 border-l border-transparent hover:border-slate-800 transition-all rounded-lg">
+          <article class="md:grid print:inline-block print:m-0 print:p-0 grid-cols-6 group cursor-default p-3 hover:bg-slate-900 border-l border-transparent hover:border-slate-800 transition-all rounded-lg">
             <h3
               class={
                 classes.h3 +
-                " opacity-75 group-hover:opacity-100 lg:text-right mr-5 relative top-2 print:text-left"
+                " text-sm !text-slate-400 group-hover:!text-slate-100 transition-color lg:text-right mr-5 relative md:top-5 print:text-left"
               }
             >
               {title}
             </h3>
             <ul class="col-span-5 flex print:inline mt-3 place-items-start justify-start gap-2 flex-wrap list-none z-100">
               {items.map((item) => (
-                <li class="print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/70 transition-colors py-1 px-2 rounded-md whitespace-nowrap">
+                <li class="print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/75 transition-colors py-1 px-2 rounded-md whitespace-nowrap">
                   {item}
                 </li>
               ))}
