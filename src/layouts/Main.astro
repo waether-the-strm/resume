@@ -48,16 +48,20 @@ const {
     <title>Astro</title>
   </head>
   <body
-    class="bg-slate-950 print:bg-white print:text-slate-900 text-base text-slate-400 leading-relaxed p-8 sm:p-8 antialiased"
+    class="bg-slate-950 print:bg-white print:text-slate-900 text-base text-slate-400 leading-relaxed p-8 sm:p-8 pb-0 antialiased"
   >
-    <div class="max-w-4xl mx-auto">
-      <div>
-        <Header {...header} />
-        <Contact {...contact} />
-      </div>
+    <div class="max-w-4xl xl:max-w-6xl mx-auto">
+      <Header {...header} />
+      <Contact {...contact} />
       <TechStack {...techStack} />
       <Experience {...experience} />
       <Education {...education} />
     </div>
+    <footer
+      class="print:hidden mt-8 pt-5 pb-1 border-t-2 bg-slate-950 border-slate-800/80"
+    >
+      <p class="mb-3">Reach out to me at:</p>
+      <Contact {...contact} />
+    </footer>
   </body>
 </html>

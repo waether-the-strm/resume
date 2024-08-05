@@ -76,9 +76,9 @@ experience:
       company: Sztorm Jan Mirecki
       title: Senior Frontend Developer • Consultant • Architect
       description: As a&nbsp;freelancer I&#39;m cooperating with various parties, supporting commercial and non-profit projects. I&nbsp;have worked on projects supporting refugees. I&nbsp;organized a&nbsp;group of IT volunteers called WebScouts, and supported more or less formal NGO organizations and grassroots initiatives. Together, we took part in accelerating the delivery of a&nbsp;Polish government website to support Ukraine. I&nbsp;led UX design exercises at the SWPS University in Warsaw, Department of Psychology and Computer Science. Commercially I&nbsp;was working on the SAP UI for the US-based company –&nbsp;Corevist as a&nbsp;React Developer. Currently, I’m cooperating with a&nbsp;Polish brand Biletomat.pl –&nbsp;a part of Time For Friends Company.
+      tools: IT volunteering, Tech Leading, Frontend Development, Design Consulting, University Lecturer
       details: >
-        <em>IT volunteering, Tech Leading, Frontend Development, Design Consulting, University Lecturer</em><br />
-        <small class="dimmed">SWPS University • Biletomat.pl • Corevist • Techlab EE • pomagamukrainie.gov.pl • Fundacja Konflikt • Daydream Yachting</small>
+        SWPS University • Biletomat.pl • Corevist • Techlab EE • pomagamukrainie.gov.pl • Fundacja Konflikt • Daydream Yachting
     - period: Aug 2019 – Aug 2021
       company: CD Projekt Red
       title: Senior Frontend Developer • Tech Lead
@@ -89,7 +89,7 @@ experience:
       title: Frontend Developer • Consultant • Architect
       description: Landing pages development, web app development
       details: >
-        <small class="dimmed"><em>Kłosy Knives • Laboratorium EE • Isobar/Dentsu Aegis Network</em></small>
+        Kłosy Knives • Laboratorium EE • Isobar/Dentsu Aegis Network
       tools: JavaScript, React JS, Gatsby, Karma + Jasmine, SASS, Bootstrap 4, GIT
     - period: Oct 2017 – Oct 2018
       company: Onwelo
@@ -114,7 +114,7 @@ experience:
       title: Frontend Developer • UI Designer
       description: Website and app design, mockup prototyping, print design.
       details: >
-        <small class="dimmed">Docs Against Gravity • pracowniajasiewicz.com • laboratorium.ee • mariaerikssonstudio.com • Caritas Polska • NOTO Studio • Jan Strumiłło Architekt • malunkimarka.com</small>
+        Docs Against Gravity • pracowniajasiewicz.com • laboratorium.ee • mariaerikssonstudio.com • Caritas Polska • NOTO Studio • Jan Strumiłło Architekt • malunkimarka.com
     - period: Jul 2012 — Sep 2014
       company: Laboratorium EE
       title: UX • UI designer
