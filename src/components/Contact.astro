@@ -1,0 +1,26 @@
+---
+export interface ContactData {
+  phone: string;
+  email: string;
+  linkedin: string;
+  resume: string;
+}
+
+type Props = ContactData;
+
+const { phone, email, linkedin, resume } = Astro.props;
+---
+
+<div class="mb-5">
+  <h3 class="text-lg text-gray-200 mb-5">Contact</h3>
+  <p class="text-gray-400 mb-5">{phone}</p>
+  <p class="text-gray-400 mb-5">
+    e-mail: <a href={`mailto:${email}`}>{email}</a>
+  </p>
+  <p class="text-gray-400 mb-5">
+    LinkedIn: <a href={linkedin}>{linkedin}</a>
+  </p>
+  <p class="text-gray-400 mb-5">
+    Up-to-date resume: <a href={resume}>{resume}</a>
+  </p>
+</div>
