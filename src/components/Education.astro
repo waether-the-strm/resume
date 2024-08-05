@@ -1,4 +1,6 @@
 ---
+import { classes } from "../shared/classes";
+
 interface School {
   period: string;
   institution: string;
@@ -13,7 +15,7 @@ const { records } = Astro.props;
 ---
 
 <section class="mb-5">
-  <h2 class="text-xl text-gray-300 border-b border-gray-700 mb-5">Education</h2>
+  <h2 class={classes.h2}>Education</h2>
   {
     records.map(({ period, institution, degree }) => (
       <div class="mb-5">

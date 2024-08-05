@@ -7,6 +7,8 @@ import {
   Education,
 } from "../components";
 
+import "printed";
+
 type HeadersProps = Parameters<typeof Header>[0];
 type ContactProps = Parameters<typeof Contact>[0];
 type TechStackProps = Parameters<typeof TechStack>[0];
@@ -35,7 +37,7 @@ const {
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -45,10 +47,14 @@ const {
     </style>
     <title>Astro</title>
   </head>
-  <body class="bg-[#181818] text-base leading-relaxed p-2 sm:p-8">
+  <body
+    class="bg-slate-950 print:bg-white print:text-slate-900 text-base text-slate-400 leading-relaxed p-8 sm:p-8 antialiased"
+  >
     <div class="max-w-4xl mx-auto">
-      <Header {...header} />
-      <Contact {...contact} />
+      <div>
+        <Header {...header} />
+        <Contact {...contact} />
+      </div>
       <TechStack {...techStack} />
       <Experience {...experience} />
       <Education {...education} />

@@ -2,25 +2,33 @@
 export interface ContactData {
   phone: string;
   email: string;
-  linkedin: string;
-  resume: string;
+  linkedin: string[];
+  resume: string[];
 }
 
 type Props = ContactData;
 
-const { phone, email, linkedin, resume } = Astro.props;
+const {
+  phone,
+  email,
+  linkedin: [linkedTitle, linkedUrl],
+  resume: [resumeTitle, resumeUrl],
+} = Astro.props;
+
+const itemClasses =
+  "mb-1 p-4 print:p-0 rounded-lg flex items-center justify-start print:block text-slate-300 bg-slate-900 hover:bg-slate-900/70 hover:text-blue-300 transition-colors print:bg-transparent print:text-slate-700";
 ---
 
-<div class="mb-5">
-  <h3 class="text-lg text-gray-200 mb-5">Contact</h3>
-  <p class="text-gray-400 mb-5">{phone}</p>
-  <p class="text-gray-400 mb-5">
-    e-mail: <a href={`mailto:${email}`}>{email}</a>
-  </p>
-  <p class="text-gray-400 mb-5">
-    LinkedIn: <a href={linkedin}>{linkedin}</a>
-  </p>
-  <p class="text-gray-400 mb-5">
-    Up-to-date resume: <a href={resume}>{resume}</a>
-  </p>
+<div
+  class="grid print:inline md:grid-cols-2 lg:grid-cols-5 gap-3 mb-10 print:mb-5"
+>
+  <a href={`tel:${phone}`} class={itemClasses}>{phone}</a>
+  <a href={`mailto:${email}`} class={itemClasses}>{email}</a>
+  <a href={linkedUrl} class={itemClasses}
+    ><span class="opacity-65 mr-2">in: </span>{linkedTitle}</a
+  >
+
+  <a href={resumeUrl} class={itemClasses + " lg:col-span-2"}
+    ><span class="opacity-65 mr-2">cv: </span>{resumeTitle}</a
+  >
 </div>

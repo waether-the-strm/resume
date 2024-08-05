@@ -1,4 +1,6 @@
 ---
+import { classes } from "../shared/classes";
+
 interface Header {
   name: string;
   title: string;
@@ -9,11 +11,23 @@ type Props = Header;
 const { name, title, description } = Astro.props;
 ---
 
-<header class="bg-[#181818] text-base leading-relaxed py-2 sm:py-8">
-  <h1 class="text-2xl text-[#fffe] leading-tight mb-5">
+<header class="text-base leading-relaxed sm:pt-8 mb-10">
+  <h1 class={classes.h1}>
     {name}
     <br />
-    <small class="opacity-60">{title}</small>
+    <small class="text-slate-500">{title}</small>
   </h1>
-  {description.map((para) => <p set:html={para} class="text-gray-400 mb-5" />)}
+  <div>
+    {
+      description.map((para) => (
+        <p
+          set:html={para.replaceAll(
+            /<strong>/g,
+            '<strong class="text-slate-300 print:text-slate-700">'
+          )}
+          class="mb-5"
+        />
+      ))
+    }
+  </div>
 </header>
