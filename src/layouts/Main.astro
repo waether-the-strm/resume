@@ -48,11 +48,13 @@ const {
     <title>Astro</title>
   </head>
   <body
-    class="bg-slate-950 print:bg-white print:text-slate-900 text-base text-slate-400 leading-relaxed p-8 sm:p-8 pb-0 antialiased"
+    class="bg-slate-950 print:bg-white print:p-0 print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed p-8 sm:p-8 pb-0 antialiased"
   >
-    <div class="max-w-4xl xl:max-w-6xl mx-auto">
+    <div class="max-w-4xl xl:max-w-6xl mx-auto relative md:pt-16">
       <Header {...header} />
-      <Contact {...contact} />
+      <div class="md:absolute top-0 left-0 right-0 print:static">
+        <Contact {...contact} />
+      </div>
       <TechStack {...techStack} />
       <Experience {...experience} />
       <Education {...education} />

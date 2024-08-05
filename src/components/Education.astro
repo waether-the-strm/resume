@@ -15,7 +15,7 @@ interface Props {
 const { records } = Astro.props;
 ---
 
-<section class="mb-5">
+<section class={classes.section}>
   <h2 class={classes.h2}>Education</h2>
   <ol class={"md:grid grid-cols-3 pl-8 gap-8" + classes.marker} reversed>
     {

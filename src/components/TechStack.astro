@@ -13,8 +13,8 @@ interface Props {
 const { records } = Astro.props;
 ---
 
-<section class="mb-10">
-  <h2 class={classes.h2}>Tech Stack</h2>
+<section class={classes.section}>
+  <h2 class={classes.h2}>Skills</h2>
   <ul class="print:inline">
     {
       records.map(({ title, items }) => (
@@ -28,7 +28,7 @@ const { records } = Astro.props;
             >
               {title}
             </h3>
-            <ul class="col-span-5 flex print:inline mt-3 place-items-start justify-start gap-2 flex-wrap list-none z-100">
+            <ul class="col-span-5 flex print:inline mt-3 place-items-start justify-start gap-3 flex-wrap list-none z-100">
               {items.map((item) => (
                 <li class="print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/75 transition-colors py-1 px-2 rounded-md whitespace-nowrap">
                   {item}

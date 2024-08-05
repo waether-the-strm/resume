@@ -10,6 +10,16 @@ header:
       I work mostly with <strong>React</strong>, <strong>TS</strong> &amp; <strong>CSS</strong>. I&#39;m interested in <strong>high quality</strong> projects focused strongly on the <strong>design</strong>, dedicated to regular internet users.<br /> I would be particularly happy to cooperate on a&nbsp;<strong>design system project</strong>. Other fields of my current professional role interests: QA, PM, and Product Designer.
     - >
       In my free time, I&nbsp;like to tinker, support friends with their projects, ride my <strong>motorcycle</strong>, <strong>climb</strong>, <strong>ski</strong>, and <strong>travel</strong> in my <strong>homemade micro rv</strong>. I&nbsp;am very fond of <strong>coffee</strong>, <strong>kombucha</strong>, and <strong>bread</strong> of my own baking.
+  languages:
+    records:
+      - name: polish
+        level: native
+      - name: english
+        level: C1
+      - name: norwegian
+        level: B1
+      - name: french
+        level: B1
 contact:
   phone: +48 501 299 282
   email: jan@strm.dev
