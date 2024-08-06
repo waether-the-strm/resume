@@ -1,0 +1,25 @@
+---
+import { classes } from "../shared/classes";
+
+interface Props {
+  records: { name: string; level: string }[];
+}
+
+const { records } = Astro.props;
+---
+
+I speak:
+<ul
+  class="inline-flex mt-3 ml-2 place-items-start justify-start gap-3 flex-wrap list-none z-100 col-span-5 mb-5"
+>
+  {
+    records.map(({ name, level }) => (
+      <li class={classes.pill + " text-slate-300/75 pr-1 border-opacity-75"}>
+        {name}
+        <span class="text-blue-200/80 inline-block bg-slate-800 print:bg-transparent print:text-slate-900 ml-1 px-2 rounded-sm">
+          {level}
+        </span>
+      </li>
+    ))
+  }
+</ul>

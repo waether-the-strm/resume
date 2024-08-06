@@ -1,0 +1,36 @@
+---
+import { classes } from "../shared/classes";
+
+interface School {
+  period: string;
+  institution: string;
+  degree: string;
+  place: string;
+}
+
+interface Props {
+  records: School[];
+}
+
+const { records } = Astro.props;
+---
+
+<section class={classes.section}>
+  <h2 class={classes.h2}>Education</h2>
+  <ol class={"md:grid grid-cols-3 pl-8 gap-8" + classes.marker} reversed>
+    {
+      records.map(({ period, institution, degree, place }) => (
+        <li class="mb-5">
+          <p class="mb-3">{period}</p>
+          <h3 class={classes.h3}>
+            {institution} <br />
+            <small class="font-normal text-slate-500">
+              <em>{place}</em>
+            </small>
+          </h3>
+          <p class="mb-5" set:html={degree} />
+        </li>
+      ))
+    }
+  </ol>
+</section>
