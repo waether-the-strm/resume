@@ -49,16 +49,18 @@ const {
     <title>Astro</title>
   </head>
   <body
-    class="bg-slate-950 dark:invert dark:bg-slate-100 transition-colors print:bg-white print:p-0 print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed p-8 sm:p-8 pb-0 antialiased"
+    class="bg-slate-950 dark:bg-slate-100 transition-colors print:bg-white print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed antialiased"
   >
     <div
-      class="fixed h-10 w-16 flex items-center justify-center top-10 right-10 z-50 bg-slate-950/60 backdrop-blur-sm rounded-full"
+      class="print:hidden dark:invert fixed h-10 w-16 flex items-center justify-center top-10 right-10 z-50 bg-slate-950/60 dark:bg-slate-950/95 dark:ring-1 backdrop-blur-sm rounded-full"
     >
       <Toggle client:only="react" />
     </div>
-    <div class="max-w-4xl xl:max-w-6xl mx-auto relative md:pt-16">
+    <div
+      class="max-w-4xl xl:max-w-6xl mx-auto relative md:pt-16 px-8 pb-0 print:p-0 dark:invert"
+    >
       <Header {...header} />
-      <div class="md:absolute top-0 left-0 right-0 print:static">
+      <div class="md:absolute top-8 left-8 right-8 print:static">
         <Contact {...contact} />
       </div>
       <TechStack {...techStack} />
@@ -66,7 +68,7 @@ const {
       <Education {...education} />
     </div>
     <footer
-      class="print:hidden mt-8 pt-5 pb-1 border-t-2 bg-slate-950 border-slate-800/80"
+      class="print:hidden mt-8 pt-5 pb-1 px-10 border-t-2 bg-slate-950 border-slate-800/80 dark:invert"
     >
       <p class="mb-3">Reach out to me at:</p>
       <Contact {...contact} />
