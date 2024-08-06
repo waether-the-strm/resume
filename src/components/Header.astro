@@ -1,0 +1,37 @@
+---
+import { Languages } from ".";
+import { classes } from "../shared/classes";
+
+interface Header {
+  name: string;
+  title: string;
+  description: string[];
+  languages: Parameters<typeof Languages>[0];
+}
+
+type Props = Header;
+const { name, title, description, languages } = Astro.props;
+---
+
+<header class="leading-relaxed sm:pt-16 mb-10 mt-16 print:m-0 print:p-0">
+  <h1 class={classes.h1}>
+    {name}
+    <br />
+    <small class="text-slate-500">{title}</small>
+  </h1>
+
+  <div class="max-w-4xl">
+    {
+      description.map((para) => (
+        <p
+          set:html={para.replaceAll(
+            /<strong>/g,
+            '<strong class="text-slate-300/90 print:text-slate-700">'
+          )}
+          class="mb-5"
+        />
+      ))
+    }
+  </div>
+  <Languages {...languages} />
+</header>
