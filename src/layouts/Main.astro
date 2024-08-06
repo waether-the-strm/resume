@@ -8,6 +8,7 @@ import {
 } from "../components";
 
 import "printed";
+import { Toggle } from "../components/react";
 
 type HeadersProps = Parameters<typeof Header>[0];
 type ContactProps = Parameters<typeof Contact>[0];
@@ -48,8 +49,13 @@ const {
     <title>Astro</title>
   </head>
   <body
-    class="bg-slate-950 print:bg-white print:p-0 print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed p-8 sm:p-8 pb-0 antialiased"
+    class="bg-slate-950 dark:invert dark:bg-slate-100 transition-colors print:bg-white print:p-0 print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed p-8 sm:p-8 pb-0 antialiased"
   >
+    <div
+      class="fixed h-10 w-16 flex items-center justify-center top-10 right-10 z-50 bg-slate-950/60 backdrop-blur-sm rounded-full"
+    >
+      <Toggle client:only="react" />
+    </div>
     <div class="max-w-4xl xl:max-w-6xl mx-auto relative md:pt-16">
       <Header {...header} />
       <div class="md:absolute top-0 left-0 right-0 print:static">
