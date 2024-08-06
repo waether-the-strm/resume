@@ -6,6 +6,5 @@ import react from "@astrojs/react";
 
 export default defineConfig({
   integrations: [mdx(), tailwind(), react()],
-  site: "https://waether-the-strm.github.io",
-  base: "resume",
+  site: "https://strm.dev",
 });
