@@ -33,10 +33,25 @@ const {
 
 <html lang="en">
   <head>
+    <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" is:inline
+    ></script>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <meta
+      name="description"
+      content="Jan Mirecki is a seasoned Frontend Developer and Product Designer with extensive experience in React, TypeScript, and CSS. Having transitioned from UI/UX design to full-time development in 2015, Jan excels in creating high-quality projects focused on design. He has collaborated with various organizations, including SWPS University, CD Projekt Red, and Avon Cosmetics Polska. Jan is also passionate about IT volunteering, tech leading, and teaching."
+    />
+    <meta
+      name="keywords"
+      content="Jan Mirecki, Frontend Developer, Product Designer, React, TypeScript, CSS, UI/UX Design, SWPS University, CD Projekt Red, Avon Cosmetics Polska, IT Volunteering, Tech Leading, Design Consulting, Web Development, JavaScript, HTML5, SASS, Web Technologies"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/lenis@1.1.9/dist/lenis.css"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
       rel="stylesheet"
@@ -46,7 +61,7 @@ const {
         font-family: "Poppins", sans-serif;
       }
     </style>
-    <title>Astro</title>
+    <title>Jan Mirecki – Frontend Developer</title>
   </head>
   <body
     class="bg-slate-950 dark:bg-slate-100 transition-colors print:bg-white print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed antialiased"
@@ -56,7 +71,7 @@ const {
     >
       <Toggle client:only="react" />
     </div>
-    <div
+    <main
       class="max-w-4xl xl:max-w-6xl mx-auto relative md:pt-16 px-8 pb-0 print:p-0 dark:invert"
     >
       <Header {...header} />
@@ -66,7 +81,7 @@ const {
       <TechStack {...techStack} />
       <Experience {...experience} />
       <Education {...education} />
-    </div>
+    </main>
     <footer
       class="print:hidden mt-8 pt-5 pb-1 px-10 border-t-2 bg-slate-950 border-slate-800/80 dark:invert"
     >
@@ -75,3 +90,13 @@ const {
     </footer>
   </body>
 </html>
+<script is:inline>
+  const lenis = new Lenis();
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+</script>

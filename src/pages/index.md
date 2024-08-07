@@ -4,12 +4,15 @@ header:
   name: Jan Mirecki
   title: Frontend Developer
   description:
-    - >
-      I&nbsp;am a&nbsp;<strong>Frontend Developer</strong> and a&nbsp;<strong>Product Designer</strong>.<br /> I graduated in Product Design and after 4&nbsp;years of professional experience as a&nbsp;<strong>UI &amp; UX designer</strong>, I switched to a&nbsp;full-time developer role in 2015.
-    - >
-      I work mostly with <strong>React</strong>, <strong>TS</strong> &amp; <strong>CSS</strong>. I&#39;m interested in <strong>high quality</strong> projects focused strongly on the <strong>design</strong>, dedicated to regular internet users.<br /> I would be particularly happy to cooperate on a&nbsp;<strong>design system project</strong>. Other fields of my current professional role interests: QA, PM, and Product Designer.
-    - >
-      In my free time, I&nbsp;like to tinker, support friends with their projects, ride my <strong>motorcycle</strong>, <strong>climb</strong>, <strong>ski</strong>, and <strong>travel</strong> in my <strong>homemade micro rv</strong>. I&nbsp;am very fond of <strong>coffee</strong>, <strong>kombucha</strong>, and <strong>bread</strong> of my own baking.
+  - >
+    I&nbsp;am a&nbsp;<strong>Frontend Developer</strong> and a&nbsp;<strong>Product Designer</strong>.<br /> I&nbsp;graduated in Product Design and after 4&nbsp;years of professional experience as a&nbsp;<strong>UI &amp; UX designer</strong>, I&nbsp;switched to a&nbsp;<strong>full-time developer</strong> role in 2015.
+  - >
+    I&nbsp;work mostly with <strong>React</strong>, <strong>TypeScript</strong> &amp; <strong>UI Design</strong>. I&#39;m interested in <strong>high-quality</strong> projects focused strongly on the design, dedicated to regular internet users. I&nbsp;would be particularly happy to cooperate on a&nbsp;<strong>design system project</strong>. Other fields of my current professional role interests: <strong>QA</strong>, <strong>PM</strong>, and <strong>Product Designer</strong>.
+  - >
+    In&nbsp;May 2024, I&nbsp;moved from Warsaw to Oslo, and since September last year, I&nbsp;have been learning Norwegian.<br /> I&nbsp;love Norway for its landscapes and vast mountain trails, and it&nbsp;was here that I&nbsp;caught my first fish early this spring 🎣.
+  - >
+    In&nbsp;my free time, I&nbsp;like to tinker, support friends with their projects, ride my <strong>motorcycle</strong>, <strong>climb</strong>, <strong>ski</strong>, and <strong>travel</strong> in my <strong>homemade micro rv</strong>. Recently, I&nbsp;started learning to skateboard, which brings me a&nbsp;lot of joy.<br /> I&nbsp;am very fond of <strong>coffee</strong>, <strong>kombucha</strong>, and <strong>bread</strong> of my own baking.
+
   languages:
     records:
       - name: polish
@@ -21,65 +24,66 @@ header:
       - name: french
         level: B1
 contact:
-  phone: +48 501 299 282
-  email: jan@strm.dev
-  linkedin:
-    - "@janmirecki"
-    - https://www.linkedin.com/in/janmirecki/
-  resume:
-    - weather-the-strm.github.io/resume
-    - https://waether-the-strm.github.io/resume/
+  records:
+    - [ tel:+48 501 299 282, +48 501 299 282 ]
+    - [ mailto:jan@strm.dev, jan@strm.dev ]
+    - [ https://www.linkedin.com/in/janmirecki/, "@janmirecki", in ]
+    - [ https://strm.dev, strm.dev, cv ]
 techStack:
   records:
-    - title: main
-      items:
-        - Javascript (ES 2020+)
-        - Typescript
-        - HTML5
-        - CSS3
-    - title: libs
-      items:
-        - React JS/TS, hooks, context
-        - Redux
-        - Saga
-        - styled-components
-        - Vue JS, Vuex
-        - Bootstrap
-        - AntD
-    - title: tests
-      items:
-        - Jest
-        - React Testing Library
-    - title: envs
-      items:
-        - GatsbyJS
-        - NextJS
-        - create-react-app
-        - Webpack
-        - Parcel
-        - yarn
-        - npm
-    - title: maintenance
-      items:
-        - JIRA
-        - git
-        - git hooks
-        - husky
-        - eslint
-        - prettier
-    - title: other
-      items:
-        - Lego Mindstorms
-        - Scripting for Adobe CC (mostly InDesign)
-    - title: ux/ui
-      items:
-        - Figma
-        - Framer
-        - Illustrator
-        - InDesign
-        - Photoshop
-        - InVision Studio
-        - Sketch
+  - title: core
+    items:
+      - Javascript
+      - Typescript
+      - HTML5
+      - CSS3
+  - title: libs & frameworks
+    items:
+      - React JS & TS
+      - Astro.js
+      - Redux
+      - Vue
+      - Tailwind CSS
+      - Tailwind UI
+      - HeadlessUI
+      - styled-components
+      - Bootstrap 4 & 5
+      - AntD
+      - Next.js
+      - Gatsby
+  - title: maintenance
+    items:
+      - Jest
+      - React Testing Library
+      - Webpack
+      - Parcel
+      - JIRA
+      - git
+      - git hooks
+      - npm
+      - yarn
+      - husky
+      - eslint
+      - prettier
+      - bash
+      - zsh
+  - title: ux & ui
+    items:
+      - Figma
+      - Framer
+      - Illustrator
+      - InDesign
+      - Photoshop
+      - InVision Studio
+      - Sketch
+  - title: more
+    items:
+      - Arduino
+      - Lego Mindstorms
+      - Adobe Scripting
+      - ...
+
+
 experience:
   records:
     - period: Aug 2022 – Now
@@ -88,7 +92,7 @@ experience:
       description: As a&nbsp;freelancer I&#39;m cooperating with various parties, supporting commercial and non-profit projects. I&nbsp;have worked on projects supporting refugees. I&nbsp;organized a&nbsp;group of IT volunteers called WebScouts, and supported more or less formal NGO organizations and grassroots initiatives. Together, we took part in accelerating the delivery of a&nbsp;Polish government website to support Ukraine. I&nbsp;led UX design exercises at the SWPS University in Warsaw, Department of Psychology and Computer Science. Commercially I&nbsp;was working on the SAP UI for the US-based company –&nbsp;Corevist as a&nbsp;React Developer. Currently, I’m cooperating with a&nbsp;Polish brand Biletomat.pl –&nbsp;a part of Time For Friends Company.
       tools: IT volunteering, Tech Leading, Frontend Development, Design Consulting, University Lecturer
       details: >
-        SWPS University • Biletomat.pl • Corevist • Techlab EE • pomagamukrainie.gov.pl • Fundacja Konflikt • Daydream Yachting
+        SWPS University • Biletomat.pl • Emagine • Ebert Studio • Corevist • Techlab EE • pomagamukrainie.gov.pl • Fundacja Konflikt • Daydream Yachting
     - period: Aug 2019 – Aug 2021
       company: CD Projekt Red
       title: Senior Frontend Developer • Tech Lead

@@ -1,34 +1,30 @@
 ---
-export interface ContactData {
-  phone: string;
-  email: string;
-  linkedin: string[];
-  resume: string[];
+type ContactData = [string, string, string?];
+
+interface Props {
+  records: ContactData[];
 }
 
-type Props = ContactData;
-
-const {
-  phone,
-  email,
-  linkedin: [linkedTitle, linkedUrl],
-  resume: [resumeTitle, resumeUrl],
-} = Astro.props;
+const { records } = Astro.props;
 
 const itemClasses =
   "mb-1 p-4 print:p-0 rounded-lg flex items-center justify-start print:block text-slate-300 bg-slate-900 hover:bg-slate-900/70 hover:text-blue-300 transition-colors print:bg-transparent print:text-slate-700";
 ---
 
-<div
-  class="grid print:inline md:grid-cols-2 lg:grid-cols-5 gap-3 mb-10 print:mb-5"
->
-  <a href={`tel:${phone}`} class={itemClasses}>{phone}</a>
-  <a href={`mailto:${email}`} class={itemClasses}>{email}</a>
-  <a href={linkedUrl} class={itemClasses}
-    ><span class="opacity-65 mr-2">in: </span>{linkedTitle}</a
+<address>
+  <span class="sr-only">Contact information:</span>
+  <ul
+    class="grid print:inline md:grid-cols-2 lg:grid-cols-4 gap-3 mb-10 print:mb-5 not-italic"
   >
-
-  <a href={resumeUrl} class={itemClasses + " lg:col-span-2"}
-    ><span class="opacity-65 mr-2">cv: </span>{resumeTitle}</a
-  >
-</div>
+    {
+      records.map(([url, title, prefix]) => (
+        <li>
+          <a href={url} class={itemClasses}>
+            {prefix && <span class="opacity-65 mr-2">{prefix}: </span>}
+            {title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</address>
