@@ -1,9 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,600;1,300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,500;0,700;1,300&display=swap");
 
 :root {
   font-size: 7.7pt;
   --primary-dark: 0 17 87;
   --links: rgb(86, 123, 245);
+  --font-bold: 500;
 }
 
 body {
@@ -27,13 +28,14 @@ h6,
 strong,
 b {
   color: rgb(var(--primary-dark) / 1);
-  font-weight: 600;
+  font-weight: var(--font-bold);
 }
 
 h1 {
   font-size: 3em;
   margin-bottom: 1.5em;
   text-align: left;
+  --font-bold: 700;
 }
 
 h2 {
@@ -42,6 +44,7 @@ h2 {
   margin-top: 1.25em;
   margin-bottom: 0.75em;
   padding-bottom: 0.2em;
+  --font-bold: 700;
 }
 
 h3 {
@@ -49,6 +52,7 @@ h3 {
 }
 
 h3 + p {
+  --font-bold: 700;
   &,
   & + p {
     margin: 0.25em 0;

@@ -21,7 +21,7 @@ const { records } = Astro.props;
   <h2 class={classes.h2}>Experience</h2>
   <ol
     reversed
-    class={"lg:grid grid-cols-2  pl-8 gap-x-12 gap-y-3" + classes.marker}
+    class={"lg:grid grid-cols-2 lg:pl-8 gap-x-12 gap-y-3" + classes.marker}
   >
     {
       records.map(({ period, company, title, tools, description, details }) => (
@@ -33,12 +33,10 @@ const { records } = Astro.props;
         >
           <p class="mb-3">{period}</p>
           <h3 class={classes.h3}>
-            {company} <br />
-            <small class="font-normal text-slate-500">
-              <em>{title}</em>
-            </small>
+            {title} <br />
+            <small class="font-normal text-lg text-slate-500">{company}</small>
           </h3>
-          <div class="opacity-25 group-hover:opacity-100 print:opacity-100 transition-opacity overflow-hidden">
+          <div class="opacity-75 group-hover:opacity-100 print:opacity-100 transition-opacity overflow-hidden">
             <p class="mb-5" set:html={description} />
             {details && <p class="text-slate-600 text-sm mb-3">{details}</p>}
             {tools && <p class="text-blue-400 text-xs">{tools}</p>}
