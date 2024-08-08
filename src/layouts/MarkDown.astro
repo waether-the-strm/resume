@@ -7,6 +7,7 @@ import { Scripts } from "../components";
 <!doctype html>
 <html lang="en">
   <head>
+    <Scripts.GTM />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -14,6 +15,7 @@ import { Scripts } from "../components";
     <title>Jan Mirecki – Frontend Developer</title>
   </head>
   <body>
+    <Scripts.GTMns />
     <div
       class="print:hidden flex justify-between absolute top-0 left-0 right-0 bg-slate-900 text-center"
     >
@@ -31,6 +33,6 @@ import { Scripts } from "../components";
     <div class="print:pt-0 pt-32">
       <slot />
     </div>
-    <Scripts gtagId="G-GKB5E87E47" />
+    <Scripts.GA gtagId="G-GKB5E87E47" />
   </body>
 </html>

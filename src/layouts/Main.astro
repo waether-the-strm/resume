@@ -33,6 +33,7 @@ const {
 
 <html lang="en">
   <head>
+    <Scripts.GTM />
     <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" is:inline
     ></script>
     <meta charset="utf-8" />
@@ -68,6 +69,7 @@ const {
   <body
     class="bg-slate-950 bg-gradient-to-tr from-slate-950 to-indigo-700/10 bg-fixed dark:bg-slate-100 dark:from-slate-100 dark:to-indigo-200/10 transition-colors print:bg-none print:bg-white print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed antialiased"
   >
+    <Scripts.GTMns />
     <div
       class="print:hidden dark:invert fixed h-10 w-16 flex items-center justify-center top-5 right-5 sm:top-10 sm:right-10 z-50 bg-slate-950/60 dark:bg-slate-950/95 dark:ring-1 backdrop-blur-sm rounded-full"
     >
@@ -90,6 +92,7 @@ const {
       <p class="mb-3">Reach out to me at:</p>
       <Contact {...contact} />
     </footer>
-    <Scripts gtagId="G-GKB5E87E47" enableLenis />
+    <Scripts.GA gtagId="G-GKB5E87E47" />
+    <Scripts.Lenis isEnabled={true} />
   </body>
 </html>
