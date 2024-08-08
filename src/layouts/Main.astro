@@ -5,9 +5,9 @@ import {
   TechStack,
   Experience,
   Education,
+  Scripts,
 } from "../components";
 
-import "printed";
 import { Toggle } from "../components/react";
 
 type HeadersProps = Parameters<typeof Header>[0];
@@ -52,8 +52,10 @@ const {
       rel="stylesheet"
       href="https://unpkg.com/lenis@1.1.9/dist/lenis.css"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,600;1,300&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -64,7 +66,7 @@ const {
     <title>Jan Mirecki – Frontend Developer</title>
   </head>
   <body
-    class="bg-slate-950 dark:bg-slate-100 transition-colors print:bg-white print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed antialiased"
+    class="bg-slate-950 bg-gradient-to-tr from-slate-950 to-indigo-700/10 bg-fixed dark:bg-slate-100 transition-colors print:bg-none print:bg-white print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed antialiased"
   >
     <div
       class="print:hidden dark:invert fixed h-10 w-16 flex items-center justify-center top-5 right-5 sm:top-10 sm:right-10 z-50 bg-slate-950/60 dark:bg-slate-950/95 dark:ring-1 backdrop-blur-sm rounded-full"
@@ -88,15 +90,6 @@ const {
       <p class="mb-3">Reach out to me at:</p>
       <Contact {...contact} />
     </footer>
+    <Scripts gtagId="G-GKB5E87E47" />
   </body>
 </html>
-<script is:inline>
-  const lenis = new Lenis();
-
-  function raf(time) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-
-  requestAnimationFrame(raf);
-</script>

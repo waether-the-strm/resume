@@ -1,0 +1,187 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,600;1,300&display=swap");
+
+:root {
+  font-size: 7.7pt;
+  --primary-dark: 0 17 87;
+  --links: rgb(86, 123, 245);
+}
+
+body {
+  font-family: "Poppins", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 1.1rem;
+  padding: 1em;
+  margin: auto;
+  max-width: 18cm;
+  background: #fefefe;
+  color: rgb(var(--primary-dark) / 0.8);
+  letter-spacing: 0.01em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b {
+  color: rgb(var(--primary-dark) / 1);
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 3em;
+  margin-bottom: 1.5em;
+  text-align: left;
+}
+
+h2 {
+  border-bottom: 3px solid rgb(var(--primary-dark) / 0.1);
+  font-size: 1.8em;
+  margin-top: 1.25em;
+  margin-bottom: 0.75em;
+  padding-bottom: 0.2em;
+}
+
+h3 {
+  font-size: 1.1em;
+}
+
+h3 + p {
+  &,
+  & + p {
+    margin: 0.25em 0;
+  }
+}
+
+h4 {
+  font-size: 1em;
+}
+
+h5 {
+  font-size: 1em;
+}
+
+h6 {
+  color: #777777;
+  background-color: inherit;
+  font-size: 1em;
+}
+
+hr {
+  margin: 1.25em 0 1.25em;
+  border: 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table,
+th,
+tr,
+td {
+  border: none;
+  text-align: left;
+}
+
+p,
+blockquote,
+ul,
+ol,
+dl,
+li,
+table,
+pre {
+  margin: 1em 0;
+}
+
+li {
+  margin: 0.5em 0;
+}
+
+blockquote {
+  border: none;
+  border-left: 2px solid rgb(var(--primary-dark) / 0.05);
+  padding: 0 1em;
+
+  & + p + p,
+  & + p {
+    font-size: 0.85em;
+    color: rgb(var(--primary-dark) / 0.5);
+  }
+}
+
+a,
+a:visited {
+  color: var(--links);
+  background-color: inherit;
+  text-decoration: none;
+}
+
+#message {
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  display: block;
+  width: 100%;
+  height: 60px;
+  margin: 6px 0px;
+}
+
+button,
+#ws {
+  font-size: 10pt;
+  padding: 4px 6px;
+  border-radius: 5px;
+  border: 1px solid #bbb;
+  background-color: #eee;
+}
+
+code,
+pre,
+#ws,
+#message {
+  font-family: Monaco;
+  font-size: 10pt;
+  border-radius: 3px;
+  background-color: #f8f8f8;
+  color: inherit;
+}
+
+code {
+  border: 1px solid #eaeaea;
+  margin: 0 2px;
+  padding: 0 5px;
+}
+
+pre {
+  border: 1px solid #cccccc;
+  overflow: auto;
+  padding: 4px 8px;
+}
+
+pre > code {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#ws {
+  background-color: #f8f8f8;
+}
+
+.send {
+  color: #77bb77;
+}
+.server {
+  color: #7799bb;
+}
+.error {
+  color: #aa0000;
+}
+
+.pagebreak {
+  page-break-after: always;
+}

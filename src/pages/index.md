@@ -28,7 +28,7 @@ contact:
     - [ tel:+48 501 299 282, +48 501 299 282 ]
     - [ mailto:jan@strm.dev, jan@strm.dev ]
     - [ https://www.linkedin.com/in/janmirecki/, "@janmirecki", in ]
-    - [ https://strm.dev, strm.dev, cv ]
+    - [ /cv, resume in .md, cv ]
 techStack:
   records:
   - title: core

@@ -1,0 +1,28 @@
+---
+interface Props {
+  gtagId: string;
+}
+
+const { gtagId } = Astro.props;
+---
+
+<script async src={"https://www.googletagmanager.com/gtag/js?id=" + gtagId}
+></script>
+
+<script is:inline define:vars={{ gtagId }}>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", gtagId);
+
+  const lenis = new Lenis();
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+</script>
