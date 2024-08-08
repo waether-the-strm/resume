@@ -1,15 +1,16 @@
 ---
 interface Props {
   gtagId: string;
+  enableLenis?: boolean;
 }
 
-const { gtagId } = Astro.props;
+const { gtagId, enableLenis } = Astro.props;
 ---
 
 <script async src={"https://www.googletagmanager.com/gtag/js?id=" + gtagId}
 ></script>
 
-<script is:inline define:vars={{ gtagId }}>
+<script is:inline define:vars={{ gtagId, enableLenis }}>
   window.dataLayer = window.dataLayer || [];
   function gtag() {
     dataLayer.push(arguments);
@@ -17,12 +18,14 @@ const { gtagId } = Astro.props;
   gtag("js", new Date());
   gtag("config", gtagId);
 
-  const lenis = new Lenis();
+  if (enableLenis) {
+    const lenis = new Lenis();
 
-  function raf(time) {
-    lenis.raf(time);
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
     requestAnimationFrame(raf);
   }
-
-  requestAnimationFrame(raf);
 </script>

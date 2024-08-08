@@ -1,6 +1,7 @@
 ---
 import "printed";
 import "../style/markdown.css";
+import { Scripts } from "../components";
 ---
 
 <!doctype html>
@@ -13,6 +14,23 @@ import "../style/markdown.css";
     <title>Jan Mirecki – Frontend Developer</title>
   </head>
   <body>
-    <slot />
+    <div
+      class="print:hidden flex justify-between absolute top-0 left-0 right-0 bg-slate-900 text-center"
+    >
+      <a
+        href="/"
+        class="hover:underline inline-block py-4 px-8 text-white visited:text-white"
+        >← Back to 🏠</a
+      >
+      <a
+        href="javascript:window.print()"
+        class="hover:underline inline-block py-4 px-8 text-white visited:text-white"
+        >🖨️ print or save as pdf
+      </a>
+    </div>
+    <div class="print:pt-0 pt-32">
+      <slot />
+    </div>
+    <Scripts gtagId="G-GKB5E87E47" />
   </body>
 </html>

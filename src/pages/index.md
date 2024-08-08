@@ -18,11 +18,11 @@ header:
       - name: polish
         level: native
       - name: english
-        level: C1
-      - name: norwegian
-        level: B1
+        level: advanced
       - name: french
-        level: B1
+        level: conversational
+      - name: norwegian
+        level: basic
 contact:
   records:
     - [ tel:+48 501 299 282, +48 501 299 282 ]
@@ -138,15 +138,15 @@ experience:
 education:
   records:
     - period: Oct 2016 — Jun 2017
-      institution: SWPS University of Social Sciences and Humanities
-      degree: Postgraduate Studies of Creative Coding
+      institution: Postgraduate Studies at SWPS University of Social Sciences and Humanities
+      degree: Creative Coding
       place: Warsaw, Poland
     - period: Dec 2010 — May 2011
-      institution: ENSAAMA Olivier de Serres
-      degree: Erasmus student exchange, Product Design on Industrial Design Faculty
+      institution: Erasmus student exchange in the Industrial Design Faculty at ENSAAMA Olivier de Serres
+      degree: Product Design
       place: Paris, France
     - period: Oct 2008 — Sep 2014
-      institution: Academy of Fine Arts
-      degree: Bachelor’s in Product Design<br/> Faculty of Industrial Design
+      institution: Faculty of Industrial Design at Academy of Fine Arts
+      degree: Bachelor’s in Product Design
       place: Warsaw, Poland
 ---

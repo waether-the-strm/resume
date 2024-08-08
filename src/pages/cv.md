@@ -12,10 +12,10 @@ In May 2024, I&nbsp;moved from Warsaw to Oslo, and since September last year, I&
 
 In my free time, I&nbsp;like to tinker, support friends with their projects, ride my **motorcycle**, **climb**, **ski**, and **travel** in my **homemade micro rv**. Recently, I&nbsp;started learning to skateboard, which brings me a&nbsp;lot of joy. I&nbsp;am very fond of **coffee**, **kombucha**, and **bread** of my own baking.
 
-**Polish** 🗣️ Native  
-**English** 🗣️ Advanced  
-**French** 🗣️ Conversational  
-**Norwegian** 🗣️ Beginner
+**Polish** 🗣️ native  
+**English** 🗣️ advanced  
+**French** 🗣️ conversational  
+**Norwegian** 🗣️ basic
 
 
 |   |   |   |   |   |

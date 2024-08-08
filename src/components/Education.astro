@@ -22,13 +22,9 @@ const { records } = Astro.props;
       records.map(({ period, institution, degree, place }) => (
         <li class="mb-5">
           <p class="mb-3">{period}</p>
-          <h3 class={classes.h3}>
-            {institution} <br />
-            <small class="font-normal text-slate-500">
-              <em>{place}</em>
-            </small>
-          </h3>
-          <p class="mb-5" set:html={degree} />
+          <h3 class={classes.h3}>{degree}</h3>
+          <p class="font-normal text-base leading-snug ">{institution}</p>
+          <em class="mb-5 text-sm text-slate-500" set:html={place} />
         </li>
       ))
     }
