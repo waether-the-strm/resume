@@ -1,5 +1,5 @@
 ---
-import { Header, Contact, TechStack, Experience, Education, Scripts } from "../components"
+import { Header, Contact, TechStack, Experience, Education, Scripts, FeaturedProjects } from "../components"
 
 import { Toggle } from "../components/react"
 
@@ -8,19 +8,21 @@ type ContactProps = Parameters<typeof Contact>[0]
 type TechStackProps = Parameters<typeof TechStack>[0]
 type ExperienceProps = Parameters<typeof Experience>[0]
 type EducationProps = Parameters<typeof Education>[0]
+type FeaturedProjectsProps = Parameters<typeof FeaturedProjects>[0]
 
 interface Props {
   frontmatter: {
     header: HeadersProps
     contact: ContactProps
     techStack: TechStackProps
+    featuredProjects: FeaturedProjectsProps
     experience: ExperienceProps
     education: EducationProps
   }
 }
 
 const {
-  frontmatter: { header, contact, techStack, experience, education },
+  frontmatter: { header, contact, techStack, featuredProjects, experience, education },
 } = Astro.props
 ---
 
@@ -71,6 +73,7 @@ const {
         <Contact {...contact} />
       </div>
       <TechStack {...techStack} />
+      <FeaturedProjects {...featuredProjects} />
       <Experience {...experience} />
       <Education {...education} />
     </main>

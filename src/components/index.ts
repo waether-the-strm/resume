@@ -4,6 +4,7 @@ export { default as Experience } from "./Experience.astro"
 export { default as TechStack } from "./TechStack.astro"
 export { default as Contact } from "./Contact.astro"
 export { default as Languages } from "./Languages.astro"
+export { default as FeaturedProjects } from "./FeaturedProjects.astro"
 
 import { default as GTM } from "./scripts/GTM.astro"
 import { default as GTMns } from "./scripts/GTMns.astro"

@@ -108,6 +108,40 @@ techStack:
         - Adobe Scripting
         - ...
 
+featuredProjects:
+  records:
+    - name: "GSR - Sports Facility Reservation System"
+      description:
+        "Full-stack reservation platform for sports centers across Poland with modern UX and
+        accessibility focus"
+      role: "Product Designer • Frontend Developer • Tech Lead"
+      impact: "Serving 20+ sports centers, processing 1000+ daily bookings"
+      tech: ["React", "TypeScript", "Design System", "Figma", "Node.js"]
+      status: "live"
+      year: "2024"
+      links:
+        demo: "https://gsr.strm.dev"
+        case_study: "/projects/gsr"
+
+    - name: "GWENT Admin Panel - CD Projekt Red"
+      description:
+        "Game management dashboard with real-time data visualization and team collaboration tools"
+      role: "Senior Frontend Developer • Tech Lead"
+      impact: "Used by 100+ team members daily, reduced admin tasks by 60%"
+      tech: ["React TS", "Redux", "Ant Design", "Jest", "Docker"]
+      status: "completed"
+      year: "2021"
+
+    - name: "WebScouts Volunteer Initiative"
+      description:
+        "Coordinated IT volunteer network supporting Ukrainian refugees through rapid web
+        development"
+      role: "Community Leader • Frontend Developer"
+      impact: "15+ volunteers mobilized, contributed to government support website"
+      tech: ["React", "Community Building", "Rapid Prototyping"]
+      status: "completed"
+      year: "2022"
+
 experience:
   records:
     - period: Aug 2022 – Now
@@ -227,6 +261,6 @@ education:
       place: Paris, France
     - period: Oct 2008 — Sep 2014
       institution: Faculty of Industrial Design at Academy of Fine Arts
-      degree: Bachelor’s in Product Design
+      degree: Bachelor's in Product Design
       place: Warsaw, Poland
 ---
