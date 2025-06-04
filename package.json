@@ -1,7 +1,7 @@
 {
   "name": "jan-mirecki-cv",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "scripts": {
     "dev": "pnpm run astro dev",
     "start": "pnpm run astro dev",
