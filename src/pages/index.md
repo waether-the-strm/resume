@@ -7,9 +7,9 @@ header:
     - >
       I&nbsp;am a&nbsp;<strong>Frontend Developer</strong> and a&nbsp;<strong>Product Designer</strong>.<br /> I&nbsp;graduated in Product Design and after 4&nbsp;years of professional experience as a&nbsp;<strong>UI &amp; UX designer</strong>, I&nbsp;switched to a&nbsp;<strong>full-time developer</strong> role in 2015.
     - >
-      I&nbsp;work mostly with <strong>React</strong>, <strong>TypeScript</strong> &amp; <strong>UI Design</strong>. I&#39;m interested in <strong>high-quality</strong> projects focused strongly on the design, dedicated to regular internet users. I&nbsp;would be particularly happy to cooperate on a&nbsp;<strong>design system project</strong>. Other fields of my current professional role interests: <strong>QA</strong>, <strong>PM</strong>, and <strong>Product Designer</strong>.
+      I work mostly with <strong>React</strong>, <strong>TypeScript</strong> &amp; <strong>UI Design</strong>. I specialize in <strong>bridging the gap between design and development</strong>, creating user-centered solutions that are both beautiful and functional. My unique background allows me to translate design vision into high-quality code while maintaining <strong>design system consistency</strong>. I&nbsp;would be particularly happy to cooperate on a&nbsp;<strong>design system project</strong>. Other fields of my current professional role interests: <strong>Product Designer</strong>, <strong>PM</strong> and <strong>QA</strong>.
     - >
-      In&nbsp;May 2024, I&nbsp;moved from Warsaw to Oslo, and since September last year, I&nbsp;have been learning Norwegian.<br /> I&nbsp;love Norway for its landscapes and vast mountain trails, and it&nbsp;was here that I&nbsp;caught my first fish early this spring 🎣.
+      Based in <strong>Oslo</strong> since May 2024, learning Norwegian. I'm passionate about Norway's innovative tech scene and love exploring the country's amazing mountain trails in my free time.
     - >
       In&nbsp;my free time, I&nbsp;like to tinker, support friends with their projects, ride my <strong>motorcycle</strong>, <strong>climb</strong>, <strong>ski</strong>, and <strong>travel</strong> in my <strong>homemade micro rv</strong>. Recently, I&nbsp;started learning to skateboard, which brings me a&nbsp;lot of joy.<br /> I&nbsp;am very fond of <strong>coffee</strong>, <strong>kombucha</strong>, and <strong>bread</strong> of my own baking.
 
@@ -19,9 +19,9 @@ header:
         level: native
       - name: english
         level: advanced
-      - name: french
-        level: conversational
       - name: norwegian
+        level: conversational
+      - name: french
         level: conversational
 contact:
   records:
@@ -94,7 +94,7 @@ experience:
         - >
           I&nbsp;led UX design exercises at the SWPS University in Warsaw, Department of Psychology and Computer Science. Commercially, I&nbsp;worked on the SAP UI for the US-based company – Corevist as a&nbsp;React Developer. Previously, I&nbsp;coordinated the redesign project of the web and mobile platform for Biletomat.pl, part of the Time For Friends Company. In this role, I&nbsp;led a&nbsp;team of designers, developers, and marketing professionals from a&nbsp;technical, coordination, and visual perspective, reporting directly to the company's management.
         - >
-          Currently, I&nbsp;am leading the development of GSR (Sports Facility Reservation System) in collaboration with Ebert Studio. In this role, I&nbsp;am responsible for product design, UX/UI design, technical architecture, frontend development, and team coordination. The system is used by Sports and Recreation Centers across Poland, providing a&nbsp;modern, accessible, and user-friendly platform for facility reservations.
+          Currently, I&nbsp;am leading the development of GSR (Sports Facility Reservation System) in collaboration with Ebert Studio. In this role, I&nbsp;am responsible for product design, UX/UI design, technical architecture, frontend development, and team coordination. The system is used by Sports and Recreation Centers across Poland, providing a&nbsp;modern, accessible, and user-friendly platform for facility reservations. I've built a&nbsp;comprehensive design system with reusable component libraries, established design tokens for consistent branding, and created design-to-code workflows that improved development efficiency while ensuring pixel-perfect implementation of user interfaces.
       tools: IT volunteering, Tech Leading, Frontend Development, Design Consulting, University Lecturer, Product Design, UX/UI Design, Technical Architecture
       details: >
         SWPS University • Biletomat.pl • Emagine • Ebert Studio (GSR) • Corevist • Techlab EE • pomagamukrainie.gov.pl • Fundacja Konflikt • Daydream Yachting
