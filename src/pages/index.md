@@ -142,7 +142,7 @@ featuredProjects:
       status: "completed"
       year: "2022"
 
-    - name: "CV Website"
+    - name: "Personal CV – strm.dev"
       description:
         "Personal portfolio website built with Astro.js, featuring modern design and smooth
         animations"

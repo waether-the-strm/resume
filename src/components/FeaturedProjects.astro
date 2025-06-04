@@ -42,7 +42,8 @@ const getStatusColor = (status: Project["status"]) => {
       records.map((project, index) => (
         <article
           class="group rounded-xl bg-slate-900/30 p-6 ring-1 ring-slate-800/40 backdrop-blur-sm transition-all duration-300 ease-out hover:scale-[1.02] hover:bg-slate-900/60 hover:shadow-2xl hover:shadow-blue-500/10 hover:ring-slate-700/60"
-          style={`animation: fadeInUp 0.5s ease-out ${index * 0.1}s forwards; opacity: 0;`}
+          data-animate
+          data-animate-delay={index * 100}
         >
           <div class="mb-4 flex items-start justify-between">
             <h3 class={classes.h3}>{project.name}</h3>
@@ -138,14 +139,5 @@ const getStatusColor = (status: Project["status"]) => {
 </section>
 
 <style>
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+  /* Remove the fadeInUp keyframes as we're using the global animation system */
 </style>

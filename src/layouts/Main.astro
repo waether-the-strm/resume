@@ -1,5 +1,13 @@
 ---
-import { Header, Contact, TechStack, Experience, Education, Scripts, FeaturedProjects } from "../components"
+import {
+  Header,
+  Contact,
+  TechStack,
+  Experience,
+  Education,
+  Scripts,
+  FeaturedProjects,
+} from "../components"
 
 import { Toggle } from "../components/react"
 
@@ -72,10 +80,18 @@ const {
       <div class="left-8 right-8 top-8 md:absolute print:static">
         <Contact {...contact} />
       </div>
-      <TechStack {...techStack} />
-      <FeaturedProjects {...featuredProjects} />
-      <Experience {...experience} />
-      <Education {...education} />
+      <div data-animate data-animate-delay="100">
+        <TechStack {...techStack} />
+      </div>
+      <div data-animate data-animate-delay="200">
+        <FeaturedProjects {...featuredProjects} />
+      </div>
+      <div data-animate data-animate-delay="300">
+        <Experience {...experience} />
+      </div>
+      <div data-animate data-animate-delay="400">
+        <Education {...education} />
+      </div>
     </main>
     <footer
       class="mt-8 border-t-2 border-slate-800/80 bg-slate-950 px-10 pb-1 pt-5 dark:invert print:hidden"
@@ -85,5 +101,6 @@ const {
     </footer>
     <Scripts.GA gtagId="G-GKB5E87E47" />
     <Scripts.Lenis isEnabled={true} />
+    <Scripts.ScrollAnimations />
   </body>
 </html>

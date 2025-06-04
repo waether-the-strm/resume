@@ -10,10 +10,12 @@ import { default as GTM } from "./scripts/GTM.astro"
 import { default as GTMns } from "./scripts/GTMns.astro"
 import { default as GA } from "./scripts/GA.astro"
 import { default as Lenis } from "./scripts/Lenis.astro"
+import { default as ScrollAnimations } from "./scripts/ScrollAnimations.astro"
 
 export const Scripts = {
   GTM,
   GTMns,
   GA,
   Lenis,
+  ScrollAnimations,
 }
