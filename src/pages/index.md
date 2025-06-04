@@ -121,7 +121,7 @@ featuredProjects:
       year: "2024"
       links:
         demo: "https://gsr.strm.dev"
-        case_study: "/projects/gsr"
+      # case_study: "/projects/gsr"
 
     - name: "GWENT Admin Panel - CD Projekt Red"
       description:
