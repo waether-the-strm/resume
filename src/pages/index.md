@@ -120,8 +120,8 @@ featuredProjects:
       status: "live"
       year: "2024"
       links:
-        demo: "https://gsr.strm.dev"
-      # case_study: "/projects/gsr"
+        demo: "https://obiekty.gosir-piaseczno.pl/"
+        case_study: "/projects/gsr"
 
     - name: "GWENT Admin Panel - CD Projekt Red"
       description:
