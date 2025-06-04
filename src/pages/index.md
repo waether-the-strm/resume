@@ -142,6 +142,46 @@ featuredProjects:
       status: "completed"
       year: "2022"
 
+    - name: "CV Website"
+      description:
+        "Personal portfolio website built with Astro.js, featuring modern design and smooth
+        animations"
+      role: "Frontend Developer • Designer"
+      impact:
+        "Showcasing professional experience and projects with a focus on accessibility and
+        performance"
+      tech: ["Astro.js", "TypeScript", "Tailwind CSS", "React", "Design System"]
+      status: "live"
+      year: "2024"
+      links:
+        demo: "https://strm.dev"
+        github: "https://github.com/strm/cv-repo"
+
+    - name: "Biletomat.pl Redesign"
+      description:
+        "Complete redesign of web and mobile platform for Time For Friends Company's ticket booking
+        system"
+      role: "Tech Lead • Product Designer • Frontend Developer"
+      impact:
+        "Led team of designers, developers and marketing professionals, improved user experience and
+        conversion rates"
+      tech: ["React", "TypeScript", "Design System", "Figma", "Team Leadership"]
+      status: "completed"
+      year: "2022"
+      links:
+        demo: "https://biletomat.pl"
+
+    - name: "Kłosy Knives"
+      description:
+        "E-commerce platform for premium handcrafted knives, featuring custom product configurator"
+      role: "Frontend Developer • UI Designer"
+      impact: "Streamlined product customization process, increased customer engagement"
+      tech: ["React", "Gatsby", "SASS", "Bootstrap 4", "Product Configurator"]
+      status: "completed"
+      year: "2019"
+      links:
+        demo: "https://klosy.pl"
+
 experience:
   records:
     - period: Aug 2022 – Now
