@@ -6,7 +6,11 @@ export const classes = {
     " lg:list-decimal marker:text-slate-400/15 hover:marker:text-slate-400/50 marker:font-bold marker:text-3xl ",
   leftBorder: " border-l border-transparent hover:border-slate-800 ",
   pill: "print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/75 transition-colors py-1 px-2 rounded-md whitespace-nowrap",
+  pillMd:
+    "print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/75 transition-colors py-1 px-2 rounded-md whitespace-nowrap text-sm",
   pillSm:
     "print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/75 transition-colors py-0.5 px-1.5 rounded-md whitespace-nowrap text-xs",
+  pillXs:
+    "print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/75 transition-colors py-0.5 px-1 rounded whitespace-nowrap text-[10px]",
   section: " mb-10 hover:bg-black/55 p-5 -m-5 rounded-2xl transition-colors ",
 }

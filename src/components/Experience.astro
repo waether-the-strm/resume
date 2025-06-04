@@ -38,7 +38,13 @@ const { records } = Astro.props
               <p class="mb-5" set:html={description} />
             ))}
             {details && <p class="mb-3 text-sm text-slate-600">{details}</p>}
-            {tools && <p class="text-xs text-blue-400">{tools}</p>}
+            {Array.isArray(tools) && tools.length > 0 && (
+              <div class="mt-2 flex flex-wrap gap-1">
+                {tools.map((tool: string) => (
+                  <span class={classes.pillXs}>{tool}</span>
+                ))}
+              </div>
+            )}
           </div>
         </li>
       ))

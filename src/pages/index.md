@@ -212,8 +212,16 @@ experience:
           design tokens for consistent branding, and created design-to-code workflows that improved
           development efficiency while ensuring pixel-perfect implementation of user interfaces.
       tools:
-        IT volunteering, Tech Leading, Frontend Development, Design Consulting, University Lecturer,
-        Product Design, UX/UI Design, Technical Architecture
+        [
+          "IT volunteering",
+          "Tech Leading",
+          "Frontend Development",
+          "Design Consulting",
+          "University Lecturer",
+          "Product Design",
+          "UX/UI Design",
+          "Technical Architecture",
+        ]
       details: >
         SWPS University • Biletomat.pl • Emagine • Ebert Studio (GSR) • Corevist • Techlab EE •
         pomagamukrainie.gov.pl • Fundacja Konflikt • Daydream Yachting
@@ -231,8 +239,18 @@ experience:
           backend devs who were new in a&nbsp;React Frontend environment, and sharing our progress
           in front of the ~100 members of the Gwent Team on monthly meetings.
       tools:
-        React TS, Redux, Saga Middleware, Typescript, Ant Design, Jest, React Testing Library, PHP,
-        Symphony, Docker
+        [
+          "React TS",
+          "Redux",
+          "Saga Middleware",
+          "Typescript",
+          "Ant Design",
+          "Jest",
+          "React Testing Library",
+          "PHP",
+          "Symphony",
+          "Docker",
+        ]
     - period: Jan 2019 – Aug 2019
       company: Sztorm Jan Mirecki
       title: Frontend Developer • Consultant • Architect
@@ -241,7 +259,7 @@ experience:
           Landing pages development, web app development
       details: >
         Kłosy Knives • Laboratorium EE • Isobar/Dentsu Aegis Network
-      tools: JavaScript, React JS, Gatsby, Karma + Jasmine, SASS, Bootstrap 4, GIT
+      tools: ["JavaScript", "React JS", "Gatsby", "Karma + Jasmine", "SASS", "Bootstrap 4", "GIT"]
     - period: Oct 2017 – Oct 2018
       company: Onwelo
       title: Frontend Developer
@@ -249,7 +267,17 @@ experience:
         - >
           Frontend for banking, financial, and moto industry CMRs, migrations, and internal product
           development.
-      tools: JavaScript, React JS, Angular 5, Karma + Jasmine, SASS, Bootstrap 4, GIT, Docker
+      tools:
+        [
+          "JavaScript",
+          "React JS",
+          "Angular 5",
+          "Karma + Jasmine",
+          "SASS",
+          "Bootstrap 4",
+          "GIT",
+          "Docker",
+        ]
     - period: Dec 2016 – Sep 2017
       company: Avon Cosmetics Polska
       title: Frontend Developer
@@ -257,17 +285,23 @@ experience:
         - >
           Landing pages, mailing templates, and corporate services supporting: Avon Online, Avon
           Representative Suite.
-      tools: >
-        HTML, SASS, Bootstrap 3, GIT, Adobe: Xd / Ai / Ps / Indd
+      tools: ["HTML", "SASS", "Bootstrap 3", "GIT", "Adobe: Xd / Ai / Ps / Indd"]
     - period: Oct 2015 – Nov 2016
       company: Laboratorium EE
       title: Frontend Developer • UX Designer
       descriptions:
         - >
           RWD websites and landing pages
-      tools: >
-        HTML5, SASS/SCSS, Bootstrap 3, Material Design, NPM, Adobe: Ai, Ps Teamworking with GIT in
-        SCRUM with JIRA
+      tools:
+        [
+          "HTML5",
+          "SASS/SCSS",
+          "Bootstrap 3",
+          "Material Design",
+          "NPM",
+          "Adobe: Ai, Ps",
+          "Teamworking with GIT in SCRUM with JIRA",
+        ]
     - period: Jan 2015 — Jan 2016
       company: Freelancer
       title: Frontend Developer • UI Designer
@@ -287,7 +321,7 @@ experience:
       description: >
         Website and app design, mockup prototyping. Laboratorium EE identity design: logotype,
         internal documents, data design, website design, and frontend coding
-      tools: HTML, CSS, Bootstrap, RWD, Adobe Ai, Ps, Id
+      tools: ["HTML", "CSS", "Bootstrap", "RWD", "Adobe Ai", "Ps", "Id"]
 education:
   records:
     - period: Oct 2016 — Jun 2017

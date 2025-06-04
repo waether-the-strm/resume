@@ -29,9 +29,7 @@ const { records } = Astro.props
           </h3>
           <ul class="z-100 col-span-5 mt-3 flex list-none flex-wrap place-items-start justify-start gap-3 rounded-lg border-l border-slate-800/65 p-3 transition-all group-hover:border-slate-800 group-hover:bg-slate-900 md:border-transparent print:inline">
             {items.map((title) => (
-              <li class="whitespace-nowrap rounded-md border border-slate-800 px-2 py-1 text-blue-400/75 transition-colors group-hover:border-blue-400/50 group-hover:text-blue-300 print:inline-block print:border-transparent print:text-slate-800 print:after:content-[',_']">
-                {title}
-              </li>
+              <li class={classes.pillMd}>{title}</li>
             ))}
           </ul>
         </li>
