@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react";
-import { Switch } from "@headlessui/react";
+import { useEffect, useState } from "react"
+import { Switch } from "@headlessui/react"
 
 export const Toggle = () => {
-  const [enabled, setEnabled] = useState(false);
+  const [enabled, setEnabled] = useState(false)
 
   useEffect(() => {
     if (enabled) {
-      document.body.classList.add("dark");
+      document.body.classList.add("dark")
     } else {
-      document.body.classList.remove("dark");
+      document.body.classList.remove("dark")
     }
-  });
+  })
 
   return (
     <Switch
       checked={enabled}
       onChange={setEnabled}
-      className="group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-amber-200/25 transition-colors duration-200 ease-in-out focus:outline-none ring-offset-slate-100/70 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 data-[checked]:bg-slate-600"
+      className="group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-amber-200/25 ring-offset-slate-100/70 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 data-[checked]:bg-slate-600"
     >
       <span className="sr-only">Toggle UI mode</span>
       <span className="pointer-events-none relative inline-block size-5 transform rounded-full bg-amber-200/80 shadow ring-0 transition duration-200 ease-in-out group-data-[checked]:translate-x-5">
@@ -57,5 +57,5 @@ export const Toggle = () => {
         </span>
       </span>
     </Switch>
-  );
-};
+  )
+}

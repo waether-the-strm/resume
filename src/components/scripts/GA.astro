@@ -1,21 +1,18 @@
 ---
 interface Props {
-  gtagId: string;
+  gtagId: string
 }
 
-const { gtagId } = Astro.props;
+const { gtagId } = Astro.props
 ---
 
-<script
-  async
-  src={"https://www.googletagmanager.com/gtag/js?id=" + gtagId}
-  is:inline></script>
+<script async src={"https://www.googletagmanager.com/gtag/js?id=" + gtagId} is:inline></script>
 
 <script is:inline define:vars={{ id: gtagId }}>
-  window.dataLayer = window.dataLayer || [];
+  window.dataLayer = window.dataLayer || []
   function gtag() {
-    dataLayer.push(arguments);
+    dataLayer.push(arguments)
   }
-  gtag("js", new Date());
-  gtag("config", id);
+  gtag("js", new Date())
+  gtag("config", id)
 </script>

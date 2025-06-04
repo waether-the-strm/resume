@@ -7,4 +7,4 @@ export const classes = {
   leftBorder: " border-l border-transparent hover:border-slate-800 ",
   pill: "print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/75 transition-colors py-1 px-2 rounded-md whitespace-nowrap",
   section: " mb-10 hover:bg-black/55 p-5 -m-5 rounded-2xl transition-colors ",
-};
+}

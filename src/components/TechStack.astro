@@ -1,16 +1,16 @@
 ---
-import { classes } from "../shared/classes";
+import { classes } from "../shared/classes"
 
 interface Stack {
-  title: string;
-  items: string[];
+  title: string
+  items: string[]
 }
 
 interface Props {
-  records: Stack[];
+  records: Stack[]
 }
 
-const { records } = Astro.props;
+const { records } = Astro.props
 ---
 
 <section class={classes.section}>
@@ -18,18 +18,18 @@ const { records } = Astro.props;
   <ul class="print:inline">
     {
       records.map(({ title, items }) => (
-        <li class="md:grid print:inline-block print:m-0 print:p-0 grid-cols-6 group cursor-default  ">
+        <li class="group cursor-default grid-cols-6 md:grid print:m-0 print:inline-block print:p-0">
           <h3
             class={
               classes.h3 +
-              " text-sm !text-slate-400/50 mt-3 mb-0 group-hover:!text-slate-100 transition-color lg:text-right mr-5 relative md:top-5 print:text-left"
+              " transition-color relative mb-0 mr-5 mt-3 text-sm !text-slate-400/50 group-hover:!text-slate-100 md:top-5 lg:text-right print:text-left"
             }
           >
             {title}
           </h3>
-          <ul class="col-span-5 flex print:inline mt-3 p-3 place-items-start justify-start gap-3 flex-wrap list-none z-100 group-hover:bg-slate-900 border-l border-slate-800/65 md:border-transparent group-hover:border-slate-800 transition-all rounded-lg">
+          <ul class="z-100 col-span-5 mt-3 flex list-none flex-wrap place-items-start justify-start gap-3 rounded-lg border-l border-slate-800/65 p-3 transition-all group-hover:border-slate-800 group-hover:bg-slate-900 md:border-transparent print:inline">
             {items.map((title) => (
-              <li class="print:inline-block print:border-transparent print:after:content-[',_'] print:text-slate-800 border border-slate-800 group-hover:border-blue-400/50 group-hover:text-blue-300 text-blue-400/75 transition-colors py-1 px-2 rounded-md whitespace-nowrap">
+              <li class="whitespace-nowrap rounded-md border border-slate-800 px-2 py-1 text-blue-400/75 transition-colors group-hover:border-blue-400/50 group-hover:text-blue-300 print:inline-block print:border-transparent print:text-slate-800 print:after:content-[',_']">
                 {title}
               </li>
             ))}

@@ -1,58 +1,48 @@
 ---
-import {
-  Header,
-  Contact,
-  TechStack,
-  Experience,
-  Education,
-  Scripts,
-} from "../components";
+import { Header, Contact, TechStack, Experience, Education, Scripts } from "../components"
 
-import { Toggle } from "../components/react";
+import { Toggle } from "../components/react"
 
-type HeadersProps = Parameters<typeof Header>[0];
-type ContactProps = Parameters<typeof Contact>[0];
-type TechStackProps = Parameters<typeof TechStack>[0];
-type ExperienceProps = Parameters<typeof Experience>[0];
-type EducationProps = Parameters<typeof Education>[0];
+type HeadersProps = Parameters<typeof Header>[0]
+type ContactProps = Parameters<typeof Contact>[0]
+type TechStackProps = Parameters<typeof TechStack>[0]
+type ExperienceProps = Parameters<typeof Experience>[0]
+type EducationProps = Parameters<typeof Education>[0]
 
 interface Props {
   frontmatter: {
-    header: HeadersProps;
-    contact: ContactProps;
-    techStack: TechStackProps;
-    experience: ExperienceProps;
-    education: EducationProps;
-  };
+    header: HeadersProps
+    contact: ContactProps
+    techStack: TechStackProps
+    experience: ExperienceProps
+    education: EducationProps
+  }
 }
 
 const {
   frontmatter: { header, contact, techStack, experience, education },
-} = Astro.props;
+} = Astro.props
 ---
 
 <html lang="en">
   <head>
     <Scripts.GTM />
-    <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" is:inline
-    ></script>
+    <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" is:inline></script>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta
       name="description"
-      content="Jan Mirecki is a seasoned Frontend Developer and Product Designer with extensive experience in React, TypeScript, and CSS. Having transitioned from UI/UX design to full-time development in 2015, Jan excels in creating high-quality projects focused on design. He has collaborated with various organizations, including SWPS University, CD Projekt Red, and Avon Cosmetics Polska. Jan is also passionate about IT volunteering, tech leading, and teaching."
-    />
-    <meta
-      name="keywords"
-      content="Jan Mirecki, Frontend Developer, Product Designer, React, TypeScript, CSS, UI/UX Design, SWPS University, CD Projekt Red, Avon Cosmetics Polska, IT Volunteering, Tech Leading, Design Consulting, Web Development, JavaScript, HTML5, SASS, Web Technologies"
+      content="Jan Mirecki - Frontend Developer & Product Designer based in Oslo. Specialized in React, TypeScript, Design Systems, and user-centered web applications. Available for full-time positions in Norway."
     />
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/lenis@1.1.9/dist/lenis.css"
+    <meta
+      name="keywords"
+      content="Frontend Developer Oslo, Product Designer Norway, React Developer, TypeScript, Design Systems, UX/UI Developer, Norwegian work permit"
     />
+
+    <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.9/dist/lenis.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -67,19 +57,17 @@ const {
     <title>Jan Mirecki – Frontend Developer</title>
   </head>
   <body
-    class="bg-slate-950 bg-gradient-to-tr from-slate-950 to-indigo-700/10 bg-fixed dark:bg-slate-100 dark:from-slate-100 dark:to-indigo-200/10 transition-colors print:bg-none print:bg-white print:text-slate-900 print:text-sm text-base text-slate-400 leading-relaxed antialiased"
+    class="bg-slate-950 bg-gradient-to-tr from-slate-950 to-indigo-700/10 bg-fixed text-base leading-relaxed text-slate-400 antialiased transition-colors dark:bg-slate-100 dark:from-slate-100 dark:to-indigo-200/10 print:bg-white print:bg-none print:text-sm print:text-slate-900"
   >
     <Scripts.GTMns />
     <div
-      class="print:hidden dark:invert fixed h-10 w-16 flex items-center justify-center top-5 right-5 sm:top-10 sm:right-10 z-50 bg-slate-950/60 dark:bg-slate-950/95 dark:ring-1 backdrop-blur-sm rounded-full"
+      class="fixed right-5 top-5 z-50 flex h-10 w-16 items-center justify-center rounded-full bg-slate-950/60 backdrop-blur-sm sm:right-10 sm:top-10 dark:bg-slate-950/95 dark:ring-1 dark:invert print:hidden"
     >
       <Toggle client:only="react" />
     </div>
-    <main
-      class="max-w-4xl xl:max-w-6xl mx-auto relative md:pt-16 px-8 pb-0 print:p-0 dark:invert"
-    >
+    <main class="relative mx-auto max-w-4xl px-8 pb-0 md:pt-16 xl:max-w-6xl dark:invert print:p-0">
       <Header {...header} />
-      <div class="md:absolute top-8 left-8 right-8 print:static">
+      <div class="left-8 right-8 top-8 md:absolute print:static">
         <Contact {...contact} />
       </div>
       <TechStack {...techStack} />
@@ -87,7 +75,7 @@ const {
       <Education {...education} />
     </main>
     <footer
-      class="print:hidden mt-8 pt-5 pb-1 px-10 border-t-2 bg-slate-950 border-slate-800/80 dark:invert"
+      class="mt-8 border-t-2 border-slate-800/80 bg-slate-950 px-10 pb-1 pt-5 dark:invert print:hidden"
     >
       <p class="mb-3">Reach out to me at:</p>
       <Contact {...contact} />

@@ -1,7 +1,7 @@
 ---
-import "printed";
-import "../style/markdown.css";
-import { Scripts } from "../components";
+import "printed"
+import "../style/markdown.css"
+import { Scripts } from "../components"
 ---
 
 <!doctype html>
@@ -17,20 +17,18 @@ import { Scripts } from "../components";
   <body>
     <Scripts.GTMns />
     <div
-      class="print:hidden flex justify-between absolute top-0 left-0 right-0 bg-slate-900 text-center"
+      class="absolute left-0 right-0 top-0 flex justify-between bg-slate-900 text-center print:hidden"
     >
-      <a
-        href="/"
-        class="hover:underline inline-block py-4 px-8 text-white visited:text-white"
+      <a href="/" class="inline-block px-8 py-4 text-white visited:text-white hover:underline"
         >← Back to 🏠</a
       >
       <a
         href="javascript:window.print()"
-        class="hover:underline inline-block py-4 px-8 text-white visited:text-white"
+        class="inline-block px-8 py-4 text-white visited:text-white hover:underline"
         >🖨️ print or save as pdf
       </a>
     </div>
-    <main class="print:pt-0 pt-32">
+    <main class="pt-32 print:pt-0">
       <slot />
     </main>
     <Scripts.GA gtagId="G-GKB5E87E47" />

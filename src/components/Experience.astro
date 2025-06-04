@@ -1,47 +1,44 @@
 ---
-import { classes } from "../shared/classes";
+import { classes } from "../shared/classes"
 
 export interface Job {
-  period: string;
-  company: string;
-  title: string;
-  descriptions: string[];
-  details?: string;
-  tools?: string;
+  period: string
+  company: string
+  title: string
+  descriptions: string[]
+  details?: string
+  tools?: string
 }
 
 interface Props {
-  records: Job[];
+  records: Job[]
 }
 
-const { records } = Astro.props;
+const { records } = Astro.props
 ---
 
 <section class={classes.section}>
   <h2 class={classes.h2}>Experience</h2>
-  <ol
-    reversed
-    class={"lg:grid grid-cols-2 lg:pl-8 gap-x-12 gap-y-3" + classes.marker}
-  >
+  <ol reversed class={"lg:grid grid-cols-2 lg:pl-8 gap-x-12 gap-y-3" + classes.marker}>
     {
       records.map(({ period, company, title, tools, descriptions, details }) => (
         <li
           class={
-            "mb-5 group print:mb-0 print:pb-0 print:bg-transparent bg-slate-900/60 hover:bg-slate-900/50 hover:scale-[1.01] px-5 pt-3 pb-5 rounded-lg transition-all" +
+            "group mb-5 rounded-lg bg-slate-900/60 px-5 pb-5 pt-3 transition-all hover:scale-[1.01] hover:bg-slate-900/50 print:mb-0 print:bg-transparent print:pb-0" +
             classes.leftBorder
           }
         >
           <p class="mb-3">{period}</p>
           <h3 class={classes.h3}>
             {title} <br />
-            <small class="font-normal text-lg text-slate-500">{company}</small>
+            <small class="text-lg font-normal text-slate-500">{company}</small>
           </h3>
-          <div class="opacity-75 group-hover:opacity-100 print:opacity-100 transition-opacity overflow-hidden">
+          <div class="overflow-hidden opacity-75 transition-opacity group-hover:opacity-100 print:opacity-100">
             {descriptions.map((description) => (
               <p class="mb-5" set:html={description} />
             ))}
-            {details && <p class="text-slate-600 text-sm mb-3">{details}</p>}
-            {tools && <p class="text-blue-400 text-xs">{tools}</p>}
+            {details && <p class="mb-3 text-sm text-slate-600">{details}</p>}
+            {tools && <p class="text-xs text-blue-400">{tools}</p>}
           </div>
         </li>
       ))

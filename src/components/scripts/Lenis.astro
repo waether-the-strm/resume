@@ -1,20 +1,20 @@
 ---
 interface Props {
-  isEnabled?: boolean;
+  isEnabled?: boolean
 }
 
-const { isEnabled } = Astro.props;
+const { isEnabled } = Astro.props
 ---
 
 <script is:inline define:vars={{ isEnabled }}>
   if (isEnabled) {
-    const lenis = new window.Lenis();
+    const lenis = new window.Lenis()
 
     function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
+      lenis.raf(time)
+      requestAnimationFrame(raf)
     }
 
-    requestAnimationFrame(raf);
+    requestAnimationFrame(raf)
   }
 </script>

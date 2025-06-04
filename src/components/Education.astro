@@ -1,18 +1,18 @@
 ---
-import { classes } from "../shared/classes";
+import { classes } from "../shared/classes"
 
 interface School {
-  period: string;
-  institution: string;
-  degree: string;
-  place: string;
+  period: string
+  institution: string
+  degree: string
+  place: string
 }
 
 interface Props {
-  records: School[];
+  records: School[]
 }
 
-const { records } = Astro.props;
+const { records } = Astro.props
 ---
 
 <section class={classes.section}>
@@ -23,7 +23,7 @@ const { records } = Astro.props;
         <li class="mb-5">
           <p class="mb-3">{period}</p>
           <h3 class={classes.h3}>{degree}</h3>
-          <p class="font-normal text-base leading-snug ">{institution}</p>
+          <p class="text-base font-normal leading-snug">{institution}</p>
           <em class="mb-5 text-sm text-slate-500" set:html={place} />
         </li>
       ))

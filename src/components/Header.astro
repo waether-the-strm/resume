@@ -1,19 +1,19 @@
 ---
-import { Languages } from ".";
-import { classes } from "../shared/classes";
+import { Languages } from "."
+import { classes } from "../shared/classes"
 
 interface Header {
-  name: string;
-  title: string;
-  description: string[];
-  languages: Parameters<typeof Languages>[0];
+  name: string
+  title: string
+  description: string[]
+  languages: Parameters<typeof Languages>[0]
 }
 
-type Props = Header;
-const { name, title, description, languages } = Astro.props;
+type Props = Header
+const { name, title, description, languages } = Astro.props
 ---
 
-<header class="leading-relaxed sm:pt-16 mb-10 mt-16 print:m-0 print:p-0">
+<header class="mb-10 mt-16 leading-relaxed sm:pt-16 print:m-0 print:p-0">
   <h1 class={classes.h1}>
     {name}
     <br />

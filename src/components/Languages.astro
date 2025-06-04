@@ -1,27 +1,22 @@
 ---
-import { classes } from "../shared/classes";
+import { classes } from "../shared/classes"
 
 interface Props {
-  records: { name: string; level: string }[];
+  records: { name: string; level: string }[]
 }
 
-const { records } = Astro.props;
+const { records } = Astro.props
 ---
 
 I speak:
 <ul
-  class="grid grid-cols-2 sm:inline-flex mt-3 md:ml-2 sm:place-items-start justify-start gap-3 flex-wrap list-none z-100 mb-5"
+  class="z-100 mb-5 mt-3 grid list-none grid-cols-2 flex-wrap justify-start gap-3 sm:inline-flex sm:place-items-start md:ml-2"
 >
   {
     records.map(({ name, level }) => (
-      <li
-        class={
-          classes.pill +
-          " text-slate-300/75 pr-1 border-opacity-75 flex justify-between"
-        }
-      >
+      <li class={classes.pill + " flex justify-between border-opacity-75 pr-1 text-slate-300/75"}>
         {name}
-        <span class="text-blue-200/80 relative shadow-black drop-shadow-md truncate hover:overflow-visible hover:whitespace-normal hover:z-10 inline-block bg-slate-800 print:bg-transparent print:text-slate-900 ml-1 px-2 rounded-sm">
+        <span class="relative ml-1 inline-block truncate rounded-sm bg-slate-800 px-2 text-blue-200/80 shadow-black drop-shadow-md hover:z-10 hover:overflow-visible hover:whitespace-normal print:bg-transparent print:text-slate-900">
           {level}
         </span>
       </li>

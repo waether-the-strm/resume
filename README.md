@@ -1,6 +1,7 @@
 # Personal CV Website
 
-This is my personal CV website built with Astro, React, and TailwindCSS. The website serves as an interactive and modern representation of my professional experience and skills.
+This is my personal CV website built with Astro, React, and TailwindCSS. The website serves as an
+interactive and modern representation of my professional experience and skills.
 
 ## 🛠️ Tech Stack
 
@@ -50,7 +51,8 @@ The site will be available at `http://localhost:4321`
 
 ## 🚀 Deployment
 
-This website is automatically deployed to GitHub Pages whenever changes are pushed to the `main` branch. The deployment process is handled by GitHub Actions and includes the following steps:
+This website is automatically deployed to GitHub Pages whenever changes are pushed to the `main`
+branch. The deployment process is handled by GitHub Actions and includes the following steps:
 
 1. Automatic build and deployment on push to `main`
 2. Manual deployment option available through GitHub Actions
@@ -92,4 +94,5 @@ This project is open source and available under the MIT License.
 
 ## 🤝 Contact
 
-For any questions or suggestions, please feel free to reach out through (jan@strm.dev)[mailto:jan@strm.dev].
+For any questions or suggestions, please feel free to reach out through
+(jan@strm.dev)[mailto:jan@strm.dev].
