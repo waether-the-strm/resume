@@ -27,5 +27,6 @@
   },
   "devDependencies": {
     "release-it": "19.0.3"
-  }
+  },
+  "packageManager": "pnpm@10.11.1"
 }
