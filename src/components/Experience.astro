@@ -5,7 +5,7 @@ export interface Job {
   period: string;
   company: string;
   title: string;
-  description: string;
+  descriptions: string[];
   details?: string;
   tools?: string;
 }
@@ -24,7 +24,7 @@ const { records } = Astro.props;
     class={"lg:grid grid-cols-2 lg:pl-8 gap-x-12 gap-y-3" + classes.marker}
   >
     {
-      records.map(({ period, company, title, tools, description, details }) => (
+      records.map(({ period, company, title, tools, descriptions, details }) => (
         <li
           class={
             "mb-5 group print:mb-0 print:pb-0 print:bg-transparent bg-slate-900/60 hover:bg-slate-900/50 hover:scale-[1.01] px-5 pt-3 pb-5 rounded-lg transition-all" +
@@ -37,7 +37,9 @@ const { records } = Astro.props;
             <small class="font-normal text-lg text-slate-500">{company}</small>
           </h3>
           <div class="opacity-75 group-hover:opacity-100 print:opacity-100 transition-opacity overflow-hidden">
-            <p class="mb-5" set:html={description} />
+            {descriptions.map((description) => (
+              <p class="mb-5" set:html={description} />
+            ))}
             {details && <p class="text-slate-600 text-sm mb-3">{details}</p>}
             {tools && <p class="text-blue-400 text-xs">{tools}</p>}
           </div>
