@@ -31,6 +31,23 @@ contact:
     - [/cv, resume in .md, cv]
 techStack:
   records:
+    - title: product & design
+      items:
+        - Design Systems
+        - User Experience (UX)
+        - User Interface (UI)
+        - Prototyping
+        - Design Tokens
+        - Component Libraries
+        - Accessibility (A11Y)
+        - User Research
+        - Figma
+        - Framer
+        - Illustrator
+        - InDesign
+        - Photoshop
+        - InVision Studio
+        - Sketch
     - title: core
       items:
         - Javascript
@@ -67,15 +84,6 @@ techStack:
         - prettier
         - bash
         - zsh
-    - title: ux & ui
-      items:
-        - Figma
-        - Framer
-        - Illustrator
-        - InDesign
-        - Photoshop
-        - InVision Studio
-        - Sketch
     - title: more
       items:
         - Arduino
