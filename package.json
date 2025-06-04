@@ -1,12 +1,12 @@
 {
-  "name": "",
+  "name": "jan-mirecki-cv",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
+    "dev": "pnpm run astro dev",
+    "start": "pnpm run astro dev",
+    "build": "pnpm run astro check && pnpm run astro build",
+    "preview": "pnpm run astro preview",
     "astro": "astro"
   },
   "dependencies": {
