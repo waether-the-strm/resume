@@ -29,7 +29,16 @@ skateboard, which brings me a&nbsp;lot of joy. I&nbsp;am very fond of **coffee**
 
 |                                                                     |                                        |                                                           |                  |                                                |
 | ------------------------------------------------------------------- | -------------------------------------- | --------------------------------------------------------- | ---------------- | ---------------------------------------------- |
-| ☎️ <a href="tel:+48 501 299 282">+48&nbsp;501&nbsp;299&nbsp;282</a> | ✉️ [jan@strm.dev](mailto:jan@strm.dev) | 💼 [@janmirecki](https://www.linkedin.com/in/janmirecki/) | 🌐 [strm.dev](/) | 💾 [pdf](/CV-JanMirecki-FrontendDeveloper.pdf) |
+| ☎️ <a id="cv-tel" href="#">&nbsp;</a> | ✉️ <a id="cv-email" href="#">&nbsp;</a> | 💼 [@janmirecki](https://www.linkedin.com/in/janmirecki/) | 🌐 [strm.dev](/) | 💾 [pdf](/CV-JanMirecki-FrontendDeveloper.pdf) |
+
+<script>
+;(function(){
+  var t=document.getElementById('cv-tel');
+  var e=document.getElementById('cv-email');
+  if(t){t.href=atob('dGVsOis0OCA1MDEgMjk5IDI4Mg==');t.textContent=atob('KzQ4IDUwMSAyOTkgMjgy');}
+  if(e){e.href=atob('bWFpbHRvOmphbkBzdHJtLmRldg==');e.textContent=atob('amFuQHN0cm0uZGV2');}
+})();
+</script>
 
 ## Skills
 

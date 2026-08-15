@@ -9,20 +9,52 @@ const { records } = Astro.props
 
 const itemClasses =
   "mb-1 p-4 print:p-0 rounded-lg flex items-center justify-start print:block text-slate-300 bg-slate-900/50 hover:bg-slate-900/95 ring-1 ring-slate-800/60 hover:text-blue-300 transition-colors print:bg-transparent print:text-slate-700"
+
+const B64_PREFIX = "b64:"
+const encode = (s: string) => s.startsWith(B64_PREFIX) ? s.slice(B64_PREFIX.length) : null
 ---
 
 <address>
   <span class="sr-only">Contact information:</span>
   <ul class="mb-10 grid gap-3 not-italic md:grid-cols-2 lg:grid-cols-4 print:mb-5 print:inline">
     {
-      records.map(([url, title, prefix]) => (
-        <li>
-          <a href={url} class={itemClasses}>
-            {prefix && <span class="mr-2 opacity-65">{prefix}: </span>}
-            {title}
-          </a>
-        </li>
-      ))
+      records.map(([url, title, prefix]) => {
+        const urlEncoded = encode(url)
+        const titleEncoded = encode(title)
+        const isObfuscated = urlEncoded || titleEncoded
+        return (
+          <li>
+            {isObfuscated ? (
+              <a
+                class={itemClasses}
+                data-b64-href={urlEncoded ?? undefined}
+                data-b64-text={titleEncoded ?? undefined}
+                href="#"
+              >
+                {prefix && <span class="mr-2 opacity-65">{prefix}: </span>}
+                <span data-b64-label></span>
+              </a>
+            ) : (
+              <a href={url} class={itemClasses}>
+                {prefix && <span class="mr-2 opacity-65">{prefix}: </span>}
+                {title}
+              </a>
+            )}
+          </li>
+        )
+      })
     }
   </ul>
 </address>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>("a[data-b64-href], a[data-b64-text]").forEach((el) => {
+    const hrefB64 = el.dataset.b64Href
+    const textB64 = el.dataset.b64Text
+    if (hrefB64) el.href = atob(hrefB64)
+    const label = el.querySelector("[data-b64-label]")
+    if (label && textB64) label.textContent = atob(textB64)
+    delete el.dataset.b64Href
+    delete el.dataset.b64Text
+  })
+</script>

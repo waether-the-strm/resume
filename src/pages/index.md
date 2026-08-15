@@ -42,8 +42,8 @@ header:
         level: conversational
 contact:
   records:
-    - [tel:+48 501 299 282, +48 501 299 282]
-    - [mailto:jan@strm.dev, jan@strm.dev]
+    - [b64:dGVsOis0OCA1MDEgMjk5IDI4Mg==, b64:KzQ4IDUwMSAyOTkgMjgy]
+    - [b64:bWFpbHRvOmphbkBzdHJtLmRldg==, b64:amFuQHN0cm0uZGV2]
     - [https://www.linkedin.com/in/janmirecki/, "@janmirecki", in]
     - [/cv, resume in .md, cv]
 techStack:
