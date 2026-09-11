@@ -110,6 +110,27 @@ techStack:
 
 featuredProjects:
   records:
+    - name: "GO Event - Theming & Frontend Architecture"
+      description:
+        "Delivered a complex product, UX, and frontend architecture initiative in about one month,
+        turning ambiguous documentation into a clear delivery scope."
+      role: "Product Scope Lead • UX/UI Architect • Frontend Architect"
+      impact:
+        "Defined scope, UX/UI guidelines, and a scalable theming system (token layer, skin contract,
+        rollout boundaries). Added contract tests, regression checks, and static rules for safer
+        releases. Used Claude to accelerate execution while keeping architecture decisions human-led."
+      tech:
+        [
+          "Design Tokens",
+          "Theming Architecture",
+          "Contract Tests",
+          "Regression Checks",
+          "Static Rules",
+          "Rollout Strategy",
+        ]
+      status: "completed"
+      year: "2026"
+
     - name: "GSR - Sports Facility Reservation System"
       description:
         "Full-stack reservation platform for sports centers across Poland with modern UX and
@@ -211,6 +232,13 @@ experience:
           built a&nbsp;comprehensive design system with reusable component libraries, established
           design tokens for consistent branding, and created design-to-code workflows that improved
           development efficiency while ensuring pixel-perfect implementation of user interfaces.
+        - >
+          Recently, I&nbsp;delivered a&nbsp;complex GO Event product/UX/frontend architecture
+          initiative in about one month. I clarified ambiguous documentation into actionable scope,
+          defined UX/UI and technical architecture, and introduced a&nbsp;scalable theming model
+          (token layer, skin contract seam, controlled rollout boundaries) supported by contract
+          tests, regression checks, and static rules. I used Claude to accelerate execution while
+          keeping product and architecture decisions human-led.
       tools:
         [
           "IT volunteering",

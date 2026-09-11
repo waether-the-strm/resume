@@ -75,7 +75,12 @@ _Arduino_ • _Lego Mindstorms_ • _Adobe Scripting_ • ...
 > this role, I&nbsp;led a&nbsp;team of designers, developers, and marketing professionals from
 > a&nbsp;technical, coordination, and visual perspective, reporting directly to the company's
 > management. Currently, I&nbsp;am coordinating work on a&nbsp;reservation system for facilities,
-> where I&nbsp;am responsible for the frontend, design, and project management.
+> where I&nbsp;am responsible for the frontend, design, and project management. Recently, I
+> delivered a&nbsp;complex GO Event product/UX/frontend architecture initiative in about one month:
+> I clarified ambiguous documentation into scope, defined UX/UI and technical architecture, and
+> implemented a&nbsp;scalable theming system (token layer, skin contract seam, controlled rollout
+> boundaries). I&nbsp;also added contract tests, regression checks, and static rules to keep rollout
+> risk low. I used Claude to accelerate execution while keeping architecture decisions human-led.
 
 _Ebert Studio_ › _SWPS University_ › _Biletomat.pl_ › _Emagine_ › _Corevist_ › _Techlab EE_  
 _pomagamukrainie.gov.pl_ › _Fundacja Konflikt_ › _Daydream Yachting_
