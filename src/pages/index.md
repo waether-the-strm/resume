@@ -11,18 +11,18 @@ header:
       "Very, very few people or organizations know why they do what they do."<br /> Simon Sinek,
       <em>How Great Leaders Inspire Action</em>, TEDx 2009
     - >
-      I try to be one of them. My first question is always why: why does this need to exist, who is
-      it for, and what should change once it is there.
+      I&nbsp;try to be one of them. My first question is always why: why does this need to exist, who
+      is it for, and what should change once it is there.
     - >
-      I graduated in Product Design and never really stopped being a designer. I just added code to
-      my tools. Since then the two have worked as one craft: I design in the material the product is
-      actually made of, and I build with the user in mind. Today that matters more than ever. AI
-      writes code fast, but it does not make a product coherent on its own. That is the part I care
-      about.
+      I&nbsp;graduated in Product Design and never really stopped being a&nbsp;designer. I&nbsp;just
+      added code to my tools. Since then the two have worked as one craft: I&nbsp;design in the
+      material the product is actually made of, and I&nbsp;build with the user in mind. Today that
+      matters more than ever. AI writes code fast, but it does not make a&nbsp;product coherent on its
+      own. That is the part I&nbsp;care about.
     - >
-      Since May 2024 I live in Oslo. I love Norway for its mountains, and I caught my first fish
-      here. Off screen: cycling, climbing, skiing, a homemade micro RV, painting Warhammer
-      miniatures again, coffee, kombucha and my own bread.
+      Since May 2024 I&nbsp;live in Oslo. I&nbsp;love Norway for its mountains, and I&nbsp;caught my
+      first fish here. Off screen: cycling, climbing, skiing, a&nbsp;homemade micro RV, painting
+      Warhammer miniatures again, coffee, kombucha and my own bread.
   languages:
     records:
       - name: polish
@@ -30,7 +30,7 @@ header:
       - name: english
         level: advanced
       - name: norwegian
-        level: basic conversational
+        level: basic conversational, learning daily
       - name: french
         level: conversational
 contact:
@@ -38,7 +38,8 @@ contact:
     - [tel:+47 462 73 098, +47 462 73 098]
     - [mailto:jan@strm.dev, jan@strm.dev]
     - [https://www.linkedin.com/in/janmirecki/, "@janmirecki", in]
-    - [/cv, resume in .md, cv]
+    - [/cv, web version, cv]
+    - [/Jan-Mirecki-CV-Design-Engineer.pdf, PDF, cv]
 techStack:
   records:
     - title: systems
@@ -96,8 +97,8 @@ featuredProjects:
       description:
         "Designed and built end to end, with an interactive animated background configurable per
         brand in Storybook"
-      role: "Product Designer · Frontend Developer"
-      impact: "Sign-up flow for the LetsReg event registration platform"
+      role: "Design · Frontend"
+      impact: "Sign-in page of the LetsReg event registration platform, one design for every partner brand"
       tech: ["React", "TypeScript", "Storybook", "Design system"]
       status: "live"
       year: "2026"
@@ -146,7 +147,7 @@ featuredProjects:
     - name: "Kłosy Knives"
       description: "E-commerce shop with a custom product configurator"
       role: "Frontend Developer · UI Designer"
-      impact: "Freelance highlight from the early career period"
+      impact: "Freelance project, 2019"
       tech: ["Frontend", "UI design", "Product configurator"]
       status: "completed"
       year: "2019"
@@ -155,60 +156,38 @@ featuredProjects:
 
 experience:
   records:
-    - period: Oct 2025 – present
+    - period: Oct 2026 – present
       company: LetsReg (Deltager AS), Oslo
       title: Product Designer
       descriptions:
         - >
-          Event registration platform for organisers and their participants. I joined to build the
-          frontend of the new React platform, and ended up shaping how it is designed, specified and
-          built.
+          Event registration platform for organisers and their participants.
         - >
-          <strong>Migration to React:</strong> UI architecture and the sign-up flow. I wrote the
-          scope of the sign-up parity epic, which product adopted as the plan.
-        - >
-          <strong>Design system:</strong> tokens, components and themeable skins, shared by the
-          Angular to React migration and the new LetsReg GO product. I set the default visual
-          direction of the new platform.
-        - >
-          <strong>AI in the workflow:</strong> built my own agent setup with Claude Code, skills,
-          project guidelines and multi-session work, and brought AI guidelines into the product
-          repos.
-        - >
-          <strong>LetsReg GO:</strong> designed a new self-service product for event organisers,
-          from requirements and wireframes to coded prototypes in the product repo.
+          <strong>New product:</strong> designed a&nbsp;new self-service product for event
+          organisers, from requirements and wireframes to coded prototypes.
         - >
           <strong>Requirements where nobody owned them:</strong> turned product goals into scope,
-          flows and acceptance criteria for sign-up, the communication module and GO.
+          flows and acceptance criteria.
         - >
-          <strong>Team:</strong> code review, UX review of UI changes, mentoring a developer, the
-          go-to person for frontend and design.
-      tools:
-        [
-          "Design systems",
-          "Frontend architecture",
-          "Product design",
-          "React",
-          "TypeScript",
-          "Claude Code",
-        ]
+          <strong>Visual direction:</strong> set the default look of the new platform and its design
+          system. UX review of UI changes.
+      tools: ["Product design", "Requirements & scoping", "User flows", "Prototyping", "Design systems"]
     - period: Oct 2025 – Oct 2026
       company: LetsReg (Deltager AS), Oslo
       title: Senior Frontend Developer and UX/UI Designer
       descriptions:
         - >
-          Event registration platform for organisers and their participants. I joined to build the
-          frontend of the new React platform, and ended up shaping how it is designed, specified and
-          built.
-      tools:
-        [
-          "Design systems",
-          "Frontend architecture",
-          "Product design",
-          "React",
-          "TypeScript",
-          "Claude Code",
-        ]
+          I&nbsp;joined to build the frontend of the new React platform.
+        - >
+          <strong>Migration to React:</strong> UI architecture and the sign-up flow. I&nbsp;wrote
+          its scope, which product adopted as the plan.
+        - >
+          <strong>Design system in code:</strong> tokens, components and themeable skins, shared by
+          the migration and the new product.
+        - >
+          <strong>AI and team:</strong> brought my Claude Code workflow and AI guidelines into the
+          product repos. Code review and mentoring a&nbsp;developer.
+      tools: ["React", "TypeScript", "Frontend architecture", "Design systems", "Claude Code"]
     - period: Aug 2021 – Oct 2025
       company: SZTORM (own design and development studio), Warsaw and Oslo
       title: Product Designer · Frontend Architect · Tech Lead
@@ -231,9 +210,9 @@ experience:
       title: Senior Frontend Developer · Tech Lead · UX Designer
       descriptions:
         - >
-          I led the team that designed and built the GWENT admin panel in React and TypeScript, the
+          I&nbsp;led the team that designed and built the GWENT admin panel in React and TypeScript, the
           internal tool behind a game played by millions of players worldwide. Team of 2 frontend
-          and 3 backend developers. I owned the panel's UX design, set the technical direction,
+          and 3 backend developers. I&nbsp;owned the panel's UX design, set the technical direction,
           wrote the documentation, ran React sessions for backend developers new to the frontend,
           and presented our progress to the ~100-person GWENT team every month.
       tools: ["React", "TypeScript", "Redux", "Ant Design", "Jest", "RTL", "Docker"]
@@ -254,6 +233,6 @@ education:
       place: Warsaw, Poland
     - period: 2008 – 2014
       institution: Academy of Fine Arts, Warsaw
-      degree: BA, Product Design (Industrial Design)
+      degree: BA, Product Design (Industrial Design); Erasmus at ENSAAMA Olivier de Serres, Paris
       place: Warsaw, Poland
 ---

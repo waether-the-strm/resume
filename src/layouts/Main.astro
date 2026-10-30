@@ -67,6 +67,7 @@ const {
     />
     <script
       type="application/ld+json"
+      is:inline
       set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Person",
@@ -109,7 +110,7 @@ const {
     </div>
     <main class="relative mx-auto max-w-4xl px-8 pb-0 md:pt-16 xl:max-w-6xl dark:invert print:p-0">
       <Header {...header} />
-      <div class="left-8 right-8 top-8 md:absolute print:static">
+      <div class="left-8 right-8 top-8 md:absolute md:pr-20 print:static print:pr-0">
         <Contact {...contact} />
       </div>
       <div data-animate data-animate-delay="100">
