@@ -41,8 +41,8 @@
 </script>
 
 <style is:global>
-  /* Base styles for animated elements */
-  [data-animate] {
+  /* Base styles for animated elements (only when JS enabled the effect, see Main.astro) */
+  .reveal [data-animate] {
     opacity: 0;
     transform: translateY(20px);
     transition:
@@ -51,9 +51,17 @@
   }
 
   /* Animation when element enters viewport */
-  [data-animate].animate-in {
+  .reveal [data-animate].animate-in {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  @media print {
+    .reveal [data-animate] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
   }
 
   /* Different animation delays for staggered effect */

@@ -31,13 +31,13 @@ const { records } = Astro.props
           <p class="mb-3">{period}</p>
           <h3 class={classes.h3}>
             {title} <br />
-            <small class="text-lg font-normal text-slate-500">{company}</small>
+            <small class="text-lg font-normal text-slate-400">{company}</small>
           </h3>
-          <div class="overflow-hidden opacity-75 transition-opacity group-hover:opacity-100 print:opacity-100">
+          <div class="overflow-hidden opacity-95 transition-opacity group-hover:opacity-100 print:opacity-100">
             {descriptions.map((description) => (
               <p class="mb-5" set:html={description} />
             ))}
-            {details && <p class="mb-3 text-sm text-slate-600">{details}</p>}
+            {details && <p class="mb-3 text-sm text-slate-400">{details}</p>}
             {Array.isArray(tools) && tools.length > 0 && (
               <div class="mt-2 flex flex-wrap gap-1">
                 {tools.map((tool: string) => (

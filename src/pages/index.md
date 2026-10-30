@@ -8,7 +8,7 @@ header:
       <strong>product designer and frontend architect</strong><br /> 15 years designing for the web,
       11 years building it.
     - >
-      "Very, very few people or organizations know why they do what they do."<br /> Simon Sinek,
+      “Very, very few people or organizations know why they do what they do.”<br /> Simon Sinek,
       <em>How Great Leaders Inspire Action</em>, TEDx 2009
     - >
       I&nbsp;try to be one of them. My first question is always why: why does this need to exist, who
