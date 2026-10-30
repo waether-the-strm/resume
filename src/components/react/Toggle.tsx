@@ -16,9 +16,9 @@ export const Toggle = () => {
     <Switch
       checked={enabled}
       onChange={setEnabled}
-      className="group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-amber-200/25 ring-offset-slate-100/70 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 data-[checked]:bg-slate-600"
+      className="group relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-amber-200/25 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 data-[checked]:bg-slate-600"
     >
-      <span className="sr-only">Toggle UI mode</span>
+      <span className="sr-only">Light theme</span>
       <span className="pointer-events-none relative inline-block size-5 transform rounded-full bg-amber-200/80 shadow ring-0 transition duration-200 ease-in-out group-data-[checked]:translate-x-5">
         <span
           aria-hidden="true"

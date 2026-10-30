@@ -13,11 +13,11 @@ type Props = Header
 const { name, title, description, languages } = Astro.props
 ---
 
-<header class="mb-10 mt-16 leading-relaxed sm:pt-16 print:m-0 print:p-0">
+<header class="mb-10 mt-16 leading-relaxed sm:pt-16 xl:pt-0 print:m-0 print:p-0">
   <h1 class={classes.h1}>
     {name}
     <br />
-    <small class="text-slate-500">{title}</small>
+    <small class="text-slate-400">{title}</small>
   </h1>
 
   <div class="max-w-4xl">

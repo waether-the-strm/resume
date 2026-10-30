@@ -97,6 +97,23 @@ const {
         font-family: "Poppins", sans-serif;
       }
     </style>
+    <style is:global>
+      /* keyboard focus: visible on every link/button, both themes (light theme inverts it) */
+      :focus-visible {
+        outline: 2px solid #93c5fd;
+        outline-offset: 3px;
+      }
+    </style>
+    <script is:inline>
+      // scroll-reveal is progressive enhancement: content stays visible without JS
+      // and for users who prefer reduced motion
+      if (
+        "IntersectionObserver" in window &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        document.documentElement.classList.add("reveal")
+      }
+    </script>
     <title>Jan Mirecki – Design Engineer</title>
   </head>
   <body
@@ -104,7 +121,7 @@ const {
   >
     <Scripts.GTMns />
     <div
-      class="fixed right-5 top-5 z-50 flex h-10 w-16 items-center justify-center rounded-full bg-slate-950/60 backdrop-blur-sm sm:right-10 sm:top-10 dark:bg-slate-950/95 dark:ring-1 dark:invert print:hidden"
+      class="absolute right-5 top-5 z-50 flex h-10 w-16 items-center justify-center rounded-full bg-slate-950/60 backdrop-blur-sm sm:right-10 sm:top-10 dark:bg-slate-950/95 dark:ring-1 dark:invert print:hidden"
     >
       <Toggle client:only="react" />
     </div>
