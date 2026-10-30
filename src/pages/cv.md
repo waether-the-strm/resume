@@ -14,8 +14,9 @@ Oslo, Norway · jan@strm.dev · +47 462 73 098 · [strm.dev](https://strm.dev) �
 
 ## Profile
 
-> "Very, very few people or organizations know why they do what they do."<br /> Simon Sinek, _How
-> Great Leaders Inspire Action_, TEDx 2009
+> "Very, very few people or organizations know why they do what they do."
+>
+> Simon Sinek, _How Great Leaders Inspire Action_, TEDx 2009
 
 I try to be one of them. My first question is always why: why does this need to exist, who is it
 for, and what should change once it is there.
@@ -47,22 +48,22 @@ frontend, and follow it through release to check it behaves as designed.
 
 ### LetsReg (Deltager AS), Oslo
 
-**Product Designer** · _Oct 2026 – present_<br /> **Senior Frontend Developer and UX/UI Designer** ·
-_Oct 2025 – Oct 2026_<br /> _Oct 2025 – present_
+**Product Designer** · _Oct 2026 – present_<br /> **Senior Frontend Developer and UX/UI Designer**
+· _Oct 2025 – Oct 2026_
 
 Event registration platform for organisers and their participants. I joined to build the frontend of
 the new React platform, and ended up shaping how it is designed, specified and built.
 
 - **Migration to React:** UI architecture and the sign-up flow. I wrote the scope of the sign-up
-  parity epic, which product adopted as the plan.
+  migration, which product adopted as the plan.
 - **Design system:** tokens, components and themeable skins, shared by the Angular → React migration
-  and the new LetsReg GO product. I set the default visual direction of the new platform.
+  and a new product. I set the default visual direction of the new platform.
 - **AI in the workflow:** built my own agent setup (Claude Code, skills, project guidelines,
   multi-session work) and brought AI guidelines into the product repos.
-- **LetsReg GO:** designed a new self-service product for event organisers, from requirements and
+- **New product:** designed a new self-service product for event organisers, from requirements and
   wireframes to coded prototypes in the product repo.
 - **Requirements where nobody owned them:** turned product goals into scope, flows and acceptance
-  criteria for sign-up, the communication module and GO.
+  criteria for the sign-up flow, messaging and the new product.
 - **Team:** code review, UX review of UI changes, mentoring a developer, the go-to person for
   frontend and design.
 
@@ -114,8 +115,6 @@ configurator.
 | LetsReg design system | one system for a migration and a new product                                                               |                                             |
 | GSR                   | reservation platform for sports centres                                                                    | [live](https://obiekty.gosir-piaseczno.pl/) |
 | Biletomat.pl          | web and mobile redesign of a ticketing platform                                                            | [live](https://biletomat.pl)                |
-| WebScouts             | organised IT volunteers for refugees and NGOs                                                              |                                             |
-| Kłosy Knives          | an e-commerce shop with a custom product configurator                                                      |                                             |
 
 ## Skills
 

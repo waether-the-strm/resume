@@ -10,13 +10,13 @@ const { records } = Astro.props
 
 I speak:
 <ul
-  class="z-100 mb-5 mt-3 grid list-none grid-cols-2 flex-wrap justify-start gap-3 sm:inline-flex sm:place-items-start md:ml-2"
+  class="z-100 mb-5 mt-3 grid list-none grid-cols-1 flex-wrap justify-start gap-3 sm:inline-flex sm:place-items-start md:ml-2"
 >
   {
     records.map(({ name, level }) => (
-      <li class={classes.pill + " flex justify-between border-opacity-75 pr-1 text-slate-300/75"}>
+      <li class={classes.pill + " flex items-start justify-between gap-2 border-opacity-75 pr-1 text-slate-300/75"}>
         {name}
-        <span class="relative ml-1 inline-block truncate rounded-sm bg-slate-800 px-2 text-blue-200/80 shadow-black drop-shadow-md hover:z-10 hover:overflow-visible hover:whitespace-normal print:bg-transparent print:text-slate-900">
+        <span class="relative ml-1 inline-block whitespace-normal text-right rounded-sm sm:truncate sm:text-left bg-slate-800 px-2 text-blue-200/80 shadow-black drop-shadow-md hover:z-10 hover:overflow-visible hover:whitespace-normal print:bg-transparent print:text-slate-900">
           {level}
         </span>
       </li>
