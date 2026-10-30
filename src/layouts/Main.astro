@@ -44,12 +44,44 @@ const {
     <meta name="generator" content={Astro.generator} />
     <meta
       name="description"
-      content="Jan Mirecki - Frontend Developer & Product Designer based in Oslo. Specialized in React, TypeScript, Design Systems, and user-centered web applications. Available for full-time positions in Norway."
+      content="Jan Mirecki - Design Engineer, product designer and frontend architect based in Oslo. 15 years designing for the web, 11 years building it."
     />
 
     <meta
       name="keywords"
-      content="Frontend Developer Oslo, Product Designer Norway, React Developer, TypeScript, Design Systems, UX/UI Developer, Norwegian work permit"
+      content="Design Engineer Oslo, product designer, frontend architect, React, TypeScript, design systems, interaction design"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Jan Mirecki – Design Engineer" />
+    <meta
+      property="og:description"
+      content="Product designer and frontend architect. 15 years designing for the web, 11 years building it."
+    />
+    <meta property="og:url" content="https://strm.dev/" />
+    <meta property="og:site_name" content="Jan Mirecki" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Jan Mirecki – Design Engineer" />
+    <meta
+      name="twitter:description"
+      content="Product designer and frontend architect. 15 years designing for the web, 11 years building it."
+    />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: "Jan Mirecki",
+        jobTitle: "Design Engineer",
+        description: "Product designer and frontend architect",
+        url: "https://strm.dev/",
+        email: "jan@strm.dev",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Oslo",
+          addressCountry: "NO",
+        },
+        sameAs: ["https://www.linkedin.com/in/janmirecki/"],
+      })}
     />
 
     <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.9/dist/lenis.css" />
@@ -64,7 +96,7 @@ const {
         font-family: "Poppins", sans-serif;
       }
     </style>
-    <title>Jan Mirecki – Frontend Developer</title>
+    <title>Jan Mirecki – Design Engineer</title>
   </head>
   <body
     class="bg-slate-950 bg-gradient-to-tr from-slate-950 to-indigo-700/10 bg-fixed text-base leading-relaxed text-slate-400 antialiased transition-colors dark:bg-slate-100 dark:from-slate-100 dark:to-indigo-200/10 print:bg-white print:bg-none print:text-sm print:text-slate-900"
