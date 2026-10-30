@@ -59,6 +59,7 @@ body.md-body {
   min-width: 0;
 }
 
+.md-doc > header,
 .md-doc > h1,
 .md-doc > h1 + p,
 .md-doc > h1 + p + p,
@@ -98,7 +99,90 @@ body.md-body {
   border-color: var(--accent);
 }
 
-/* Header */
+/* Header: name small, role large, contacts as a list (see MarkDown.astro) */
+.md-doc .cv-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 3rem;
+  row-gap: 1.75rem;
+  align-items: end;
+}
+
+.md-doc .cv-head h1 {
+  margin: 0;
+  color: var(--ink);
+}
+
+.md-doc .cv-name {
+  display: block;
+  font: 600 1.3rem/1.2 var(--display);
+  letter-spacing: -0.005em;
+  margin-bottom: 0.4rem;
+}
+
+.md-doc .cv-role {
+  display: block;
+  font: 700 clamp(2.6rem, 7vw, 3.6rem) / 0.95 var(--display);
+  letter-spacing: -0.035em;
+}
+
+.md-doc .cv-id > p {
+  margin: 1.1rem 0 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.md-doc .cv-head .cv-id > p > strong:first-child {
+  display: inline-block;
+  font: 500 1.2rem/1.35 var(--display);
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.md-doc .cv-contact {
+  font-style: normal;
+}
+
+.md-doc .cv-contact ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.md-doc .cv-contact li {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0;
+  margin: 0;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.md-doc .cv-contact li::before {
+  content: none;
+}
+
+.md-doc .cv-contact svg.i {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.md-doc .cv-head + hr {
+  border-top-color: var(--rule-strong);
+  margin-top: 2rem;
+}
+
+/* Fallback when the header could not be shaped */
 .md-doc h1 {
   font: 700 clamp(2.2rem, 5vw, 3.2rem) / 1 var(--display);
   letter-spacing: -0.035em;
@@ -109,23 +193,11 @@ body.md-body {
 .md-doc h1 + p {
   font-size: 1.1rem;
   color: var(--muted);
-  margin: 0 0 0.75rem;
-}
-
-.md-doc h1 + p strong {
-  font: 700 1.2rem/1.3 var(--display);
-  letter-spacing: -0.01em;
-  color: var(--ink);
 }
 
 .md-doc h1 + p + p {
   font-size: 0.9rem;
   color: var(--muted);
-  margin: 0;
-}
-
-.md-doc h1 + p + p a {
-  color: var(--text);
 }
 
 .md-doc hr {
@@ -280,9 +352,6 @@ body.md-body {
   color: var(--ink);
 }
 
-.md-doc h1 + p > strong:first-child {
-  font-size: 1.2rem;
-}
 
 /* Tables as clean rows */
 .md-doc table {
@@ -372,6 +441,14 @@ body.md-body {
 
   .md-doc h2 {
     margin-bottom: 1rem;
+  }
+
+  .md-doc .cv-head {
+    grid-template-columns: 1fr;
+  }
+
+  .md-doc .cv-contact ul {
+    gap: 0.45rem;
   }
 
   .md-doc > :not(hr) + h2 {
