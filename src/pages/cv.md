@@ -1,203 +1,137 @@
 ---
 layout: "../layouts/MarkDown.astro"
+cv:
+  name: Jan Mirecki
+  role: Design Engineer
+  subtitle: product designer and frontend architect
+  tagline: 15 years designing for the web, 11 years building it.
+  contacts:
+    - { kind: place, label: "Oslo, Norway" }
+    - { kind: mail, label: jan@strm.dev, href: "mailto:jan@strm.dev" }
+    - { kind: phone, label: "+47 462 73 098", href: "tel:+4746273098" }
+    - { kind: web, label: strm.dev, href: "https://strm.dev" }
+    - { kind: linkedin, label: linkedin.com/in/janmirecki, href: "https://www.linkedin.com/in/janmirecki/" }
 ---
 
-# Jan&nbsp;Mirecki • Frontend&nbsp;Developer
+---
 
-I am a&nbsp;**Frontend Developer** and a&nbsp;**Product Designer**. I&nbsp;graduated in Product
-Design and after 4&nbsp;years of professional experience as a&nbsp;**UI & UX designer**,
-I&nbsp;switched to a&nbsp;**full-time developer** role in 2015.
+## Profile
 
-I work mostly with **React**, **TypeScript** & **UI Design**. I'm interested in **high-quality**
-projects focused strongly on the design, dedicated to regular internet users. I&nbsp;would be
-particularly happy to cooperate on a&nbsp;**design system project**. Other fields of my current
-professional role interests: **QA**, **PM**, and **Product Designer**.
+> "Very, very few people or organizations know why they do what they do."
+>
+> Simon Sinek, _How Great Leaders Inspire Action_, TEDx 2009
 
-In May 2024, I&nbsp;moved from Warsaw to Oslo, and since September last year, I&nbsp;have been
-learning Norwegian. I&nbsp;love Norway for its landscapes and vast mountain trails, and it was here
-that I&nbsp;caught my first fish early this spring 🎣.
+I try to be one of them. My first question is always why: why does this need to exist, who is it
+for, and what should change once it is there.
 
-In my free time, I&nbsp;like to tinker, support friends with their projects, ride my **motorcycle**,
-**climb**, **ski**, and **travel** in my **homemade micro rv**. Recently, I&nbsp;started learning to
-skateboard, which brings me a&nbsp;lot of joy. I&nbsp;am very fond of **coffee**, **kombucha**, and
-**bread** of my own baking.
+I graduated in Product Design and never really stopped being a designer. I just added code to my
+tools. Since then the two have worked as one craft: I design in the material the product is actually
+made of, and I build with the user in mind. Today that matters more than ever. AI writes code fast,
+but it does not make a product coherent on its own. That is the part I care about.
 
-**Polish** 🗣️ native  
-**English** 🗣️ advanced  
-**French** 🗣️ conversational  
-**Norwegian** 🗣️ basic
+Since May 2024 I live in Oslo. I love Norway for its mountains, and I caught my first fish here. Off
+screen: cycling, climbing, skiing, a homemade micro RV, painting Warhammer miniatures again, coffee,
+kombucha and my own bread.
 
-|                                                                     |                                        |                                                           |                  |                                                |
-| ------------------------------------------------------------------- | -------------------------------------- | --------------------------------------------------------- | ---------------- | ---------------------------------------------- |
-| ☎️ <a href="tel:+48 501 299 282">+48&nbsp;501&nbsp;299&nbsp;282</a> | ✉️ [jan@strm.dev](mailto:jan@strm.dev) | 💼 [@janmirecki](https://www.linkedin.com/in/janmirecki/) | 🌐 [strm.dev](/) | 💾 [pdf](/CV-JanMirecki-FrontendDeveloper.pdf) |
+## My process
 
-## Skills
+**Ask why first**<br /> Before I build anything, I want to know why it is needed. I talk to product
+and business people until a vague goal becomes a clear problem, a scope and a way to tell if it
+worked.
 
-### 🪩 Core
+**Design the system**<br /> Flows first, then the tokens, components and rules that hold them
+together. With AI writing more of the code, the system keeps the UI from drifting.
 
-_Javascript_ • _Typescript_ • _HTML5_ • _CSS3_
+**Build it in the product**<br /> I prototype in code and with AI, turn what works into production
+frontend, and follow it through release to check it behaves as designed.
 
-### 🖼️ Libs & Frameworks
-
-_React JS & TS_ • _Astro.js_ • _Redux_ • _Vue_ • _Tailwind CSS_ • _Tailwind UI_ • _HeadlessUI_  
-_styled-components_ • _Bootstrap 4&nbsp;& 5_ • _AntD_ • _Next.js_ • _Gatsby_
-
-### 👨‍🔧 Maintenance
-
-_Jest_ • _React Testing Library_ • _Webpack_ • _Parcel_ • _JIRA_  
-_git_ • _git hooks_ • _npm_ • _yarn_ • _husky_ • _eslint_ • _prettier_ • _bash_ • _zsh_
-
-### 🏛️ UX & UI
-
-_Figma_ • _Framer_ • _Illustrator_ • _InDesign_ • _Photoshop_ • _InVision Studio_ • _Sketch_
-
-### 🪁 More
-
-_Arduino_ • _Lego Mindstorms_ • _Adobe Scripting_ • ...
-
-<div class="pagebreak"> </div>
+---
 
 ## Experience
 
-### Aug 2022 – Now
+### LetsReg (Deltager AS), Oslo
 
-👨‍💻 **Own Business › Senior Frontend Developer › Consultant › Architect**  
-🏢 _SZTORM_
+**Product Designer** · _Oct 2026 – present_<br /> **Senior Frontend Developer and UX/UI Designer**
+· _Oct 2025 – Oct 2026_
 
-> As a&nbsp;freelancer I'm cooperating with various parties, supporting commercial and non-profit
-> projects. I&nbsp;have worked on projects supporting refugees. I&nbsp;organized a&nbsp;group of IT
-> volunteers called WebScouts and supported more or less formal NGO organizations and grassroots
-> initiatives. Together, we took part in accelerating the delivery of a&nbsp;Polish government
-> website to support Ukraine. I&nbsp;led UX design exercises at the SWPS University in Warsaw,
-> Department of Psychology and Computer Science. Commercially, I&nbsp;worked on the SAP UI for the
-> US-based company – Corevist as a&nbsp;React Developer. Previously, I&nbsp;coordinated the redesign
-> project of the web and mobile platform for Biletomat.pl, part of the Time For Friends Company. In
-> this role, I&nbsp;led a&nbsp;team of designers, developers, and marketing professionals from
-> a&nbsp;technical, coordination, and visual perspective, reporting directly to the company's
-> management. Currently, I&nbsp;am coordinating work on a&nbsp;reservation system for facilities,
-> where I&nbsp;am responsible for the frontend, design, and project management.
+Event registration platform for organisers and their participants. I joined to build the frontend of
+the new React platform, and ended up shaping how it is designed, specified and built.
 
-_Ebert Studio_ › _SWPS University_ › _Biletomat.pl_ › _Emagine_ › _Corevist_ › _Techlab EE_  
-_pomagamukrainie.gov.pl_ › _Fundacja Konflikt_ › _Daydream Yachting_
+- **Migration to React:** UI architecture and the sign-up flow. I wrote the scope of the sign-up
+  migration, which product adopted as the plan.
+- **Design system:** tokens, components and themeable skins, shared by the Angular → React migration
+  and a new product. I set the default visual direction of the new platform.
+- **AI in the workflow:** built my own agent setup (Claude Code, skills, project guidelines,
+  multi-session work) and brought AI guidelines into the product repos.
+- **New product:** designed a new self-service product for event organisers, from requirements and
+  wireframes to coded prototypes in the product repo.
+- **Requirements where nobody owned them:** turned product goals into scope, flows and acceptance
+  criteria for the sign-up flow, messaging and the new product.
+- **Team:** code review, UX review of UI changes, mentoring a developer, the go-to person for
+  frontend and design.
 
-IT volunteering • Tech Leading • Frontend Development • Design Consulting • University Lecturer
+_Design systems · Frontend architecture · Product design · React · TypeScript · Claude Code_
 
----
+### SZTORM (own design and development studio), Warsaw and Oslo
 
-### Aug 2019 – Aug 2021
+**Product Designer · Frontend Architect · Tech Lead**<br /> _Aug 2021 – Oct 2025_
 
-👨‍💻 **Senior Frontend Developer › Tech Lead**  
-🏢 _CD Projekt Red_
+- **GSR, sports facility reservations:** product design, frontend, design system with tokens and
+  project management, end to end. Co-built the npm package the frontend used to consume the system's
+  API.
+- **Biletomat.pl redesign** (web and mobile): led designers, developers and marketing, reporting
+  directly to management.
+- **WebScouts:** organised IT volunteers for refugees and NGOs, and helped speed up
+  pomagamukrainie.gov.pl.
+- Taught UX design at SWPS University. React developer on an SAP UI for Corevist (US).
 
-> Leading the team for designing and implementing a&nbsp;game (GWENT) Admin Panel in React
-> Typescript integrated with the existing backend environment and creating tools for game management
-> in a&nbsp;variety of frontend technologies. I&nbsp;was tech leading the team of 2&nbsp;Frontend
-> Developers (me + 1&nbsp;mid/regular FD) and 3&nbsp;Backend Developers (PHP). I&nbsp;was
-> responsible for setting the development directions for the platform, writing documentation and
-> manuals, leading the knowledge-sharing sessions for backend devs who were new in a&nbsp;React
-> Frontend environment, and sharing our progress in front of the ~100 members of the Gwent Team on
-> monthly meetings.
+_Product design · Design systems · Tech leading · Frontend · University lecturer_
 
-React TS • Redux • Saga Middleware • Typescript • Ant Design • Jest • React Testing Library • PHP •
-Symphony • Docker
+### CD Projekt Red, Warsaw
 
----
+**Senior Frontend Developer · Tech Lead · UX Designer**<br /> _Aug 2019 – Aug 2021_
 
-### Jan 2019 – Aug 2019
+I led the team that designed and built the GWENT admin panel in React and TypeScript, the internal
+tool behind a game played by millions of players worldwide. Team of 2 frontend and 3 backend
+developers. I owned the panel's UX design, set the technical direction, wrote the documentation, ran
+React sessions for backend developers new to the frontend, and presented our progress to the
+~100-person GWENT team every month.
 
-👨‍💻 **Frontend Developer › Consultant › Architect**  
-🏢 _Sztorm Jan Mirecki_
+_React · TypeScript · Redux · Ant Design · Jest · RTL · Docker_
 
-> Landing pages development, web app development
+### Laboratorium EE · Onwelo · Avon · freelance, Warsaw
 
-_Kłosy Knives_ › _Laboratorium EE_ › _Isobar-Dentsu Aegis Network_
+**UX/UI Designer · Frontend Developer**<br /> _2011 – 2019_
 
-JavaScript • React JS • Gatsby • Karma + Jasmine • SASS • Bootstrap 4&nbsp;• GIT
-
----
-
-### Oct 2017 – Oct 2018
-
-👨‍💻 **Frontend Developer**  
-🏢 _Onwelo_
-
-> Frontend for banking, financial, and moto industry CMRs, migrations, and internal product
-> development.
-
-JavaScript • React JS • Angular 5&nbsp;• Karma + Jasmine • SASS • Bootstrap 4&nbsp;• GIT • Docker
-
-<div class="pagebreak"> </div>
+Eight years in agencies, corporate teams and freelance, deep in both design and code. UX/UI design,
+prototyping and identity at Laboratorium EE, banking and automotive frontends at Onwelo, corporate
+services at Avon. Freelance highlight: Kłosy Knives, an e-commerce shop with a custom product
+configurator.
 
 ---
 
-### Dec 2016 – Sep 2017
+## Selected work
 
-👨‍💻 **Frontend Developer**  
-🏢 _Avon Cosmetics Polska_
+| Project               | What                                                                                                       | Link                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| LetsReg sign-in       | designed and built end to end, with an interactive animated background configurable per brand in Storybook | [live](https://app.letsreg.com/no/sign-in)  |
+| LetsReg design system | one system for a migration and a new product                                                               |                                             |
+| GSR                   | reservation platform for sports centres                                                                    | [live](https://obiekty.gosir-piaseczno.pl/) |
+| Biletomat.pl          | web and mobile redesign of a ticketing platform                                                            | [live](https://biletomat.pl)                |
 
-> Landing pages, mailing templates, and corporate services supporting: Avon Online, Avon
-> Representative Suite.
+## Skills
 
-HTML • SASS • Bootstrap 3&nbsp;• GIT • Adobe: Xd / Ai / Ps / Indd
-
----
-
-### Oct 2015 – Nov 2016
-
-👨‍💻 **Frontend Developer › UX Designer**  
-🏢 _Laboratorium EE_
-
-> RWD websites and landing pages
-
-HTML5 • SASS/SCSS • Bootstrap 3&nbsp;• Material Design • NPM • Adobe: Ai, Ps • Teamworking with GIT
-in SCRUM with JIRA
-
----
-
-### Jan 2015 — Jan 2016
-
-👨‍💻 **Frontend Developer › UI Designer**  
-🏢 _Freelancer_
-
-> Website and app design, mockup prototyping, print design.
-
-_Docs Against Gravity_ › _pracowniajasiewicz.com_ › _laboratorium.ee_ › _mariaerikssonstudio.com_ ›
-_Caritas Polska_ › _NOTO Studio_ › _Jan Strumiłło Architekt_ › _malunkimarka.com_
-
----
-
-### Jul 2012 — Sep 2014
-
-👨‍💻 **UX › UI designer**  
-🏢 _Laboratorium EE_
-
-> Website and app design, mockup prototyping. Laboratorium EE identity design: logotype, internal
-> documents, data design, website design, and frontend coding
-
-HTML • CSS • Bootstrap • RWD • Adobe Ai, Ps, Id
+| Area         |                                                                                                                               |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Systems      | Design systems · Design tokens · Theming · Frontend architecture · Migrations (Angular → React)                               |
+| AI           | Claude Code · Agent workflows · Skills & project guidelines · AI guardrails for UI                                            |
+| Stack        | TypeScript · React · HTML · CSS · Storybook · Next.js · Astro · Tailwind CSS · Lit · Bun · Jest · React Testing Library · git |
+| Product & UX | Product discovery · Requirements & scoping · User flows · Interaction design · Motion · Prototyping · Accessibility           |
+| Design tools | Figma · Framer · Adobe CC                                                                                                     |
+| Languages    | Polish (native) · English (advanced) · Norwegian (basic conversational, learning daily) · French (conversational)             |
 
 ## Education
 
-### Oct 2016 — Jun 2017
-
-🏫 **SWPS University of Social Sciences and Humanities** 📍 _Warsaw, Poland_
-
-> Postgraduate Studies of **Creative Coding**
-
----
-
-### Dec 2010 — May 2011
-
-🏫 **ENSAAMA Olivier de Serres** 📍 _Paris, France_
-
-> Erasmus student exchange  
->  **Product Design** on Faculty of Industrial Design
-
----
-
-### Oct 2008 — Sep 2014
-
-🏫 **Academy of Fine Arts** 📍 _Warsaw, Poland_
-
-> Bachelor’s in **Product Design**  
->  Faculty of Industrial Design
+- **Academy of Fine Arts, Warsaw**: BA, Product Design (Industrial Design); Erasmus at ENSAAMA
+  Olivier de Serres, Paris · _2008 – 2014_
+- **SWPS University, Warsaw**: postgraduate studies, Creative Coding · _2016 – 2017_

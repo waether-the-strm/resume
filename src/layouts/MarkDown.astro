@@ -1,7 +1,28 @@
 ---
-import "printed"
 import "../style/markdown.css"
 import { Scripts } from "../components"
+
+/*
+ * The CV header (name, role, tagline, contacts) comes from the page's
+ * frontmatter, so its structure doesn't depend on how the markdown is written.
+ * Pages without a `cv` block in frontmatter render as plain markdown.
+ */
+type ContactKind = "place" | "mail" | "phone" | "web" | "linkedin"
+type Contact = { kind: ContactKind; label: string; href?: string }
+type CvHeader = { name: string; role: string; subtitle?: string; tagline?: string; contacts?: Contact[] }
+
+const icons: Record<ContactKind, string> = {
+  place:
+    '<path d="M12 21s-7-6.1-7-11.5a7 7 0 0 1 14 0C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  phone:
+    '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+  web: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  linkedin:
+    '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 11v5M8 8v.01M12 16v-5M16 16v-3a2 2 0 0 0-4 0"/>',
+}
+
+const cv: CvHeader | undefined = Astro.props.frontmatter?.cv
 ---
 
 <!doctype html>
@@ -12,23 +33,63 @@ import { Scripts } from "../components"
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>Jan Mirecki – Frontend Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Jan Mirecki – Design Engineer</title>
   </head>
-  <body>
+  <body class="md-body">
     <Scripts.GTMns />
-    <div
-      class="absolute left-0 right-0 top-0 flex justify-between bg-slate-900 text-center print:hidden"
+    <nav
+      class="sticky top-0 z-10 flex items-center justify-between gap-2 bg-[#111214] px-3 text-sm text-white sm:px-6 print:hidden"
+      aria-label="Page"
     >
-      <a href="/" class="inline-block px-8 py-4 text-white visited:text-white hover:underline"
-        >← Back to 🏠</a
-      >
-      <a
-        href="javascript:window.print()"
-        class="inline-block px-8 py-4 text-white visited:text-white hover:underline"
-        >🖨️ print or save as pdf
-      </a>
-    </div>
-    <main class="pt-32 print:pt-0">
+      <a href="/" class="inline-block px-2 py-3 text-white hover:underline">← Back</a>
+      <div class="flex items-center gap-1 sm:gap-3">
+        <a
+          href="/Jan-Mirecki-CV-Design-Engineer.pdf"
+          class="inline-block px-2 py-3 text-white hover:underline"
+          download>Download PDF</a
+        >
+        <a href="javascript:window.print()" class="inline-block px-2 py-3 text-white hover:underline"
+          >Print</a
+        >
+      </div>
+    </nav>
+    <main class="md-doc">
+      {
+        cv && (
+          <header class="cv-head">
+            <div class="cv-id">
+              <h1>
+                <span class="cv-name">{cv.name}</span> <span class="cv-role">{cv.role}</span>
+              </h1>
+              {(cv.subtitle || cv.tagline) && (
+                <p>
+                  {cv.subtitle && <strong>{cv.subtitle}</strong>}
+                  {cv.subtitle && cv.tagline && <br />}
+                  {cv.tagline}
+                </p>
+              )}
+            </div>
+            {cv.contacts && (
+              <address class="cv-contact">
+                <ul>
+                  {cv.contacts.map((c) => (
+                    <li data-kind={c.kind}>
+                      <svg class="i" viewBox="0 0 24 24" aria-hidden="true" set:html={icons[c.kind]} />
+                      {c.href ? <a href={c.href}>{c.label}</a> : c.label}
+                    </li>
+                  ))}
+                </ul>
+              </address>
+            )}
+          </header>
+        )
+      }
       <slot />
     </main>
     <Scripts.GA gtagId="G-GKB5E87E47" />

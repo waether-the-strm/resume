@@ -44,12 +44,45 @@ const {
     <meta name="generator" content={Astro.generator} />
     <meta
       name="description"
-      content="Jan Mirecki - Frontend Developer & Product Designer based in Oslo. Specialized in React, TypeScript, Design Systems, and user-centered web applications. Available for full-time positions in Norway."
+      content="Jan Mirecki - Design Engineer, product designer and frontend architect based in Oslo. 15 years designing for the web, 11 years building it."
     />
 
     <meta
       name="keywords"
-      content="Frontend Developer Oslo, Product Designer Norway, React Developer, TypeScript, Design Systems, UX/UI Developer, Norwegian work permit"
+      content="Design Engineer Oslo, product designer, frontend architect, React, TypeScript, design systems, interaction design"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Jan Mirecki – Design Engineer" />
+    <meta
+      property="og:description"
+      content="Product designer and frontend architect. 15 years designing for the web, 11 years building it."
+    />
+    <meta property="og:url" content="https://strm.dev/" />
+    <meta property="og:site_name" content="Jan Mirecki" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Jan Mirecki – Design Engineer" />
+    <meta
+      name="twitter:description"
+      content="Product designer and frontend architect. 15 years designing for the web, 11 years building it."
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: "Jan Mirecki",
+        jobTitle: "Design Engineer",
+        description: "Product designer and frontend architect",
+        url: "https://strm.dev/",
+        email: "jan@strm.dev",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Oslo",
+          addressCountry: "NO",
+        },
+        sameAs: ["https://www.linkedin.com/in/janmirecki/"],
+      })}
     />
 
     <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.9/dist/lenis.css" />
@@ -64,20 +97,37 @@ const {
         font-family: "Poppins", sans-serif;
       }
     </style>
-    <title>Jan Mirecki – Frontend Developer</title>
+    <style is:global>
+      /* keyboard focus: visible on every link/button, both themes (light theme inverts it) */
+      :focus-visible {
+        outline: 2px solid #93c5fd;
+        outline-offset: 3px;
+      }
+    </style>
+    <script is:inline>
+      // scroll-reveal is progressive enhancement: content stays visible without JS
+      // and for users who prefer reduced motion
+      if (
+        "IntersectionObserver" in window &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        document.documentElement.classList.add("reveal")
+      }
+    </script>
+    <title>Jan Mirecki – Design Engineer</title>
   </head>
   <body
     class="bg-slate-950 bg-gradient-to-tr from-slate-950 to-indigo-700/10 bg-fixed text-base leading-relaxed text-slate-400 antialiased transition-colors dark:bg-slate-100 dark:from-slate-100 dark:to-indigo-200/10 print:bg-white print:bg-none print:text-sm print:text-slate-900"
   >
     <Scripts.GTMns />
     <div
-      class="fixed right-5 top-5 z-50 flex h-10 w-16 items-center justify-center rounded-full bg-slate-950/60 backdrop-blur-sm sm:right-10 sm:top-10 dark:bg-slate-950/95 dark:ring-1 dark:invert print:hidden"
+      class="absolute right-5 top-5 z-50 flex h-10 w-16 items-center justify-center rounded-full bg-slate-950/60 backdrop-blur-sm sm:right-10 sm:top-10 dark:bg-slate-950/95 dark:ring-1 dark:invert print:hidden"
     >
       <Toggle client:only="react" />
     </div>
     <main class="relative mx-auto max-w-4xl px-8 pb-0 md:pt-16 xl:max-w-6xl dark:invert print:p-0">
       <Header {...header} />
-      <div class="left-8 right-8 top-8 md:absolute print:static">
+      <div class="left-8 right-8 top-8 md:absolute md:pr-20 print:static print:pr-0">
         <Contact {...contact} />
       </div>
       <div data-animate data-animate-delay="100">

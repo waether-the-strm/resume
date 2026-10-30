@@ -2,34 +2,27 @@
 layout: ../layouts/Main.astro
 header:
   name: Jan Mirecki
-  title: Frontend Developer
+  title: Design Engineer
   description:
     - >
-      I&nbsp;am a&nbsp;<strong>Frontend Developer</strong> and a&nbsp;<strong>Product
-      Designer</strong>.<br /> I&nbsp;graduated in Product Design and after 4&nbsp;years of
-      professional experience as a&nbsp;<strong>UI &amp; UX designer</strong>, I&nbsp;switched to
-      a&nbsp;<strong>full-time developer</strong> role in 2015.
+      <strong>product designer and frontend architect</strong><br /> 15 years designing for the web,
+      11 years building it.
     - >
-      I work mostly with <strong>React</strong>, <strong>TypeScript</strong> &amp; <strong>UI
-      Design</strong>. I specialize in <strong>bridging the gap between design and
-      development</strong>, creating user-centered solutions that are both beautiful and functional.
-      My unique background allows me to translate design vision into high-quality code while
-      maintaining <strong>design system consistency</strong>. I&nbsp;would be particularly happy to
-      cooperate on a&nbsp;<strong>design system project</strong>. Other fields of my current
-      professional role interests: <strong>Product Designer</strong>, <strong>PM</strong> and
-      <strong>QA</strong>.
+      “Very, very few people or organizations know why they do what they do.”<br /> Simon Sinek,
+      <em>How Great Leaders Inspire Action</em>, TEDx 2009
     - >
-      Based in <strong>Oslo</strong> since May 2024, learning Norwegian. I'm passionate about
-      Norway's innovative tech scene and love exploring the country's amazing mountain trails in my
-      free time.
+      I&nbsp;try to be one of them. My first question is always why: why does this need to exist, who
+      is it for, and what should change once it is there.
     - >
-      In&nbsp;my free time, I&nbsp;like to tinker, support friends with their projects, ride my
-      <strong>motorcycle</strong>, <strong>climb</strong>, <strong>ski</strong>, and
-      <strong>travel</strong> in my <strong>homemade micro rv</strong>. Recently, I&nbsp;started
-      learning to skateboard, which brings me a&nbsp;lot of joy.<br /> I&nbsp;am very fond of
-      <strong>coffee</strong>, <strong>kombucha</strong>, and <strong>bread</strong> of my own
-      baking.
-
+      I&nbsp;graduated in Product Design and never really stopped being a&nbsp;designer. I&nbsp;just
+      added code to my tools. Since then the two have worked as one craft: I&nbsp;design in the
+      material the product is actually made of, and I&nbsp;build with the user in mind. Today that
+      matters more than ever. AI writes code fast, but it does not make a&nbsp;product coherent on its
+      own. That is the part I&nbsp;care about.
+    - >
+      Since May 2024 I&nbsp;live in Oslo. I&nbsp;love Norway for its mountains, and I&nbsp;caught my
+      first fish here. Off screen: cycling, climbing, skiing, a&nbsp;homemade micro RV, painting
+      Warhammer miniatures again, coffee, kombucha and my own bread.
   languages:
     records:
       - name: polish
@@ -37,146 +30,125 @@ header:
       - name: english
         level: advanced
       - name: norwegian
-        level: conversational
+        level: basic conversational, learning daily
       - name: french
         level: conversational
 contact:
   records:
-    - [tel:+48 501 299 282, +48 501 299 282]
+    - [tel:+47 462 73 098, +47 462 73 098]
     - [mailto:jan@strm.dev, jan@strm.dev]
     - [https://www.linkedin.com/in/janmirecki/, "@janmirecki", in]
-    - [/cv, resume in .md, cv]
+    - [/cv, web version, cv]
+    - [/Jan-Mirecki-CV-Design-Engineer.pdf, PDF, cv]
 techStack:
   records:
-    - title: product & design
+    - title: systems
       items:
-        - Design Systems
-        - User Experience (UX)
-        - User Interface (UI)
-        - Prototyping
-        - Design Tokens
-        - Component Libraries
-        - Accessibility (A11Y)
-        - User Research
-        - Figma
-        - Framer
-        - Illustrator
-        - InDesign
-        - Photoshop
-        - InVision Studio
-        - Sketch
-    - title: core
+        - Design systems
+        - Design tokens
+        - Theming
+        - Frontend architecture
+        - Migrations (Angular → React)
+    - title: ai
       items:
-        - Javascript
-        - Typescript
-        - HTML5
-        - CSS3
-    - title: libs & frameworks
+        - Claude Code
+        - Agent workflows
+        - Skills & project guidelines
+        - AI guardrails for UI
+    - title: stack
       items:
-        - React JS & TS
-        - Astro.js
-        - Redux
-        - Vue
-        - Tailwind CSS
-        - Tailwind UI
-        - HeadlessUI
-        - styled-components
-        - Bootstrap 4 & 5
-        - AntD
+        - TypeScript
+        - React
+        - HTML
+        - CSS
+        - Storybook
         - Next.js
-        - Gatsby
-    - title: maintenance
-      items:
+        - Astro
+        - Tailwind CSS
+        - Lit
+        - Bun
         - Jest
         - React Testing Library
-        - Webpack
-        - Parcel
-        - JIRA
         - git
-        - git hooks
-        - npm
-        - yarn
-        - husky
-        - eslint
-        - prettier
-        - bash
-        - zsh
-    - title: more
+    - title: product & ux
       items:
-        - Arduino
-        - Lego Mindstorms
-        - Adobe Scripting
-        - ...
+        - Product discovery
+        - Requirements & scoping
+        - User flows
+        - Interaction design
+        - Motion
+        - Prototyping
+        - Accessibility
+    - title: design tools
+      items:
+        - Figma
+        - Framer
+        - Adobe CC
+    - title: languages
+      items:
+        - Polish
+        - English
+        - Norwegian
+        - French
 
 featuredProjects:
   records:
-    - name: "GSR - Sports Facility Reservation System"
+    - name: "LetsReg sign-in"
       description:
-        "Full-stack reservation platform for sports centers across Poland with modern UX and
-        accessibility focus"
-      role: "Product Designer • Frontend Developer • Tech Lead"
-      impact: "Serving 20+ sports centers, processing 1000+ daily bookings"
-      tech: ["React", "TypeScript", "Design System", "Figma", "Node.js"]
+        "Designed and built end to end, with an interactive animated background configurable per
+        brand in Storybook"
+      role: "Design · Frontend"
+      impact: "Sign-in page of the LetsReg event registration platform, one design for every partner brand"
+      tech: ["React", "TypeScript", "Storybook", "Design system"]
       status: "live"
-      year: "2024"
+      year: "2026"
+      links:
+        demo: "https://app.letsreg.com/no/sign-in"
+
+    - name: "GSR"
+      description: "Reservation platform for sports centres"
+      role: "Product Designer · Frontend Architect · Tech Lead"
+      impact:
+        "Product design, frontend, design system with tokens and project management, end to end"
+      tech: ["React", "TypeScript", "Design system", "Design tokens"]
+      status: "live"
+      year: "2025"
       links:
         demo: "https://obiekty.gosir-piaseczno.pl/"
-        case_study: "/projects/gsr"
 
-    - name: "GWENT Admin Panel - CD Projekt Red"
-      description:
-        "Game management dashboard with real-time data visualization and team collaboration tools"
-      role: "Senior Frontend Developer • Tech Lead"
-      impact: "Used by 100+ team members daily, reduced admin tasks by 60%"
-      tech: ["React TS", "Redux", "Ant Design", "Jest", "Docker"]
+    - name: "GWENT Admin Panel"
+      description: "Internal tool behind a game played by millions of players worldwide"
+      role: "Senior Frontend Developer · Tech Lead · UX Designer"
+      impact:
+        "Designed and built in React and TypeScript with a team of 2 frontend and 3 backend
+        developers"
+      tech: ["React", "TypeScript", "Redux", "Ant Design", "Jest", "RTL", "Docker"]
       status: "completed"
       year: "2021"
 
-    - name: "WebScouts Volunteer Initiative"
-      description:
-        "Coordinated IT volunteer network supporting Ukrainian refugees through rapid web
-        development"
-      role: "Community Leader • Frontend Developer"
-      impact: "15+ volunteers mobilized, contributed to government support website"
-      tech: ["React", "Community Building", "Rapid Prototyping"]
-      status: "completed"
-      year: "2022"
-
-    - name: "Personal CV – strm.dev"
-      description:
-        "Personal portfolio website built with Astro.js, featuring modern design and smooth
-        animations"
-      role: "Frontend Developer • Designer"
-      impact:
-        "Showcasing professional experience and projects with a focus on accessibility and
-        performance"
-      tech: ["Astro.js", "TypeScript", "Tailwind CSS", "React", "Design System"]
-      status: "live"
-      year: "2024"
-      links:
-        demo: "https://strm.dev"
-        github: "https://github.com/strm/cv-repo"
-
-    - name: "Biletomat.pl Redesign"
-      description:
-        "Complete redesign of web and mobile platform for Time For Friends Company's ticket booking
-        system"
-      role: "Tech Lead • Product Designer • Frontend Developer"
-      impact:
-        "Led team of designers, developers and marketing professionals, improved user experience and
-        conversion rates"
-      tech: ["React", "TypeScript", "Design System", "Figma", "Team Leadership"]
+    - name: "Biletomat.pl"
+      description: "Web and mobile redesign of a ticketing platform"
+      role: "Product Designer · Frontend Architect · Tech Lead"
+      impact: "Led designers, developers and marketing, reporting directly to management"
+      tech: ["Product design", "Design systems", "Frontend"]
       status: "completed"
       year: "2022"
       links:
         demo: "https://biletomat.pl"
 
+    - name: "WebScouts"
+      description: "Organised IT volunteers for refugees and NGOs"
+      role: "Organiser · Frontend Developer"
+      impact: "Helped speed up pomagamukrainie.gov.pl"
+      tech: ["Frontend", "IT volunteering", "Web development"]
+      status: "completed"
+      year: "2022"
+
     - name: "Kłosy Knives"
-      description:
-        "E-commerce platform for premium handcrafted knives, featuring custom product configurator"
-      role: "Frontend Developer • UI Designer"
-      impact: "Streamlined product customization process, increased customer engagement"
-      tech: ["React", "Gatsby", "SASS", "Bootstrap 4", "Product Configurator"]
+      description: "E-commerce shop with a custom product configurator"
+      role: "Frontend Developer · UI Designer"
+      impact: "Freelance project, 2019"
+      tech: ["Frontend", "UI design", "Product configurator"]
       status: "completed"
       year: "2019"
       links:
@@ -184,157 +156,83 @@ featuredProjects:
 
 experience:
   records:
-    - period: Aug 2022 – Now
-      company: Sztorm Jan Mirecki
-      title: Senior Frontend Developer • Consultant • Architect
+    - period: Oct 2026 – present
+      company: LetsReg (Deltager AS), Oslo
+      title: Product Designer
       descriptions:
         - >
-          As a&nbsp;freelancer I'm cooperating with various parties, supporting commercial and
-          non-profit projects. I&nbsp;have worked on projects supporting refugees. I&nbsp;organized
-          a&nbsp;group of IT volunteers called WebScouts and supported more or less formal NGO
-          organizations and grassroots initiatives. Together, we took part in accelerating the
-          delivery of a&nbsp;Polish government website to support Ukraine.
+          Event registration platform for organisers and their participants.
         - >
-          I&nbsp;led UX design exercises at the SWPS University in Warsaw, Department of Psychology
-          and Computer Science. Commercially, I&nbsp;worked on the SAP UI for the US-based company –
-          Corevist as a&nbsp;React Developer. Previously, I&nbsp;coordinated the redesign project of
-          the web and mobile platform for Biletomat.pl, part of the Time For Friends Company. In
-          this role, I&nbsp;led a&nbsp;team of designers, developers, and marketing professionals
-          from a&nbsp;technical, coordination, and visual perspective, reporting directly to the
-          company's management.
+          <strong>New product:</strong> designed a&nbsp;new self-service product for event
+          organisers, from requirements and wireframes to coded prototypes.
         - >
-          Currently, I&nbsp;am leading the development of GSR (Sports Facility Reservation System)
-          in collaboration with Ebert Studio. In this role, I&nbsp;am responsible for product
-          design, UX/UI design, technical architecture, frontend development, and team coordination.
-          The system is used by Sports and Recreation Centers across Poland, providing
-          a&nbsp;modern, accessible, and user-friendly platform for facility reservations. I've
-          built a&nbsp;comprehensive design system with reusable component libraries, established
-          design tokens for consistent branding, and created design-to-code workflows that improved
-          development efficiency while ensuring pixel-perfect implementation of user interfaces.
-      tools:
-        [
-          "IT volunteering",
-          "Tech Leading",
-          "Frontend Development",
-          "Design Consulting",
-          "University Lecturer",
-          "Product Design",
-          "UX/UI Design",
-          "Technical Architecture",
-        ]
-      details: >
-        SWPS University • Biletomat.pl • Emagine • Ebert Studio (GSR) • Corevist • Techlab EE •
-        pomagamukrainie.gov.pl • Fundacja Konflikt • Daydream Yachting
+          <strong>Requirements where nobody owned them:</strong> turned product goals into scope,
+          flows and acceptance criteria.
+        - >
+          <strong>Visual direction:</strong> set the default look of the new platform and its design
+          system. UX review of UI changes.
+      tools: ["Product design", "Requirements & scoping", "User flows", "Prototyping", "Design systems"]
+    - period: Oct 2025 – Oct 2026
+      company: LetsReg (Deltager AS), Oslo
+      title: Senior Frontend Developer and UX/UI Designer
+      descriptions:
+        - >
+          I&nbsp;joined to build the frontend of the new React platform.
+        - >
+          <strong>Migration to React:</strong> UI architecture and the sign-up flow. I&nbsp;wrote
+          its scope, which product adopted as the plan.
+        - >
+          <strong>Design system in code:</strong> tokens, components and themeable skins, shared by
+          the migration and the new product.
+        - >
+          <strong>AI and team:</strong> brought my Claude Code workflow and AI guidelines into the
+          product repos. Code review and mentoring a&nbsp;developer.
+      tools: ["React", "TypeScript", "Frontend architecture", "Design systems", "Claude Code"]
+    - period: Aug 2021 – Oct 2025
+      company: SZTORM (own design and development studio), Warsaw and Oslo
+      title: Product Designer · Frontend Architect · Tech Lead
+      descriptions:
+        - >
+          <strong>GSR, sports facility reservations:</strong> product design, frontend, design
+          system with tokens and project management, end to end. Co-built the npm package the
+          frontend used to consume the system's API.
+        - >
+          <strong>Biletomat.pl redesign</strong> (web and mobile): led designers, developers and
+          marketing, reporting directly to management.
+        - >
+          <strong>WebScouts:</strong> organised IT volunteers for refugees and NGOs, and helped
+          speed up pomagamukrainie.gov.pl.
+        - >
+          Taught UX design at SWPS University. React developer on an SAP UI for Corevist (US).
+      tools: ["Product design", "Design systems", "Tech leading", "Frontend", "University lecturer"]
     - period: Aug 2019 – Aug 2021
-      company: CD Projekt Red
-      title: Senior Frontend Developer • Tech Lead
+      company: CD Projekt Red, Warsaw
+      title: Senior Frontend Developer · Tech Lead · UX Designer
       descriptions:
         - >
-          Leading the team for designing and implementing a&nbsp;game (GWENT) Admin Panel in React
-          Typescript integrated with the existing backend environment and creating tools for game
-          management in a&nbsp;variety of frontend technologies. I was tech leading the team of
-          2&nbsp;Frontend Developers (me&nbsp;+&nbsp;1&nbsp;mid/regular FD) and 3&nbsp;Backend
-          Developers (PHP). I&nbsp;was responsible for setting the development directions for the
-          platform, writing documentation and manuals, leading the knowledge-sharing sessions for
-          backend devs who were new in a&nbsp;React Frontend environment, and sharing our progress
-          in front of the ~100 members of the Gwent Team on monthly meetings.
-      tools:
-        [
-          "React TS",
-          "Redux",
-          "Saga Middleware",
-          "Typescript",
-          "Ant Design",
-          "Jest",
-          "React Testing Library",
-          "PHP",
-          "Symphony",
-          "Docker",
-        ]
-    - period: Jan 2019 – Aug 2019
-      company: Sztorm Jan Mirecki
-      title: Frontend Developer • Consultant • Architect
+          I&nbsp;led the team that designed and built the GWENT admin panel in React and TypeScript, the
+          internal tool behind a game played by millions of players worldwide. Team of 2 frontend
+          and 3 backend developers. I&nbsp;owned the panel's UX design, set the technical direction,
+          wrote the documentation, ran React sessions for backend developers new to the frontend,
+          and presented our progress to the ~100-person GWENT team every month.
+      tools: ["React", "TypeScript", "Redux", "Ant Design", "Jest", "RTL", "Docker"]
+    - period: 2011 – 2019
+      company: Laboratorium EE · Onwelo · Avon · freelance, Warsaw
+      title: UX/UI Designer · Frontend Developer
       descriptions:
         - >
-          Landing pages development, web app development
-      details: >
-        Kłosy Knives • Laboratorium EE • Isobar/Dentsu Aegis Network
-      tools: ["JavaScript", "React JS", "Gatsby", "Karma + Jasmine", "SASS", "Bootstrap 4", "GIT"]
-    - period: Oct 2017 – Oct 2018
-      company: Onwelo
-      title: Frontend Developer
-      descriptions:
-        - >
-          Frontend for banking, financial, and moto industry CMRs, migrations, and internal product
-          development.
-      tools:
-        [
-          "JavaScript",
-          "React JS",
-          "Angular 5",
-          "Karma + Jasmine",
-          "SASS",
-          "Bootstrap 4",
-          "GIT",
-          "Docker",
-        ]
-    - period: Dec 2016 – Sep 2017
-      company: Avon Cosmetics Polska
-      title: Frontend Developer
-      descriptions:
-        - >
-          Landing pages, mailing templates, and corporate services supporting: Avon Online, Avon
-          Representative Suite.
-      tools: ["HTML", "SASS", "Bootstrap 3", "GIT", "Adobe: Xd / Ai / Ps / Indd"]
-    - period: Oct 2015 – Nov 2016
-      company: Laboratorium EE
-      title: Frontend Developer • UX Designer
-      descriptions:
-        - >
-          RWD websites and landing pages
-      tools:
-        [
-          "HTML5",
-          "SASS/SCSS",
-          "Bootstrap 3",
-          "Material Design",
-          "NPM",
-          "Adobe: Ai, Ps",
-          "Teamworking with GIT in SCRUM with JIRA",
-        ]
-    - period: Jan 2015 — Jan 2016
-      company: Freelancer
-      title: Frontend Developer • UI Designer
-      descriptions:
-        - >
-          Website and app design, mockup prototyping, print design.
-      details: >
-        Docs Against Gravity • pracowniajasiewicz.com • laboratorium.ee • mariaerikssonstudio.com •
-        Caritas Polska • NOTO Studio • Jan Strumiłło Architekt • malunkimarka.com
-    - period: Jul 2012 — Sep 2014
-      company: Laboratorium EE
-      title: UX • UI designer
-      descriptions:
-        - >
-          Website and app design, mockup prototyping. Laboratorium EE identity design: logotype,
-          internal documents, data design, website design, and frontend coding
-      description: >
-        Website and app design, mockup prototyping. Laboratorium EE identity design: logotype,
-        internal documents, data design, website design, and frontend coding
-      tools: ["HTML", "CSS", "Bootstrap", "RWD", "Adobe Ai", "Ps", "Id"]
+          Eight years in agencies, corporate teams and freelance, deep in both design and code.
+          UX/UI design, prototyping and identity at Laboratorium EE, banking and automotive
+          frontends at Onwelo, corporate services at Avon. Freelance highlight: Kłosy Knives, an
+          e-commerce shop with a custom product configurator.
 education:
   records:
-    - period: Oct 2016 — Jun 2017
-      institution: Postgraduate Studies at SWPS University of Social Sciences and Humanities
-      degree: Creative Coding
+    - period: 2016 – 2017
+      institution: SWPS University, Warsaw
+      degree: Postgraduate studies, Creative Coding
       place: Warsaw, Poland
-    - period: Dec 2010 — May 2011
-      institution:
-        Erasmus student exchange in the Industrial Design Faculty at ENSAAMA Olivier de Serres
-      degree: Product Design
-      place: Paris, France
-    - period: Oct 2008 — Sep 2014
-      institution: Faculty of Industrial Design at Academy of Fine Arts
-      degree: Bachelor's in Product Design
+    - period: 2008 – 2014
+      institution: Academy of Fine Arts, Warsaw
+      degree: BA, Product Design (Industrial Design); Erasmus at ENSAAMA Olivier de Serres, Paris
       place: Warsaw, Poland
 ---

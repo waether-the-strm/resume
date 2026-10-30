@@ -34,7 +34,7 @@ const { records } = Astro.props
         <article
           class="group flex h-full flex-col rounded-xl bg-slate-900/30 p-6 ring-1 ring-slate-800/40 backdrop-blur-sm transition-all duration-300 ease-out hover:scale-[1.02] hover:bg-slate-900/60 hover:shadow-2xl hover:shadow-blue-500/10 hover:ring-slate-700/60"
           data-animate
-          data-animate-delay={index * 100}
+          data-animate-delay={(index % 3) * 100}
         >
           <div class="mb-4 flex items-start justify-between">
             <h3 class={classes.h3}>{project.name}</h3>
