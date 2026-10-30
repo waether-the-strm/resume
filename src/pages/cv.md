@@ -1,14 +1,17 @@
 ---
 layout: "../layouts/MarkDown.astro"
+cv:
+  name: Jan Mirecki
+  role: Design Engineer
+  subtitle: product designer and frontend architect
+  tagline: 15 years designing for the web, 11 years building it.
+  contacts:
+    - { kind: place, label: "Oslo, Norway" }
+    - { kind: mail, label: jan@strm.dev, href: "mailto:jan@strm.dev" }
+    - { kind: phone, label: "+47 462 73 098", href: "tel:+4746273098" }
+    - { kind: web, label: strm.dev, href: "https://strm.dev" }
+    - { kind: linkedin, label: linkedin.com/in/janmirecki, href: "https://www.linkedin.com/in/janmirecki/" }
 ---
-
-# Jan Mirecki • Design Engineer
-
-**product designer and frontend architect**<br /> 15 years designing for the web, 11 years building
-it.
-
-Oslo, Norway · jan@strm.dev · +47 462 73 098 · [strm.dev](https://strm.dev) ·
-[linkedin.com/in/janmirecki](https://www.linkedin.com/in/janmirecki/)
 
 ---
 
