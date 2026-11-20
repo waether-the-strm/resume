@@ -25,6 +25,6 @@ to preview work, and explains itself.
 ## Next step
 
 Connect the repository to Cloudflare so that `rebuild` and every pull request get a preview URL
-(#3). That closes phase 1 together with the skills and the board. Then phase 2: the first
-slice of strm-ui, starting with two questions for Jan (what to transplant from jan-ui, and how
-strm-ui is documented).
+(#3). That closes phase 1 together with the skills and the board. Then phase 2: the first slice of
+strm-ui, starting with two questions for Jan (what to transplant from jan-ui, and how strm-ui is
+documented).
