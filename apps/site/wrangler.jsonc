@@ -7,4 +7,6 @@
     "directory": "./dist",
     "not_found_handling": "404-page",
   },
+  // Required by `wrangler preview`; an empty block means previews use the settings above.
+  "previews": {},
 }
