@@ -4,11 +4,13 @@
  */
 :root {
   /* paper and ink: a warm neutral ramp */
+  --p-white: #ffffff;
   --p-paper-100: #f6f4ef;
   --p-paper-300: #d8d3c8;
   --p-stone-400: #a39e94;
   --p-stone-600: #6b675f;
   --p-coal-700: #34312c;
+  --p-coal-800: #1f1d1a;
   --p-coal-900: #161513;
   --p-chalk-100: #efece4;
 

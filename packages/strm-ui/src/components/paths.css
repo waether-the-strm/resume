@@ -1,0 +1,69 @@
+/*
+ * Paths: a few ways on from where the reader is. Each is a name, what it leads to, an arrow.
+ *   <nav class="ui-paths" aria-label="…">
+ *     <a class="is-primary" href="…">write to me <span>a role or a project</span></a>
+ *     <a href="…">see the work <span>selected projects</span></a>
+ *     <a class="is-soft" href="…">or wander <span>notes, soon</span></a>
+ *   </nav>
+ */
+.ui-paths {
+  display: grid;
+  align-content: start;
+}
+.ui-paths > a {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: 14px;
+  padding: var(--paths-pad) 0;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 19px;
+  font-variation-settings:
+    "MONO" var(--voice-sans),
+    "wght" 600;
+}
+.ui-paths > a + a {
+  border-top: 1px solid var(--line);
+}
+.ui-paths > a > span {
+  color: var(--ink-mute);
+  font-size: var(--type-label-size);
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 400;
+}
+.ui-paths > a::after {
+  content: "→" / "";
+  display: inline-block;
+  color: var(--accent);
+  transition: translate var(--motion-enter) var(--ease-out);
+}
+.ui-paths > a:hover::after {
+  translate: var(--paths-nudge) 0;
+}
+.ui-paths > a.is-primary {
+  color: var(--accent-text);
+}
+.ui-paths > a.is-soft {
+  color: var(--ink-mute);
+  font-variation-settings:
+    "MONO" var(--voice-sans),
+    "wght" 500;
+}
+
+/* Phones: the name and the arrow on one line, what it leads to underneath. */
+@media (max-width: 760px) {
+  .ui-paths > a {
+    grid-template-columns: 1fr auto;
+    gap: 4px 14px;
+  }
+  .ui-paths > a > span {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .ui-paths > a::after {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}

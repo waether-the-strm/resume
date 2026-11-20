@@ -1,4 +1,43 @@
 /*
- * Tier 3: component tokens. A component names its own parts here and points them at tier 2.
- * Empty until the first primitives arrive (pill, tile, card, rail).
+ * Tier 3: component tokens. A component names its own decisions here and points them at tier 2.
+ * Only values that are a decision of that component live here; everything else it reads from
+ * tier 2 directly.
  */
+:root {
+  /* pill: the one filled control */
+  --pill-fill: var(--accent-fill);
+  --pill-ink: var(--on-accent);
+  --pill-pad: 11px 18px 11px 16px;
+  --pill-nudge: 3px;
+
+  /* tiles: a numbered list on a text axis */
+  --tiles-indent: 44px;
+  --tiles-pad: 14px;
+  --tiles-number: var(--accent-text);
+
+  /* panel: the one raised surface */
+  --panel-fill: var(--paper-raised);
+  --panel-pad: 36px 44px 48px;
+  --panel-radius: var(--radius-control);
+
+  /* mark: the monogram */
+  --mark-size: 36px;
+
+  /* paths: ways out of a panel */
+  --paths-pad: 15px;
+  --paths-nudge: 6px;
+
+  /* work: a project card */
+  --work-visual: 140px;
+  --work-lift: -3px;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --tiles-indent: 34px;
+    --tiles-pad: 10px;
+    --panel-pad: 28px 24px 20px;
+    --paths-pad: 18px;
+    --work-visual: 150px;
+  }
+}

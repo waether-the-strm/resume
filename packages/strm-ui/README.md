@@ -13,7 +13,10 @@ The design system of strm.dev: tokens, themes and the few primitives the site ne
 
 - `src/tokens/primitives.css`: tier 1, raw values (`--p-*`). Only `semantic.css` may read them.
 - `src/tokens/semantic.css`: tier 2, roles. The theme and the motion profile live here.
-- `src/tokens/component.css`: tier 3, empty until the first primitives.
+- `src/tokens/component.css`: tier 3, the decisions of each component.
+- `src/components/*.css`: the primitives: pill, tiles, rule, panel (with kicker and mark), paths,
+  work. Each file starts with what it is for and its markup.
+- `test/tokens.test.js`: the tier rules, checked on the CSS (`pnpm test`).
 - `src/base.css`: the document base and the type role classes.
 - `src/theme-init.js`: inlined in `<head>`; restores the stored theme and motion choice before
   paint.
@@ -31,5 +34,5 @@ The design system of strm.dev: tokens, themes and the few primitives the site ne
 A colour that carries meaning has a signal token (3:1 on paper: lines, marks, large type) and a
 `-text` partner (4.5:1: small text). The page at `/ui` measures every pair in both themes.
 
-Status: the first slice (tokens, themes, type and motion roles). Primitives come next. See ADR 0003
-and 0004 in `docs/adr`.
+Status: tokens and the first primitives. Rail, blob and hint come with the engine. See ADR 0003 and
+0004 in `docs/adr`, and the `strm-ui` skill in `.claude/skills`.
