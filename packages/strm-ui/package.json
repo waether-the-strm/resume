@@ -1,0 +1,9 @@
+{
+  "name": "@strm/ui",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "exports": {
+    "./tokens.css": "./src/tokens.css"
+  }
+}

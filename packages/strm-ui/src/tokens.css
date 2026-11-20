@@ -1,0 +1,5 @@
+/*
+ * strm-ui tokens. The source of truth is CSS custom properties (ADR 0003).
+ * Three tiers arrive in phase 2: primitives -> semantic -> component.
+ * Components read only the semantic and component tiers.
+ */
