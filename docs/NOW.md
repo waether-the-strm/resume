@@ -12,6 +12,8 @@ to preview work, and explains itself.
 - Branch `rebuild` exists with the workspace skeleton: `apps/site` (Astro 7, a placeholder page),
   `packages/strm-ui` and `packages/narrative` (empty, contracts in their READMEs).
 - CI runs format, type check, tests and build on every pull request.
+- The agent layer: `CLAUDE.md` as the navigator and the `session` skill (start and end of a
+  session).
 - Hosting: a Cloudflare Worker serves the static build. `rebuild` and every pull request get a
   preview on workers.dev with `noindex`; `rebuild` is at
   <https://rebuild-strm-dev.mirecki-janek.workers.dev>. Production deploys from a `v*.*.*` tag
@@ -27,10 +29,12 @@ The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3), 
 
 ## In progress
 
-- Agent skills for this repository: not written yet (#4).
+- Nothing. Phase 1 is complete.
 
 ## Next step
 
-Write the agent skills, `session` first (#4). That closes phase 1. Then phase 2: the first slice of
-strm-ui, starting with two questions for Jan (what to transplant from jan-ui, and how strm-ui is
-documented).
+Phase 2, the first slice of strm-ui. It starts with two questions for Jan: what to transplant from
+jan-ui, and how strm-ui is documented.
+
+The remaining agent skills are written with the phase that gives them something to describe:
+`strm-ui` in phase 2, `content-and-facts` and `verify` in phase 3.

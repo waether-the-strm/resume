@@ -10,6 +10,8 @@ private notes, no employer code or internal material.
    render, a measurement, a test).
 3. End by updating `docs/NOW.md` and adding to `docs/log/YYYY-MM-DD.md`.
 
+Details: the `session` skill (`.claude/skills/session`).
+
 ## Where things are
 
 | Path                  | What                                                              |
