@@ -1,0 +1,142 @@
+/*
+ * Tier 2: semantic tokens. Roles, not values. Components read these (and tier 3), never tier 1.
+ *
+ * Theme. Every colour is written once with light-dark(light, dark). The theme attribute on
+ * <html> only switches color-scheme; with no attribute the system setting decides.
+ * A new skin is a new set of the values in this file, selected by an attribute. It touches
+ * no component.
+ *
+ * Signal and text pairs (ADR 0004). A colour that carries meaning has a signal hue for lines,
+ * marks and large type (3:1 on paper is enough) and a -text partner that keeps 4.5:1 on paper
+ * in both themes. Small coloured text always uses the -text partner.
+ */
+:root {
+  color-scheme: light dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root {
+  /* surfaces */
+  --paper: light-dark(var(--p-paper-100), var(--p-coal-900));
+  --veil: color-mix(in oklab, var(--paper) 84%, transparent);
+
+  /* ink: three steps. --ink-soft is for marks and for words that are deliberately faint;
+     it does not meet 4.5:1 and must not carry text that has to be read. */
+  --ink: light-dark(var(--p-coal-900), var(--p-chalk-100));
+  --ink-mute: light-dark(var(--p-stone-600), var(--p-stone-400));
+  --ink-soft: light-dark(var(--p-stone-400), var(--p-stone-600));
+
+  /* lines sit between things, never around them */
+  --line: light-dark(var(--p-paper-300), var(--p-coal-700));
+
+  /* the accent */
+  --accent: light-dark(var(--p-red-500), var(--p-red-400));
+  --accent-text: light-dark(var(--p-red-600), var(--p-red-400));
+
+  /* links */
+  --link: light-dark(var(--p-blue-600), var(--p-blue-300));
+
+  /* notes: the three annotation colours of the structure scene */
+  --note-sem: var(--accent);
+  --note-sem-text: var(--accent-text);
+  --note-el: light-dark(var(--p-steel-600), var(--p-steel-300));
+  --note-el-text: light-dark(var(--p-steel-600), var(--p-steel-300));
+  --note-tok: light-dark(var(--p-moss-500), var(--p-moss-300));
+  --note-tok-text: light-dark(var(--p-moss-600), var(--p-moss-300));
+
+  /* focus */
+  --focus-ring: var(--accent);
+
+  /* space */
+  --space-hair: var(--p-space-1);
+  --space-tight: var(--p-space-2);
+  --space-snug: var(--p-space-3);
+  --space-base: var(--p-space-4);
+  --space-loose: var(--p-space-5);
+  --space-block: var(--p-space-6);
+  --space-section: var(--p-space-7);
+  --space-page: var(--p-space-8);
+  --space-stage: var(--p-space-9);
+
+  /* radius */
+  --radius-mark: var(--p-radius-1);
+  --radius-control: var(--p-radius-2);
+  --radius-panel: var(--p-radius-3);
+  --radius-pill: var(--p-radius-full);
+
+  /* type: family and voices. A voice is a setting of the MONO axis. */
+  --font: var(--p-font-recursive);
+  --voice-sans: 0;
+  --voice-mono: 1;
+
+  /* type roles: size, weight, leading, tracking, voice */
+  --type-display-size: clamp(36px, 4.4vw, 54px);
+  --type-display-weight: 800;
+  --type-display-leading: 1.02;
+  --type-display-tracking: -0.025em;
+  --type-display-voice: var(--voice-sans);
+
+  --type-title-size: clamp(30px, 3.6vw, 44px);
+  --type-title-weight: 600;
+  --type-title-leading: 1.15;
+  --type-title-tracking: -0.025em;
+  --type-title-voice: var(--voice-sans);
+
+  --type-lead-size: clamp(18px, 2vw, 24px);
+  --type-lead-weight: 400;
+  --type-lead-leading: 1.45;
+  --type-lead-tracking: 0;
+  --type-lead-voice: var(--voice-sans);
+
+  --type-body-size: 16px;
+  --type-body-weight: 400;
+  --type-body-leading: 1.6;
+  --type-body-tracking: 0;
+  --type-body-voice: var(--voice-sans);
+
+  --type-label-size: 13px;
+  --type-label-weight: 400;
+  --type-label-leading: 1.5;
+  --type-label-tracking: 0.02em;
+  --type-label-voice: var(--voice-mono);
+
+  --type-micro-size: 12px;
+  --type-micro-weight: 500;
+  --type-micro-leading: 1.4;
+  --type-micro-tracking: 0.06em;
+  --type-micro-voice: var(--voice-mono);
+
+  /* motion roles: how long, and along which curve */
+  --motion-micro: var(--p-time-2);
+  --motion-enter: var(--p-time-3);
+  --motion-move: var(--p-time-4);
+  --motion-scene: var(--p-time-5);
+  --ease-out: var(--p-curve-out);
+  --ease-in-out: var(--p-curve-in-out);
+  --ease-spring: var(--p-curve-spring);
+}
+
+/*
+ * The motion profile: a separate axis next to the theme (ADR 0004).
+ * Reduced motion zeroes the motion roles, so anything timed by them stops moving without
+ * knowing why. data-motion="reduced" forces it; data-motion="full" overrides the system.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) {
+    --motion-micro: 0ms;
+    --motion-enter: 0ms;
+    --motion-move: 0ms;
+    --motion-scene: 0ms;
+  }
+}
+:root[data-motion="reduced"] {
+  --motion-micro: 0ms;
+  --motion-enter: 0ms;
+  --motion-move: 0ms;
+  --motion-scene: 0ms;
+}

@@ -1,21 +1,32 @@
 ---
 // Placeholder for the rebuild branch. The real home page arrives in phase 3
 // (the static finished page) and phases 4-6 (the engine on top of it).
+import Base from "../layouts/Base.astro"
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>strm.dev v2, in progress</title>
-  </head>
-  <body>
-    <main>
-      <h1>strm.dev v2</h1>
-      <p>The rebuild is in progress. The live site is <a href="https://strm.dev">strm.dev</a>.</p>
-    </main>
-  </body>
-</html>
+<Base title="strm.dev v2, in progress">
+  <main>
+    <h1 class="type-title">strm.dev v2</h1>
+    <p class="type-lead">The rebuild is in progress.</p>
+    <p>
+      The live site is <a href="https://strm.dev">strm.dev</a>. The design system so far is at <a
+        href="/ui">/ui</a
+      >.
+    </p>
+  </main>
+</Base>
+
+<style>
+  main {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: var(--space-stage) var(--space-loose);
+  }
+  h1 {
+    margin: 0 0 var(--space-base);
+  }
+  p {
+    margin: 0 0 var(--space-base);
+    max-width: 56ch;
+  }
+</style>

@@ -1,0 +1,6 @@
+/* strm-ui: everything a page needs, in tier order. */
+@import "@fontsource-variable/recursive/full.css";
+@import "./tokens/primitives.css";
+@import "./tokens/semantic.css";
+@import "./tokens/component.css";
+@import "./base.css";

@@ -1,0 +1,528 @@
+---
+// strm-ui, first slice: the tokens, shown from the CSS they are written in (ADR 0005).
+import Base from "../../layouts/Base.astro"
+import primitivesCss from "@strm/ui/tokens/primitives.css?raw"
+import semanticCss from "@strm/ui/tokens/semantic.css?raw"
+import { contrast, parseTokens, resolve, type Scheme } from "../../lib/tokens"
+
+const tokens = parseTokens(primitivesCss, semanticCss)
+const schemes: Scheme[] = ["light", "dark"]
+const value = (name: string, scheme: Scheme) => resolve(tokens.get(name) ?? "", tokens, scheme)
+
+// What each colour is for, and the contrast on paper it has to reach.
+// 4.5 = text that must be read. 3 = lines, marks and large type. 0 = decorative, no requirement.
+const colours: { name: string; use: string; needs: number }[] = [
+  { name: "--paper", use: "The page.", needs: 0 },
+  { name: "--ink", use: "Text.", needs: 4.5 },
+  { name: "--ink-mute", use: "Secondary text, labels.", needs: 4.5 },
+  { name: "--ink-soft", use: "Marks and deliberately faint words. Not for text.", needs: 0 },
+  { name: "--line", use: "Hairlines between things.", needs: 0 },
+  { name: "--accent", use: "The accent as a signal: marks, large type.", needs: 3 },
+  { name: "--accent-text", use: "The accent as small text.", needs: 4.5 },
+  { name: "--link", use: "Links.", needs: 4.5 },
+  { name: "--note-el", use: "The element note: marks.", needs: 3 },
+  { name: "--note-el-text", use: "The element note: text.", needs: 4.5 },
+  { name: "--note-tok", use: "The token note: marks.", needs: 3 },
+  { name: "--note-tok-text", use: "The token note: text.", needs: 4.5 },
+]
+
+const colourRows = colours.map((colour) => ({
+  ...colour,
+  cells: schemes.map((scheme) => {
+    const hex = value(colour.name, scheme)
+    const ratio = contrast(hex, value("--paper", scheme))
+    return {
+      scheme,
+      hex,
+      ratio: colour.name === "--paper" || ratio === null ? null : ratio,
+      pass: colour.needs === 0 || ratio === null ? null : ratio >= colour.needs,
+    }
+  }),
+}))
+
+const typeRoles = [
+  { role: "display", sample: "Layout carries meaning" },
+  { role: "title", sample: "Now the look. Read it again." },
+  { role: "lead", sample: "15 years designing for the web, 11 years building it." },
+  {
+    role: "body",
+    sample:
+      "I design in the material the product is actually made of, and I build with the user in mind.",
+  },
+  { role: "label", sample: '<Headline as="h1" />' },
+  { role: "micro", sample: "THE WORDS · 7/12" },
+]
+const typeRows = typeRoles.map((row) => ({
+  ...row,
+  size: value(`--type-${row.role}-size`, "light"),
+  weight: value(`--type-${row.role}-weight`, "light"),
+  leading: value(`--type-${row.role}-leading`, "light"),
+  voice: value(`--type-${row.role}-voice`, "light") === "1" ? "mono" : "sans",
+}))
+
+const names = (prefix: string) => [...tokens.keys()].filter((name) => name.startsWith(prefix))
+const spaces = names("--space-").map((name) => ({ name, px: value(name, "light") }))
+const radii = names("--radius-").map((name) => ({ name, px: value(name, "light") }))
+const durations = names("--motion-").map((name) => ({ name, ms: value(name, "light") }))
+const curves = names("--ease-").map((name) => ({ name, curve: value(name, "light") }))
+
+const failures = colourRows.flatMap((row) =>
+  row.cells.filter((cell) => cell.pass === false).map((cell) => `${row.name} (${cell.scheme})`)
+)
+---
+
+<Base title="strm-ui">
+  <main>
+    <header class="top">
+      <p class="type-micro kicker">strm-ui · first slice</p>
+      <h1 class="type-display">Tokens</h1>
+      <p class="type-lead intro">
+        Three tiers: primitives, semantic roles, component tokens. This page reads the same CSS the
+        site uses, so what you see here is what ships.
+      </p>
+      <div class="switches">
+        <fieldset data-switch="theme">
+          <legend class="type-micro">Theme</legend>
+          <button type="button" data-value="" aria-pressed="true">auto</button>
+          <button type="button" data-value="light" aria-pressed="false">light</button>
+          <button type="button" data-value="dark" aria-pressed="false">dark</button>
+        </fieldset>
+        <fieldset data-switch="motion">
+          <legend class="type-micro">Motion</legend>
+          <button type="button" data-value="" aria-pressed="true">auto</button>
+          <button type="button" data-value="full" aria-pressed="false">full</button>
+          <button type="button" data-value="reduced" aria-pressed="false">reduced</button>
+        </fieldset>
+      </div>
+    </header>
+
+    <section aria-labelledby="h-colour">
+      <h2 id="h-colour" class="type-title">Colour</h2>
+      <p class="note">
+        Contrast is measured on the paper of each theme. Text has to reach 4.5:1; signals (lines,
+        marks, large type) 3:1. {
+          failures.length === 0 ? "Every pair below passes." : `Failing: ${failures.join(", ")}.`
+        }
+      </p>
+      <div class="schemes">
+        {
+          schemes.map((scheme, index) => (
+            <div class="scheme" style={`color-scheme: ${scheme}`}>
+              <h3 class="type-micro">{scheme}</h3>
+              <ul class="colours">
+                {colourRows.map((row) => {
+                  const cell = row.cells[index]
+                  return (
+                    <li>
+                      <span class="swatch" style={`background: var(${row.name})`} />
+                      <span class="type-label name">{row.name}</span>
+                      <span class="type-label hex">{cell?.hex}</span>
+                      <span class="type-label ratio" data-pass={String(cell?.pass)}>
+                        {cell?.ratio ? `${cell.ratio.toFixed(2)}:1` : ""}
+                        {cell?.pass === true && ` ≥ ${row.needs}`}
+                        {cell?.pass === false && ` < ${row.needs}`}
+                      </span>
+                      <span class="use">{row.use}</span>
+                    </li>
+                  )
+                })}
+              </ul>
+              <p class="specimen">
+                Text in <span style="color: var(--ink-mute)">mute</span>, a{" "}
+                <a href="#h-colour">link</a>, small accent text{" "}
+                <span class="type-label" style="color: var(--accent-text)">
+                  = how?
+                </span>
+                , notes{" "}
+                <span class="type-label" style="color: var(--note-el-text)">
+                  as="h1"
+                </span>{" "}
+                <span class="type-label" style="color: var(--note-tok-text)">
+                  tokens="…"
+                </span>
+                .
+              </p>
+              <p class="type-title specimen-accent">
+                Layout <span style="color: var(--accent)">carries meaning</span>
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section aria-labelledby="h-type">
+      <h2 id="h-type" class="type-title">Type</h2>
+      <p class="note">
+        One variable family, Recursive, with two voices on its MONO axis. A role sets size, weight,
+        leading, tracking and voice together.
+      </p>
+      <ul class="types">
+        {
+          typeRows.map((row) => (
+            <li>
+              <p class="type-label meta">
+                {row.role} · {row.size} · {row.weight} · {row.leading} · {row.voice}
+              </p>
+              <p class={`type-${row.role} sample`}>{row.sample}</p>
+            </li>
+          ))
+        }
+        <li>
+          <p class="type-label meta">body · Polish · latin-ext</p>
+          <p class="type-body sample" lang="pl">
+            Zażółć gęślą jaźń. Projektuję w materiale, z którego produkt jest naprawdę zrobiony.
+          </p>
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-space">
+      <h2 id="h-space" class="type-title">Space and radius</h2>
+      <ul class="spaces">
+        {
+          spaces.map((space) => (
+            <li>
+              <span class="type-label name">{space.name}</span>
+              <span class="type-label hex">{space.px}</span>
+              <span class="bar" style={`width: var(${space.name})`} />
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="radii">
+        {
+          radii.map((radius) => (
+            <li>
+              <span class="corner" style={`border-radius: var(${radius.name})`} />
+              <span class="type-label name">{radius.name}</span>
+              <span class="type-label hex">{radius.px}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="h-motion">
+      <h2 id="h-motion" class="type-title">Motion</h2>
+      <p class="note">
+        Durations and curves are roles. The reduced profile sets every duration to zero, so anything
+        timed by a role stops moving. Press a row to play it; switch Motion to reduced and press
+        again.
+      </p>
+      <ul class="motions">
+        {
+          durations.flatMap((duration) =>
+            curves.map((curve) => (
+              <li>
+                <button
+                  type="button"
+                  class="play"
+                  style={`--d: var(${duration.name}); --e: var(${curve.name})`}
+                >
+                  <span class="type-label name">
+                    {duration.name} · {curve.name}
+                  </span>
+                  <span class="type-label hex">{duration.ms}</span>
+                  <span class="lane">
+                    <span class="dot" />
+                  </span>
+                </button>
+              </li>
+            ))
+          )
+        }
+      </ul>
+    </section>
+  </main>
+</Base>
+
+<script is:inline>
+  // The two switches. Each writes an attribute on <html> and remembers the choice.
+  ;(function () {
+    var root = document.documentElement
+    document.querySelectorAll("[data-switch]").forEach(function (group) {
+      var axis = group.getAttribute("data-switch")
+      var key = "strm-" + axis
+      var attr = "data-" + axis
+      function paint() {
+        var current = root.getAttribute(attr) || ""
+        group.querySelectorAll("button").forEach(function (button) {
+          button.setAttribute("aria-pressed", String(button.dataset.value === current))
+        })
+      }
+      group.addEventListener("click", function (event) {
+        var button = event.target.closest("button")
+        if (!button) return
+        var next = button.dataset.value
+        try {
+          if (next) localStorage.setItem(key, next)
+          else localStorage.removeItem(key)
+        } catch (e) {}
+        if (next) root.setAttribute(attr, next)
+        else root.removeAttribute(attr)
+        paint()
+      })
+      paint()
+    })
+    document.querySelectorAll(".play").forEach(function (button) {
+      button.addEventListener("click", function () {
+        button.classList.toggle("on")
+      })
+    })
+  })()
+</script>
+
+<style>
+  main {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: var(--space-page) var(--space-loose) var(--space-stage);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  h1,
+  h2,
+  h3,
+  p {
+    margin: 0;
+  }
+
+  .top {
+    padding-bottom: var(--space-section);
+  }
+  .kicker {
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: var(--space-snug);
+  }
+  .intro {
+    max-width: 44ch;
+    margin-top: var(--space-base);
+    color: var(--ink-mute);
+  }
+  .switches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-loose);
+    margin-top: var(--space-block);
+  }
+  fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-tight);
+  }
+  legend {
+    float: left;
+    padding: 0;
+    margin-right: var(--space-snug);
+    color: var(--ink-mute);
+    text-transform: uppercase;
+  }
+  fieldset button {
+    font: inherit;
+    font-size: var(--type-label-size);
+    font-variation-settings:
+      "MONO" var(--voice-mono),
+      "wght" 400;
+    color: var(--ink-mute);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    padding: var(--space-tight) var(--space-hair);
+    min-height: 44px;
+    cursor: pointer;
+    transition:
+      color var(--motion-micro) var(--ease-out),
+      border-color var(--motion-micro) var(--ease-out);
+  }
+  fieldset button[aria-pressed="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+
+  section {
+    border-top: 1px solid var(--line);
+    padding: var(--space-section) 0;
+  }
+  .note {
+    max-width: 62ch;
+    margin-top: var(--space-snug);
+    color: var(--ink-mute);
+  }
+
+  .schemes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: var(--space-loose);
+    margin-top: var(--space-block);
+  }
+  .scheme {
+    background: var(--paper);
+    color: var(--ink);
+    padding: var(--space-loose);
+    border-radius: var(--radius-control);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .scheme h3 {
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: var(--space-base);
+  }
+  .colours li {
+    display: grid;
+    grid-template-columns: 20px 1fr auto auto;
+    column-gap: var(--space-snug);
+    align-items: center;
+    padding: var(--space-tight) 0;
+    border-top: 1px solid var(--line);
+  }
+  .swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-mark);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .hex {
+    color: var(--ink-mute);
+  }
+  .ratio {
+    min-width: 11ch;
+    text-align: right;
+    color: var(--ink-mute);
+  }
+  .ratio[data-pass="false"] {
+    color: var(--accent-text);
+    text-decoration: underline;
+  }
+  .use {
+    grid-column: 2 / -1;
+    font-size: var(--type-label-size);
+    color: var(--ink-mute);
+  }
+  .specimen {
+    margin-top: var(--space-loose);
+    padding-top: var(--space-base);
+    border-top: 1px solid var(--line);
+  }
+  .specimen-accent {
+    margin-top: var(--space-base);
+  }
+
+  .types li {
+    padding: var(--space-loose) 0;
+    border-top: 1px solid var(--line);
+  }
+  .types li:first-child {
+    border-top: 0;
+  }
+  .meta {
+    color: var(--ink-mute);
+    margin-bottom: var(--space-tight);
+  }
+  .sample {
+    max-width: 30em;
+  }
+
+  .spaces {
+    margin-top: var(--space-block);
+  }
+  .spaces li {
+    display: grid;
+    grid-template-columns: minmax(14ch, 18ch) 6ch 1fr;
+    align-items: center;
+    column-gap: var(--space-base);
+    padding: var(--space-hair) 0;
+  }
+  .bar {
+    height: 8px;
+    background: var(--ink);
+    border-radius: 1px;
+  }
+  .radii {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-block);
+    margin-top: var(--space-block);
+  }
+  .radii li {
+    display: grid;
+    gap: var(--space-hair);
+  }
+  .corner {
+    width: 72px;
+    height: 48px;
+    border: 1px solid var(--ink);
+    margin-bottom: var(--space-tight);
+  }
+
+  .motions {
+    margin-top: var(--space-block);
+  }
+  .motions li {
+    border-top: 1px solid var(--line);
+  }
+  .play {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    width: 100%;
+    min-height: 44px;
+    padding: var(--space-tight) 0;
+    display: grid;
+    grid-template-columns: minmax(0, 34ch) 7ch 1fr;
+    align-items: center;
+    column-gap: var(--space-base);
+    text-align: left;
+    cursor: pointer;
+  }
+  .lane {
+    position: relative;
+    height: 12px;
+    container-type: inline-size;
+  }
+  .dot {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    transition: translate var(--d) var(--e);
+  }
+  .play.on .dot {
+    translate: calc(100cqw - 12px) 0;
+  }
+
+  @media (max-width: 520px) {
+    main {
+      padding-inline: var(--space-base);
+    }
+    .colours li {
+      grid-template-columns: 20px 1fr auto;
+    }
+    .colours .hex {
+      display: none;
+    }
+    .spaces li {
+      grid-template-columns: 1fr 6ch;
+    }
+    .spaces .bar {
+      grid-column: 1 / -1;
+    }
+    .play {
+      grid-template-columns: 1fr auto;
+    }
+    .lane {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
