@@ -1,0 +1,55 @@
+/*
+ * Panel: the one raised surface. A page has few of these; most things sit on the paper.
+ *   <div class="ui-panel">…</div>
+ *
+ * Kicker: the first row of a panel, a quiet line with a hairline under it.
+ *   <p class="ui-kicker"><span><b>=</b> how? · …</span><span class="ui-mark">JM</span></p>
+ *
+ * Mark: the monogram.
+ */
+.ui-panel {
+  padding: var(--panel-pad);
+  border: 1px solid var(--line);
+  border-radius: var(--panel-radius);
+  background: var(--panel-fill);
+  box-shadow: var(--shadow-raised);
+}
+
+.ui-kicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-base);
+  margin: 0;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-mute);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 400;
+}
+.ui-kicker b {
+  color: var(--accent-text);
+  font-weight: inherit;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 500;
+}
+
+.ui-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--mark-size);
+  height: var(--mark-size);
+  border-radius: var(--radius-pill);
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  font-size: var(--type-label-size);
+  letter-spacing: var(--type-label-tracking);
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 700;
+}

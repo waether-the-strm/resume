@@ -1,0 +1,51 @@
+/*
+ * Work: a project card. A visual on top, a title and one sentence underneath.
+ *   <ul class="ui-work">
+ *     <li><div class="ui-work__visual">…</div>
+ *         <div class="ui-work__text"><b>GSR</b>I took a reservation platform…</div></li>
+ *   </ul>
+ */
+.ui-work {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ui-work > li {
+  display: grid;
+  grid-template-rows: var(--work-visual) auto;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--panel-radius);
+  background: var(--panel-fill);
+  transition:
+    translate var(--motion-enter) var(--ease-out),
+    border-color var(--motion-enter) var(--ease-out);
+}
+.ui-work > li:hover {
+  translate: 0 var(--work-lift);
+  border-color: var(--ink);
+}
+.ui-work__visual {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+}
+.ui-work__text {
+  padding: 16px 18px 18px;
+  color: var(--ink-mute);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ui-work__text > b {
+  display: block;
+  margin-bottom: var(--space-hair);
+  color: var(--ink);
+  font-size: var(--type-body-size);
+  font-weight: inherit;
+  font-variation-settings:
+    "MONO" var(--voice-sans),
+    "wght" 600;
+}

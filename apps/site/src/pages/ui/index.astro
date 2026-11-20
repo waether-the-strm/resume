@@ -11,7 +11,7 @@ const value = (name: string, scheme: Scheme) => resolve(tokens.get(name) ?? "", 
 
 // What each colour is for, and the contrast on paper it has to reach.
 // 4.5 = text that must be read. 3 = lines, marks and large type. 0 = decorative, no requirement.
-const colours: { name: string; use: string; needs: number }[] = [
+const colours: { name: string; use: string; needs: number; on?: string }[] = [
   { name: "--paper", use: "The page.", needs: 0 },
   { name: "--ink", use: "Text.", needs: 4.5 },
   { name: "--ink-mute", use: "Secondary text, labels.", needs: 4.5 },
@@ -20,6 +20,14 @@ const colours: { name: string; use: string; needs: number }[] = [
   { name: "--accent", use: "The accent as a signal: marks, large type.", needs: 3 },
   { name: "--accent-text", use: "The accent as small text.", needs: 4.5 },
   { name: "--link", use: "Links.", needs: 4.5 },
+  { name: "--paper-raised", use: "The one raised surface: panels, cards.", needs: 0 },
+  { name: "--accent-fill", use: "A surface filled with the accent: the pill, the mark.", needs: 3 },
+  {
+    name: "--on-accent",
+    use: "Text on the accent fill. Measured on --accent-fill.",
+    needs: 4.5,
+    on: "--accent-fill",
+  },
   { name: "--note-el", use: "The element note: marks.", needs: 3 },
   { name: "--note-el-text", use: "The element note: text.", needs: 4.5 },
   { name: "--note-tok", use: "The token note: marks.", needs: 3 },
@@ -30,7 +38,7 @@ const colourRows = colours.map((colour) => ({
   ...colour,
   cells: schemes.map((scheme) => {
     const hex = value(colour.name, scheme)
-    const ratio = contrast(hex, value("--paper", scheme))
+    const ratio = contrast(hex, value(colour.on ?? "--paper", scheme))
     return {
       scheme,
       hex,
@@ -74,7 +82,7 @@ const failures = colourRows.flatMap((row) =>
 <Base title="strm-ui">
   <main>
     <header class="top">
-      <p class="type-micro kicker">strm-ui · first slice</p>
+      <p class="type-micro kicker">strm-ui · tokens · <a href="/ui/primitives/">primitives</a></p>
       <h1 class="type-display">Tokens</h1>
       <p class="type-lead intro">
         Three tiers: primitives, semantic roles, component tokens. This page reads the same CSS the

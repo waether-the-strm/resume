@@ -12,6 +12,8 @@ private notes, no employer code or internal material.
 
 Details: the `session` skill (`.claude/skills/session`).
 
+Before touching `packages/strm-ui` or writing styles in the site: the `strm-ui` skill.
+
 ## Where things are
 
 | Path                  | What                                                              |

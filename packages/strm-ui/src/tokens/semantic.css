@@ -23,7 +23,11 @@
 :root {
   /* surfaces */
   --paper: light-dark(var(--p-paper-100), var(--p-coal-900));
+  --paper-raised: light-dark(var(--p-white), var(--p-coal-800));
   --veil: color-mix(in oklab, var(--paper) 84%, transparent);
+  --shadow-raised:
+    0 1px 0 light-dark(rgb(0 0 0 / 0.03), rgb(0 0 0 / 0.4)),
+    0 24px 48px -32px light-dark(rgb(22 21 19 / 0.35), rgb(0 0 0 / 0.8));
 
   /* ink: three steps. --ink-soft is for marks and for words that are deliberately faint;
      it does not meet 4.5:1 and must not carry text that has to be read. */
@@ -37,6 +41,9 @@
   /* the accent */
   --accent: light-dark(var(--p-red-500), var(--p-red-400));
   --accent-text: light-dark(var(--p-red-600), var(--p-red-400));
+  /* a surface filled with the accent, and the text that sits on it: together they keep 4.5:1 */
+  --accent-fill: light-dark(var(--p-red-600), var(--p-red-400));
+  --on-accent: light-dark(var(--p-white), var(--p-coal-900));
 
   /* links */
   --link: light-dark(var(--p-blue-600), var(--p-blue-300));

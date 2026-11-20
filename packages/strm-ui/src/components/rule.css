@@ -1,0 +1,15 @@
+/*
+ * Rule: a line between two things. Never around a thing.
+ *   <hr class="ui-rule" />            a hairline
+ *   <hr class="ui-rule is-strong" />  the 2px ink rule of the equation
+ */
+.ui-rule {
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: var(--line);
+}
+.ui-rule.is-strong {
+  height: 2px;
+  background: var(--ink);
+}

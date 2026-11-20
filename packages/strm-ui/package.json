@@ -6,9 +6,13 @@
   "exports": {
     "./index.css": "./src/index.css",
     "./tokens/*": "./src/tokens/*",
-    "./theme-init.js": "./src/theme-init.js"
+    "./theme-init.js": "./src/theme-init.js",
+    "./components/*": "./src/components/*"
   },
   "dependencies": {
     "@fontsource-variable/recursive": "^5.3.0"
+  },
+  "scripts": {
+    "test": "node --test"
   }
 }

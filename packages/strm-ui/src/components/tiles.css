@@ -1,0 +1,41 @@
+/*
+ * Tiles: a short numbered list. The number sits on the text axis; hairlines only between items.
+ *   <ol class="ui-tiles"><li>One idea per sentence.</li>…</ol>
+ */
+.ui-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: tile;
+}
+.ui-tiles > li {
+  position: relative;
+  padding: var(--tiles-pad) 0 var(--tiles-pad) var(--tiles-indent);
+  counter-increment: tile;
+  font-size: 18px;
+  line-height: 1.35;
+  font-variation-settings:
+    "MONO" var(--voice-sans),
+    "wght" 500;
+}
+.ui-tiles > li + li {
+  border-top: 1px solid var(--line);
+}
+.ui-tiles > li::before {
+  content: "0" counter(tile);
+  position: absolute;
+  left: 0;
+  top: calc(var(--tiles-pad) + 3px);
+  color: var(--tiles-number);
+  font-size: var(--type-micro-size);
+  letter-spacing: var(--type-micro-tracking);
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" var(--type-micro-weight);
+}
+
+@media (max-width: 760px) {
+  .ui-tiles > li {
+    font-size: 16px;
+  }
+}

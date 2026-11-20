@@ -1,0 +1,22 @@
+/*
+ * Pill: the one filled control on a page. Use once per view, for the action that matters.
+ *   <a class="ui-pill" href="…">write to me.</a>
+ */
+.ui-pill {
+  display: inline-block;
+  padding: var(--pill-pad);
+  border-radius: var(--radius-pill);
+  background: var(--pill-fill);
+  color: var(--pill-ink);
+  text-decoration: none;
+  font-variation-settings:
+    "MONO" var(--voice-sans),
+    "wght" 600;
+  transition: translate var(--motion-enter) var(--ease-out);
+}
+.ui-pill::before {
+  content: "→ " / "";
+}
+.ui-pill:hover {
+  translate: var(--pill-nudge) 0;
+}

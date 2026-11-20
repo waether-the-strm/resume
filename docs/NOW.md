@@ -30,13 +30,16 @@ The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3), 
 
 ## In progress
 
-- strm-ui tokens: three tiers, light and dark, type and motion roles, the `/ui` page. In review with
-  Jan: the dark palette and the `-text` values are proposals.
+- strm-ui: tokens in three tiers, light and dark, type and motion roles, and the first primitives
+  (pill, tiles, rule, panel, paths, work). Shown at `/ui` and `/ui/primitives`. Tier rules are
+  tested. Token values are provisional: Jan tunes them on the assembled page.
 
 ## Next step
 
-Jan judges the dark palette, the `-text` colours and the type roles at `/ui` on the preview. Then
-the primitives the home page needs (pill, tile, card, rail) with their component tokens, and the
-`strm-ui` skill.
+Phase 3: the content model and the static finished page, in English and Polish, with no JS. It
+starts with two questions for Jan: Q5 (files in git edited by AI only, or a git-based CMS from the
+start) and where the public copy of the test scenarios lives. Decide the data shape for words with
+roles (`name`, `accent`) before any scene is ported.
 
-The other agent skills are written with their phase: `content-and-facts` and `verify` in phase 3.
+Left in phase 2, to do with the engine in phase 6: rail, blob, hint. The agent skills
+`content-and-facts` and `verify` are written in phase 3.
