@@ -1,0 +1,86 @@
+/* The document base: what every page gets before any component. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  font-variation-settings:
+    "MONO" var(--type-body-voice),
+    "wght" var(--type-body-weight);
+}
+
+a {
+  color: var(--link);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Type roles as classes. Each sets size, leading, tracking, weight and voice together. */
+.type-display {
+  font-size: var(--type-display-size);
+  line-height: var(--type-display-leading);
+  letter-spacing: var(--type-display-tracking);
+  font-variation-settings:
+    "MONO" var(--type-display-voice),
+    "wght" var(--type-display-weight);
+}
+.type-title {
+  font-size: var(--type-title-size);
+  line-height: var(--type-title-leading);
+  letter-spacing: var(--type-title-tracking);
+  font-variation-settings:
+    "MONO" var(--type-title-voice),
+    "wght" var(--type-title-weight);
+}
+.type-lead {
+  font-size: var(--type-lead-size);
+  line-height: var(--type-lead-leading);
+  letter-spacing: var(--type-lead-tracking);
+  font-variation-settings:
+    "MONO" var(--type-lead-voice),
+    "wght" var(--type-lead-weight);
+}
+.type-body {
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--type-body-tracking);
+  font-variation-settings:
+    "MONO" var(--type-body-voice),
+    "wght" var(--type-body-weight);
+}
+.type-label {
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--type-label-tracking);
+  font-variation-settings:
+    "MONO" var(--type-label-voice),
+    "wght" var(--type-label-weight);
+}
+.type-micro {
+  font-size: var(--type-micro-size);
+  line-height: var(--type-micro-leading);
+  letter-spacing: var(--type-micro-tracking);
+  font-variation-settings:
+    "MONO" var(--type-micro-voice),
+    "wght" var(--type-micro-weight);
+}

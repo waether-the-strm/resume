@@ -1,0 +1,62 @@
+/*
+ * Tier 1: primitives. Raw values with no meaning attached.
+ * Nothing outside tokens/semantic.css may read a --p-* property.
+ */
+:root {
+  /* paper and ink: a warm neutral ramp */
+  --p-paper-100: #f6f4ef;
+  --p-paper-300: #d8d3c8;
+  --p-stone-400: #a39e94;
+  --p-stone-600: #6b675f;
+  --p-coal-700: #34312c;
+  --p-coal-900: #161513;
+  --p-chalk-100: #efece4;
+
+  /* red: the one accent */
+  --p-red-400: #f0603f;
+  --p-red-500: #e4482c;
+  --p-red-600: #c2371d;
+
+  /* blue: links, and the "element" note */
+  --p-blue-300: #8aabff;
+  --p-blue-600: #1a4fd6;
+  --p-steel-300: #7fb0e0;
+  --p-steel-600: #3a6ea5;
+
+  /* green: the "token" note */
+  --p-moss-300: #a3c25e;
+  --p-moss-500: #5f7f2a;
+  --p-moss-600: #567326;
+
+  /* space: a 4px rhythm */
+  --p-space-1: 4px;
+  --p-space-2: 8px;
+  --p-space-3: 12px;
+  --p-space-4: 16px;
+  --p-space-5: 24px;
+  --p-space-6: 32px;
+  --p-space-7: 48px;
+  --p-space-8: 64px;
+  --p-space-9: 96px;
+
+  /* radius */
+  --p-radius-1: 3px;
+  --p-radius-2: 8px;
+  --p-radius-3: 18px;
+  --p-radius-full: 999px;
+
+  /* time */
+  --p-time-1: 150ms;
+  --p-time-2: 200ms;
+  --p-time-3: 300ms;
+  --p-time-4: 500ms;
+  --p-time-5: 800ms;
+
+  /* curves */
+  --p-curve-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --p-curve-in-out: cubic-bezier(0.45, 0, 0.15, 1);
+  --p-curve-spring: cubic-bezier(0.3, 1.35, 0.5, 1);
+
+  /* type: one variable family, Recursive, with two voices on its MONO axis */
+  --p-font-recursive: "Recursive Variable", ui-monospace, system-ui, sans-serif;
+}

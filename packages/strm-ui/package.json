@@ -4,6 +4,11 @@
   "type": "module",
   "version": "0.0.0",
   "exports": {
-    "./tokens.css": "./src/tokens.css"
+    "./index.css": "./src/index.css",
+    "./tokens/*": "./src/tokens/*",
+    "./theme-init.js": "./src/theme-init.js"
+  },
+  "dependencies": {
+    "@fontsource-variable/recursive": "^5.3.0"
   }
 }

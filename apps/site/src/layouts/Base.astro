@@ -1,0 +1,26 @@
+---
+import "@strm/ui/index.css"
+import themeInit from "@strm/ui/theme-init.js?raw"
+
+interface Props {
+  title: string
+  lang?: string
+}
+const { title, lang = "en" } = Astro.props
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <script is:inline set:html={themeInit} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
