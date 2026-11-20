@@ -35,6 +35,8 @@ jobs:
       - run: pnpm build
       - name: Deploy the preview
         working-directory: apps/site
+        # An explicit bash enables pipefail, so a wrangler error is not hidden by tee.
+        shell: bash
         run: |
           pnpm exec wrangler preview --name "$PREVIEW_NAME" --message "${GITHUB_SHA::7}" | tee preview.log
           {
