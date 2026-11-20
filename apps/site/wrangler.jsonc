@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "strm-dev",
+  "compatibility_date": "2026-11-20",
+  // A static site: no Worker script, only the Astro build output (ADR 0002).
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+  },
+}
