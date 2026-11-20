@@ -1,28 +1,10 @@
 ---
-// strm-ui primitives, assembled the way the home page will use them. The copy is the
-// prototype's; the layout around the primitives is this page's own and moves to the home
-// page in phase 3.
+// strm-ui primitives, assembled by the same components the home page uses, with its real
+// content. The layout around the primitives belongs to those components.
 import Base from "../../layouts/Base.astro"
-
-const tiles = [
-  "One idea per sentence.",
-  "One clear place to look.",
-  "Colour only where it means something.",
-]
-const work = [
-  {
-    title: "LetsReg sign-in",
-    text: "I owned it from design to code: the flow, an animated background, and per-brand configuration in Storybook.",
-  },
-  {
-    title: "GSR",
-    text: "I took a reservation platform for public sports centres from product design to frontend, with its own design system.",
-  },
-  {
-    title: "One design system, both products",
-    text: "I set the tokens, components and skins that carried the Angular → React migration and a new self-service product.",
-  },
-]
+import Card from "../../components/Card.astro"
+import Message from "../../components/Message.astro"
+import Work from "../../components/Work.astro"
 ---
 
 <Base title="strm-ui primitives">
@@ -46,76 +28,21 @@ const work = [
 
     <section aria-labelledby="h-message">
       <h2 id="h-message" class="type-micro part">
-        The message · type-display · type-lead · ui-tiles · ui-rule · ui-pill
+        The message · ui-w · type-display · ui-tiles · ui-rule · ui-pill
       </h2>
-      <div class="message">
-        <p class="type-display headline">
-          Your product, <span class="accent">clear at a glance.</span>
-        </p>
-        <p class="lead">
-          Visitors decide quickly whether a product is for them. I shape the page so they can.
-        </p>
-        <ol class="ui-tiles list">
-          {tiles.map((tile) => <li>{tile}</li>)}
-        </ol>
-        <div class="who">
-          <hr class="ui-rule" />
-          <p>
-            <strong>I'm Jan Mirecki,</strong> a design engineer: fifteen years designing for the web,
-            eleven building it.
-          </p>
-        </div>
-        <p class="call">
-          <span>If you want your product to work like this</span>
-          <a class="ui-pill" href="mailto:jan@strm.dev">write to me.</a>
-        </p>
-      </div>
+      <Message locale="en" />
     </section>
 
     <section aria-labelledby="h-card">
       <h2 id="h-card" class="type-micro part">
         The card · ui-panel · ui-kicker · ui-mark · ui-paths
       </h2>
-      <div class="ui-panel card">
-        <p class="ui-kicker">
-          <span><b>=</b> how? · the same question, answered</span>
-          <span class="ui-mark" aria-hidden="true">JM</span>
-        </p>
-        <div class="card-who">
-          <p class="type-title card-name">
-            I'm Jan, <span class="accent">a staff‑level design engineer.</span>
-          </p>
-          <p class="type-label role">15 years designing for the web · 11 building it · Oslo</p>
-          <p class="sub">
-            What you just scrolled through is how I work: I write the words, draw the structure,
-            build the markup, keep the system, and only then pick the colour.
-          </p>
-        </div>
-        <nav class="ui-paths" aria-label="Ways in">
-          <a class="is-primary" href="mailto:jan@strm.dev">
-            write to me <span>a role or a project</span>
-          </a>
-          <a href="#h-work">see the work <span>selected projects</span></a>
-          <a class="is-soft" href="#h-card">or wander <span>notes and experiments, soon</span></a>
-        </nav>
-      </div>
+      <Card locale="en" />
     </section>
 
     <section aria-labelledby="h-work">
       <h2 id="h-work" class="type-micro part">The work · ui-work</h2>
-      <ul class="ui-work">
-        {
-          work.map((item, index) => (
-            <li>
-              <div class={`ui-work__visual visual-${index + 1}`} />
-              <div class="ui-work__text">
-                <b>{item.title}</b>
-                {item.text}
-              </div>
-            </li>
-          ))
-        }
-      </ul>
+      <Work locale="en" />
     </section>
 
     <section aria-labelledby="h-rule">
@@ -225,145 +152,15 @@ const work = [
     text-transform: uppercase;
     margin-bottom: var(--space-section);
   }
-  .accent {
-    color: var(--accent);
-  }
-
-  /* the message: two columns, the list beside the headline and the lead */
-  .message {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 12px 64px;
-    align-items: start;
-    font-size: 17px;
-    line-height: 1.55;
-  }
-  .headline {
-    grid-column: 1;
-    line-height: 1;
-    margin-bottom: 10px;
-  }
-  .lead {
-    grid-column: 1;
-    max-width: 40ch;
-    color: var(--ink-mute);
-  }
-  .list {
-    grid-column: 2;
-    grid-row: 1 / 3;
-    margin-top: 6px;
-  }
-  .who {
-    grid-column: 1 / -1;
-    margin-top: 44px;
-    font-size: 19px;
-  }
-  .who .ui-rule {
-    margin-bottom: 18px;
-  }
-  .who strong {
-    font-weight: inherit;
-    font-variation-settings:
-      "MONO" var(--voice-sans),
-      "wght" 800;
-  }
-  .call {
-    grid-column: 1 / -1;
-    margin-top: 34px;
-    display: flex;
-    align-items: center;
-    gap: 22px;
-    flex-wrap: wrap;
-    color: var(--ink-mute);
-    font-size: 16px;
-  }
-
-  /* the card: who on the left, the ways in on the right */
-  .card {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 0 64px;
-  }
-  .card .ui-kicker {
-    grid-column: 1 / -1;
-    margin-bottom: 40px;
-  }
-  .card-name {
-    line-height: 1.02;
-    margin-bottom: 20px;
-    font-variation-settings:
-      "MONO" var(--voice-sans),
-      "wght" 800;
-  }
-  .role {
-    color: var(--ink-mute);
-    margin-bottom: 28px;
-  }
-  .sub {
-    max-width: 44ch;
-    color: var(--ink-mute);
-    line-height: 1.55;
-  }
-  .card .ui-paths {
-    margin-top: -14px;
-  }
-
-  /* placeholder visuals; real screenshots or live fragments come with the project pages */
-  .visual-1 {
-    background: var(--accent-fill);
-  }
-  .visual-2 {
-    background:
-      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 28px,
-      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 28px 100%,
-      var(--paper);
-  }
-  .visual-3 {
-    background: linear-gradient(
-      90deg,
-      var(--ink) 0 33.3%,
-      var(--accent) 33.3% 66.6%,
-      var(--paper-raised) 66.6%
-    );
-  }
-
   .rules {
     display: grid;
     gap: var(--space-block);
     max-width: 46ch;
   }
 
-  @media (max-width: 900px) {
-    .card {
-      grid-template-columns: 1fr;
-    }
-    .card .ui-paths {
-      margin-top: 36px;
-    }
-  }
   @media (max-width: 760px) {
     main {
       padding-inline: var(--space-base);
-    }
-    .message {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 18px;
-    }
-    .list {
-      grid-column: 1;
-      grid-row: auto;
-    }
-    .lead {
-      max-width: none;
-    }
-    .who {
-      margin-top: 22px;
-    }
-    .card .ui-kicker {
-      margin-bottom: 36px;
-    }
-    .card-name .accent {
-      display: block;
     }
   }
 </style>

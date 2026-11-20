@@ -3,7 +3,7 @@
  *   <div class="ui-panel">…</div>
  *
  * Kicker: the first row of a panel, a quiet line with a hairline under it.
- *   <p class="ui-kicker"><span><b>=</b> how? · …</span><span class="ui-mark">JM</span></p>
+ *   <p class="ui-kicker"><span>= how? · …</span><span class="ui-mark">JM</span></p>
  *
  * Mark: the monogram.
  */
@@ -30,14 +30,6 @@
     "MONO" var(--voice-mono),
     "wght" 400;
 }
-.ui-kicker b {
-  color: var(--accent-text);
-  font-weight: inherit;
-  font-variation-settings:
-    "MONO" var(--voice-mono),
-    "wght" 500;
-}
-
 .ui-mark {
   flex: none;
   display: grid;

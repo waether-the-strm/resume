@@ -1,0 +1,21 @@
+---
+// Renders marked-up text one word at a time, typeset for the locale.
+import type { Locale } from "../i18n/locales"
+import { typeset } from "../i18n/typography"
+import { words } from "../lib/rich"
+
+interface Props {
+  text: string
+  locale: Locale
+}
+const { text, locale } = Astro.props
+const list = words(typeset(text, locale))
+---
+
+{
+  list.map((word, index) => (
+    <span class="ui-w" data-role={word.role}>
+      {index < list.length - 1 ? `${word.text} ` : word.text}
+    </span>
+  ))
+}
