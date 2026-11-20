@@ -38,7 +38,9 @@ lost when the session ends. Everything here is public: no private notes, no empl
 1. **Park what is unfinished.** Open an issue only for something that will not be finished in this
    session. Each one records: done when, where it stopped, the first step on return. Give it a
    milestone and a label, add it to the board with a horizon.
-2. **Close what is finished**, with a sentence of evidence in the closing comment.
+2. **Close what is finished**, with a sentence of evidence in the closing comment. `Closes #n` in a
+   pull request does not close the issue here: GitHub does that only for merges into the default
+   branch, and `rebuild` is not it. Close by hand after the merge.
 3. **`docs/NOW.md`**: rewrite, do not append. The goal of the phase, the state, what is in progress,
    one next step. A few lines; it is read first by every session.
 4. **`docs/log/YYYY-MM-DD.md`**: add to today's file or create it. Sections: Planned, What happened,
