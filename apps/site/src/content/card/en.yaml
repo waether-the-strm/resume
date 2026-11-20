@@ -1,0 +1,19 @@
+kicker: "[=]{accent} how? · the same question, answered"
+mark: JM
+name: "I'm Jan, [a staff‑level design engineer.]{accent}"
+role: 15 years designing for the web · 11 building it · Oslo
+sub: >-
+  What you just scrolled through is how I work: I write the words, draw the structure, build the
+  markup, keep the system, and only then pick the colour.
+paths:
+  - label: write to me
+    note: a role or a project
+    href: mailto:jan@strm.dev
+    tone: primary
+  - label: see the work
+    note: selected projects
+    href: "#work"
+  - label: or wander
+    note: notes and experiments, soon
+    href: "#jan"
+    tone: soft

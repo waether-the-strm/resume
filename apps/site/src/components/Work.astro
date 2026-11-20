@@ -1,0 +1,48 @@
+---
+// The featured projects, from the same collection that will feed /cv and the project pages.
+import { many } from "../i18n/content"
+import type { Locale } from "../i18n/locales"
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const projects = (await many("projects", locale))
+  .filter((project) => project.data.featured !== undefined)
+  .sort((a, b) => (a.data.featured ?? 0) - (b.data.featured ?? 0))
+---
+
+<ul class="ui-work">
+  {
+    projects.map((project) => (
+      <li>
+        <div class="ui-work__visual" data-project={project.slug} />
+        <div class="ui-work__text">
+          <b>{project.data.title}</b>
+          {project.data.summary}
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  /* Placeholder visuals. Real screenshots or live fragments come with the project pages. */
+  [data-project="letsreg-sign-in"] {
+    background: var(--accent-fill);
+  }
+  [data-project="gsr"] {
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 28px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 28px 100%,
+      var(--paper);
+  }
+  [data-project="design-system"] {
+    background: linear-gradient(
+      90deg,
+      var(--ink) 0 33.3%,
+      var(--accent) 33.3% 66.6%,
+      var(--paper-raised) 66.6%
+    );
+  }
+</style>

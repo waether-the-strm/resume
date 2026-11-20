@@ -1,0 +1,85 @@
+---
+// The business card: who is talking, and three ways in.
+import { single } from "../i18n/content"
+import type { Locale } from "../i18n/locales"
+import { t } from "../i18n/ui"
+import Words from "./Words.astro"
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const card = await single("card", locale)
+const tone = { primary: "is-primary", plain: undefined, soft: "is-soft" } as const
+---
+
+<div class="ui-panel card">
+  <p class="ui-kicker">
+    <span><Words text={card.kicker} locale={locale} /></span>
+    <span class="ui-mark" aria-hidden="true">{card.mark}</span>
+  </p>
+  <div>
+    <h2 class="type-title name"><Words text={card.name} locale={locale} /></h2>
+    <p class="type-label role">{card.role}</p>
+    <p class="sub"><Words text={card.sub} locale={locale} /></p>
+  </div>
+  <nav class="ui-paths" aria-label={t(locale, "nav.paths")}>
+    {
+      card.paths.map((path) => (
+        <a class={tone[path.tone]} href={path.href}>
+          {path.label} <span>{path.note}</span>
+        </a>
+      ))
+    }
+  </nav>
+</div>
+
+<style>
+  /* who on the left, the ways in on the right */
+  .card {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 0 64px;
+  }
+  h2,
+  p {
+    margin: 0;
+  }
+  .card .ui-kicker {
+    grid-column: 1 / -1;
+    margin-bottom: 40px;
+  }
+  .name {
+    line-height: 1.02;
+    margin-bottom: 20px;
+    font-variation-settings:
+      "MONO" var(--voice-sans),
+      "wght" 800;
+  }
+  .role {
+    color: var(--ink-mute);
+    margin-bottom: 28px;
+  }
+  .sub {
+    max-width: 44ch;
+    color: var(--ink-mute);
+    line-height: 1.55;
+  }
+  .card .ui-paths {
+    margin-top: -14px;
+  }
+
+  @media (max-width: 900px) {
+    .card {
+      grid-template-columns: 1fr;
+    }
+    .card .ui-paths {
+      margin-top: 36px;
+    }
+  }
+  @media (max-width: 760px) {
+    .card .ui-kicker {
+      margin-bottom: 36px;
+    }
+  }
+</style>

@@ -1,0 +1,20 @@
+# DRAFT. Polish copy is written, not translated word for word, and goes through Jan.
+kicker: "[=]{accent} jak? · to samo pytanie, z odpowiedzią"
+mark: JM
+name: "Jestem Jan, [design engineer na poziomie staff.]{accent}"
+role: 15 lat projektowania dla sieci · 11 lat budowania · Oslo
+sub: >-
+  To, co właśnie przewinąłeś, to mój sposób pracy: piszę słowa, rysuję strukturę, buduję markup,
+  pilnuję systemu i dopiero wtedy wybieram kolor.
+paths:
+  - label: napisz do mnie
+    note: rola albo projekt
+    href: mailto:jan@strm.dev
+    tone: primary
+  - label: zobacz prace
+    note: wybrane projekty
+    href: "#work"
+  - label: albo pobłądź
+    note: notatki i eksperymenty, wkrótce
+    href: "#jan"
+    tone: soft

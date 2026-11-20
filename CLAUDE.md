@@ -12,7 +12,8 @@ private notes, no employer code or internal material.
 
 Details: the `session` skill (`.claude/skills/session`).
 
-Before touching `packages/strm-ui` or writing styles in the site: the `strm-ui` skill.
+Before touching `packages/strm-ui` or writing styles in the site: the `strm-ui` skill. Before
+changing copy, content files or schemas: the `content-and-facts` skill.
 
 ## Where things are
 

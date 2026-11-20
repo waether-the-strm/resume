@@ -1,0 +1,12 @@
+headline: "Your product, [clear at a glance.]{accent}"
+lead: Visitors decide quickly whether a product is for them. I shape the page so they can.
+list:
+  - One idea per sentence.
+  - One clear place to look.
+  - Colour only where it means something.
+who: "[I'm Jan Mirecki,]{name} a design engineer: fifteen years designing for the web, eleven building it."
+call:
+  text: If you want your product to work like this
+  action:
+    label: write to me.
+    href: mailto:jan@strm.dev

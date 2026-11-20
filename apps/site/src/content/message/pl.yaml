@@ -1,0 +1,13 @@
+# DRAFT. Polish copy is written, not translated word for word, and goes through Jan.
+headline: "Twój produkt, [zrozumiały od pierwszego spojrzenia.]{accent}"
+lead: Odwiedzający szybko decydują, czy produkt jest dla nich. Układam stronę tak, żeby mogli to zrobić.
+list:
+  - Jedna myśl w jednym zdaniu.
+  - Jedno wyraźne miejsce, na które patrzysz.
+  - Kolor tylko tam, gdzie coś znaczy.
+who: "[Jestem Jan Mirecki,]{name} design engineer: od piętnastu lat projektuję dla sieci, od jedenastu ją buduję."
+call:
+  text: Jeśli chcesz, żeby twój produkt działał w ten sposób
+  action:
+    label: napisz do mnie.
+    href: mailto:jan@strm.dev

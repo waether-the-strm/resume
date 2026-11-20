@@ -4,24 +4,26 @@ Updated 20 Nov 2026.
 
 ## Goal of the phase
 
-**Phase 2, strm-ui, first slice.** Tokens in three tiers, light and dark, type and motion roles, the
-few primitives the home page needs, and a page at `/ui` that shows them.
+**Phase 3, the content model and the static finished page**, in English and Polish, with no JS.
+`/cv` from the same data.
 
 ## State
 
-- Branch `rebuild` exists with the workspace skeleton: `apps/site` (Astro 7, a placeholder page),
-  `packages/strm-ui` and `packages/narrative` (empty, contracts in their READMEs).
-- CI runs format, type check, tests and build on every pull request.
-- The agent layer: `CLAUDE.md` as the navigator and the `session` skill (start and end of a
-  session).
-- Hosting: a Cloudflare Worker serves the static build. `rebuild` and every pull request get a
-  preview on workers.dev with `noindex`; `rebuild` is at
+- `rebuild` is v2 in progress; `main` and the live site are untouched (v1, tag `v1.2.0`).
+- Workspace: `apps/site` (Astro 7), `packages/strm-ui`, `packages/narrative` (still empty).
+- CI on every pull request: format, type check, unit tests, build. Every pull request and `rebuild`
+  get a preview on Cloudflare with `noindex`; `rebuild` is at
   <https://rebuild-strm-dev.mirecki-janek.workers.dev>. Production deploys from a `v*.*.*` tag
-  (written, not yet run). The strm.dev domain still points at v1 on GitHub Pages (#6).
-- Decided: workspace (ADR 0001), Cloudflare hosting (ADR 0002), CSS custom properties as the token
-  source (ADR 0003), four mechanisms taken from jan-ui (ADR 0004), strm-ui documented at `/ui` (ADR
-  0005).
-- `main` and the live site are untouched: v1, tag `v1.2.0`.
+  (written, never run). The strm.dev domain still points at v1 on GitHub Pages (#6).
+- strm-ui: tokens in three tiers, light and dark, type and motion roles, and the first primitives
+  (words, pill, tiles, rule, panel, paths, work). Shown at `/ui` and `/ui/primitives`. Tier rules
+  are tested. Token values are provisional: Jan tunes them on the assembled page.
+- Content: collections with strict schemas for the message, the card and the projects, one file per
+  entry and locale. The home page at `/` and `/pl/` is the finished look, the card and three
+  projects, rendered on the server with no JS.
+- Agent layer: `CLAUDE.md` and the skills `session`, `strm-ui`, `content-and-facts`.
+- Decisions: ADR 0001 workspace, 0002 Cloudflare, 0003 CSS tokens, 0004 transplants from jan-ui,
+  0005 docs at `/ui`, 0006 content in git. ADR 0007 (words with roles) is proposed.
 
 ## Plan
 
@@ -30,16 +32,16 @@ The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3), 
 
 ## In progress
 
-- strm-ui: tokens in three tiers, light and dark, type and motion roles, and the first primitives
-  (pill, tiles, rule, panel, paths, work). Shown at `/ui` and `/ui/primitives`. Tier rules are
-  tested. Token values are provisional: Jan tunes them on the assembled page.
+- Polish copy is a draft waiting for Jan (#12).
+- The finished look does not fit a 390×664 phone in Polish; the short-phone layout is not ported
+  (#13).
+- ADR 0007, words with roles: for Jan to confirm before the scenes are ported in phase 5.
 
 ## Next step
 
-Phase 3: the content model and the static finished page, in English and Polish, with no JS. It
-starts with two questions for Jan: Q5 (files in git edited by AI only, or a git-based CMS from the
-start) and where the public copy of the test scenarios lives. Decide the data shape for words with
-roles (`name`, `accent`) before any scene is ported.
+`/cv` and the experience collection from the v1 content in `docs/v1-content`, in English first. Then
+the first Playwright checks on the static page (complete without JS, both languages, three sizes).
+They need the test scenarios in a public form: a question for Jan.
 
-Left in phase 2, to do with the engine in phase 6: rail, blob, hint. The agent skills
-`content-and-facts` and `verify` are written in phase 3.
+Parked for phase 6, with the engine: rail, blob, hint. The `verify` skill is written with the first
+Playwright checks.

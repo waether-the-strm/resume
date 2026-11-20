@@ -1,0 +1,117 @@
+---
+// The home page in its finished state: the look, then the card and the work. This is what a
+// reader without JavaScript, or with reduced motion, gets. The engine is a layer on top.
+import Base from "../layouts/Base.astro"
+import { launched, localeNames, localePath, type Locale } from "../i18n/locales"
+import { t } from "../i18n/ui"
+import Card from "./Card.astro"
+import Message from "./Message.astro"
+import Work from "./Work.astro"
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+---
+
+<Base
+  title={t(locale, "site.title")}
+  description={t(locale, "site.description")}
+  locale={locale}
+  path="/"
+>
+  <a class="skip" href="#jan">{t(locale, "nav.skip")}</a>
+  <main>
+    <section class="stage" aria-label={t(locale, "site.title")}>
+      <Message locale={locale} />
+    </section>
+    <section class="jan" id="jan">
+      <Card locale={locale} />
+      <h2 class="type-micro work-heading" id="work">{t(locale, "work.heading")}</h2>
+      <Work locale={locale} />
+    </section>
+  </main>
+  <footer>
+    <nav class="type-label languages" aria-label={t(locale, "nav.language")}>
+      {
+        launched.map((other) => (
+          <a
+            href={localePath(other)}
+            lang={other}
+            hreflang={other}
+            aria-current={other === locale ? "true" : undefined}
+          >
+            {localeNames[other]}
+          </a>
+        ))
+      }
+    </nav>
+  </footer>
+</Base>
+
+<style>
+  .skip {
+    position: absolute;
+    left: var(--space-base);
+    top: var(--space-base);
+    translate: 0 -300%;
+    padding: var(--space-tight) var(--space-snug);
+    background: var(--paper-raised);
+    color: var(--ink);
+  }
+  .skip:focus-visible {
+    translate: 0;
+  }
+  main,
+  footer {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding-inline: 40px;
+  }
+  .stage {
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-block: 120px 60px;
+  }
+  .jan {
+    display: grid;
+    gap: 28px;
+    padding-block: 150px 120px;
+  }
+  .work-heading {
+    margin: var(--space-block) 0 0;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+  }
+  footer {
+    padding-block: 20px 80px;
+  }
+  .languages {
+    display: flex;
+    gap: var(--space-loose);
+  }
+  .languages a {
+    color: var(--ink-mute);
+    text-decoration: none;
+    padding-block: var(--space-snug);
+  }
+  .languages a[aria-current] {
+    color: var(--ink);
+    border-bottom: 1px solid var(--accent);
+  }
+
+  @media (max-width: 760px) {
+    main,
+    footer {
+      padding-inline: 20px;
+    }
+    .stage {
+      padding-block: 96px 48px;
+    }
+    .jan {
+      padding-block: 96px;
+      gap: 24px;
+    }
+  }
+</style>
