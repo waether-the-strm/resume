@@ -1,0 +1,43 @@
+name: Preview
+
+# A preview URL on workers.dev for every pull request and for the rebuild branch (ADR 0002).
+# Previews carry an X-Robots-Tag: noindex header.
+
+on:
+  pull_request:
+  push:
+    branches: [rebuild]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    # Secrets are not available to pull requests from forks.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PREVIEW_NAME: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Deploy the preview
+        working-directory: apps/site
+        run: |
+          pnpm exec wrangler preview --name "$PREVIEW_NAME" --message "${GITHUB_SHA::7}" | tee preview.log
+          {
+            echo "### Preview: $PREVIEW_NAME"
+            grep -Eo 'https://[^ ]+workers\.dev[^ ]*' preview.log | sort -u | sed 's/^/- /'
+          } >> "$GITHUB_STEP_SUMMARY"
