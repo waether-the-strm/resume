@@ -16,15 +16,18 @@ to preview work, and explains itself.
   source (ADR 0003).
 - `main` and the live site are untouched: v1, tag `v1.2.0`.
 
+## Plan
+
+The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3), with a horizon field
+(now / next / later). Milestones are the phases.
+
 ## In progress
 
 - Hosting on Cloudflare: not connected yet (#3).
-- The GitHub Project board: not created yet (#5).
 - Agent skills for this repository: not written yet (#4).
 
 ## Next step
 
 Connect the repository to Cloudflare so that `rebuild` and every pull request get a preview URL
-(#3). That closes phase 1 together with the skills and the board. Then phase 2: the first slice of
-strm-ui, starting with two questions for Jan (what to transplant from jan-ui, and how strm-ui is
-documented).
+(#3). That closes phase 1 together with the skills (#4). Then phase 2: the first slice of strm-ui,
+starting with two questions for Jan (what to transplant from jan-ui, and how strm-ui is documented).
