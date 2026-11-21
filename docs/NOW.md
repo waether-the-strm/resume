@@ -10,14 +10,14 @@ have a template.
 
 ## The roadmap
 
-| #   | Milestone                | What                                                              | Due    |
-| --- | ------------------------ | ----------------------------------------------------------------- | ------ |
-| 1   | Prototype recreated      | the narrative works; a template for project pages                 | 22 Nov |
-| 2   | Domain                   | strm.dev serves the new design from Cloudflare, still in progress | 24 Nov |
-| 3   | Content and case studies | Polish copy, how projects are written about, the first case study | open   |
-| 4   | Warmth                   | interactions and decorations                                      | open   |
-| 5   | AI and tokens            | the browser's built-in AI restyles the page through design tokens | open   |
-| 6   | Later                    | Norwegian, analytics, experiments, the insight loop               | open   |
+| #   | Milestone                | What                                                              | Due               |
+| --- | ------------------------ | ----------------------------------------------------------------- | ----------------- |
+| 1   | Prototype recreated      | the narrative works; a template for project pages                 | 22 Nov            |
+| 2   | Domain                   | strm.dev serves the new design from Cloudflare, still in progress | 24 Nov            |
+| 3   | Content and case studies | Polish copy, how projects are written about, the first case study | 6 Dec (proposed)  |
+| 4   | Warmth                   | interactions and decorations                                      | 20 Dec (proposed) |
+| 5   | AI and tokens            | the browser's built-in AI restyles the page through design tokens | 17 Jan (proposed) |
+| 6   | Later                    | Norwegian, analytics, experiments, the insight loop               | 31 Jan (proposed) |
 
 The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3). Every issue has a
 milestone, a Status, a Horizon (now / next / later), a Who (Delegate / Lead / Jan) and, for the
