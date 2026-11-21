@@ -86,8 +86,10 @@
   --rail-caption: block;
 
   /*
-   * Blob: the floating place-marker. Lengths are the prototype's. The shadow is the
-   * raised surface's: a new shadow colour would be a look decision.
+   * Blob: the floating place-marker. Lengths are the prototype's. The fill is
+   * --paper-raised and the edge is --line, both read in the component. The shadow is
+   * the raised surface's: a new shadow colour would be a look decision.
+   * --blob-blur is the prototype's glass blur. The solid surface does not use it.
    */
   --blob-size: var(--type-label-size);
   --blob-title-size: var(--type-micro-size);

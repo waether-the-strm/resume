@@ -17,6 +17,43 @@ test.describe("the blob on the finished page", () => {
     await expect(page.locator(".ui-blob__title")).toHaveAttribute("tabindex", "-1")
   })
 
+  test("a raised surface, and two columns with the third control alone on the next row", async ({
+    page,
+  }) => {
+    await page.goto("/")
+    await page.locator(".ui-blob").evaluate((el) => el.classList.add("is-open"))
+    const surface = await page.locator(".ui-blob").evaluate((el) => {
+      const style = getComputedStyle(el)
+      return {
+        background: style.backgroundColor,
+        borderWidth: style.borderTopWidth,
+        borderStyle: style.borderTopStyle,
+        borderColor: style.borderTopColor,
+        backdrop: style.backdropFilter,
+      }
+    })
+    expect(surface.background).not.toBe("rgba(0, 0, 0, 0)")
+    expect(surface.borderWidth).toBe("1px")
+    expect(surface.borderStyle).toBe("solid")
+    expect(surface.borderColor).not.toBe("rgba(0, 0, 0, 0)")
+    expect(surface.backdrop).toBe("none")
+
+    const clip = page.locator(".ui-blob__menu-clip")
+    const columns = await clip.evaluate((el) => getComputedStyle(el).gridTemplateColumns)
+    expect(columns.trim().split(/\s+/)).toHaveLength(2)
+    const boxes = await clip.locator(":scope > *").evaluateAll((els) =>
+      els.map((el) => {
+        const box = el.getBoundingClientRect()
+        return { left: Math.round(box.left), top: Math.round(box.top) }
+      })
+    )
+    expect(boxes).toHaveLength(3)
+    expect(boxes[0]?.top).toBe(boxes[1]?.top)
+    expect(boxes[0]?.left).toBeLessThan(boxes[1]?.left ?? 0)
+    expect(boxes[2]?.top).toBeGreaterThan(boxes[0]?.top ?? 0)
+    expect(boxes[2]?.left).toBe(boxes[0]?.left)
+  })
+
   test("Polish keeps the same number and uses the Polish title", async ({ page }) => {
     await page.goto("/pl/")
     const current = page.locator(".ui-blob__stop.is-current")

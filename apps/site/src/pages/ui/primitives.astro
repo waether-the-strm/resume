@@ -61,7 +61,23 @@ import Work from "../../components/Work.astro"
 
     <section aria-labelledby="h-blob">
       <h2 id="h-blob" class="type-micro part">The blob · ui-blob</h2>
-      <Blob locale="en" flow open slim={false} />
+      <div class="blob-states">
+        <div>
+          <p id="blob-folded" class="state">Folded</p>
+          <Blob locale="en" flow slim labelledBy="blob-folded" />
+        </div>
+        <div>
+          <p id="blob-unfolded" class="state">Unfolded</p>
+          <Blob
+            locale="en"
+            flow
+            open
+            slim={false}
+            menuId="blob-menu-open"
+            labelledBy="blob-unfolded"
+          />
+        </div>
+      </div>
     </section>
 
     <section aria-labelledby="h-rule">
@@ -161,6 +177,16 @@ import Work from "../../components/Work.astro"
     display: grid;
     gap: var(--space-block);
     max-width: 46ch;
+  }
+  .blob-states {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-block);
+  }
+  .state {
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: var(--space-snug);
   }
 
   @media (max-width: 760px) {
