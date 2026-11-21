@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "e2e": "playwright test",
+    "test": "node --test perf-budget.test.ts",
     "check": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
