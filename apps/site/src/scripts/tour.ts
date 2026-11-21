@@ -17,6 +17,7 @@ import {
   type Track,
 } from "@strm/narrative"
 import { createPrefs } from "../lib/prefs"
+import { parts } from "./parts"
 
 const SKINS = ["none", "words", "structure", "look"] as const
 
@@ -101,6 +102,7 @@ function start(): void {
     const state = store.get()
     scenes.jump(state.stage as Stage, state.t)
     guide.toggleAttribute("data-pay", state.named)
+    for (const part of parts) part({ store, track: laid, settle: null, prefs })
     return
   }
 
@@ -153,6 +155,7 @@ function start(): void {
   store.setPosition(read())
   const state = store.get()
   scenes.jump(state.stage, state.t)
+  for (const part of parts) part({ store, track: laid, settle, prefs })
 }
 
 start()
