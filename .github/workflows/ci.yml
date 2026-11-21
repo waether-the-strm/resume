@@ -48,3 +48,13 @@ jobs:
         run: pnpm --filter @strm/tests exec playwright install --with-deps chromium
       - name: Playwright
         run: pnpm --filter @strm/tests e2e
+      - name: Performance budget summary
+        if: always()
+        run: |
+          summary="tests/test-results/perf-budget.md"
+          if [ -f "$summary" ]; then
+            cat "$summary" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "The performance budget did not write a summary." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
