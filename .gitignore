@@ -31,5 +31,5 @@ test-results/
 playwright-report/
 blob-report/
 
-# local hand-off between agents working in one clone (AGENTS.md)
+# local scratch of an agent; never part of a hand-over
 .handoff/
