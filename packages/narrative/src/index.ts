@@ -22,3 +22,16 @@ export {
 } from "./phases.ts"
 // phases.ts
 export type { PhaseDirection, PhaseStep, PhaseTracker, Warp } from "./phases.ts"
+// sound.ts
+export { createSound } from "./sound.ts"
+export type {
+  Sound,
+  SoundClock,
+  SoundContext,
+  SoundDeps,
+  SoundDestination,
+  SoundGain,
+  SoundOscillator,
+  SoundParam,
+  SoundWave,
+} from "./sound.ts"
