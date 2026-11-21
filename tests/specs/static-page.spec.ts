@@ -165,9 +165,17 @@ test.describe("static page, JavaScript disabled", () => {
           const skip = page.locator("a.skip")
           const pill = page.locator(".message a.ui-pill")
           const paths = page.locator(".card nav.ui-paths > a")
+          const tldr = page.locator("a.ui-blob__tldr")
 
           await page.keyboard.press("Tab")
           await expectVisibleFocus(page, skip)
+
+          // The title stays out of the tab order until the tour starts it. `tldr` is a
+          // real link, and on a wide page it sits before the message.
+          if (await tldr.isVisible()) {
+            await page.keyboard.press("Tab")
+            await expectVisibleFocus(page, tldr)
+          }
 
           await page.keyboard.press("Tab")
           await expectVisibleFocus(page, pill)

@@ -152,6 +152,11 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
   const workEl: HTMLAnchorElement = work
   const tldrEl: HTMLAnchorElement = tldr
 
+  // The title does nothing until this part is running, so the finished page (no script,
+  // or reduced motion, which never starts the parts) does not put a dead control in
+  // the tab order. Once the tour is on, it is a real button.
+  titleEl.tabIndex = 0
+
   const stops = [...blobEl.querySelectorAll<HTMLElement>(".ui-blob__stop")]
   let shown: string | null = null
 

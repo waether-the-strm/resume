@@ -14,6 +14,7 @@ test.describe("the blob on the finished page", () => {
     await expect(page.locator(".ui-blob__id")).toHaveAttribute("inert", "")
     await expect(page.locator(".ui-blob__menu")).toHaveAttribute("inert", "")
     await expect(page.locator(".ui-blob__menu").locator("button, a")).toHaveCount(3)
+    await expect(page.locator(".ui-blob__title")).toHaveAttribute("tabindex", "-1")
   })
 
   test("Polish keeps the same number and uses the Polish title", async ({ page }) => {
@@ -46,6 +47,7 @@ test.describe("the blob on the tour", () => {
       await expect(name).toBeVisible()
       await expect(name).toHaveAttribute("href", "#jan")
       await expect(name).not.toHaveAttribute("inert", "")
+      await expect(page.locator(".ui-blob__title")).toHaveAttribute("tabindex", "0")
     }
   })
 
