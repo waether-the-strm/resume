@@ -25,8 +25,8 @@ This repository is public. Only public facts go in.
 
 Before the first change of a new batch of work (an issue you pick up, a group of issues, the goal of
 a session), tell Jan what is coming. He reads it as the owner of the product and as its tech lead:
-he wants to know where the project is and whether it is still growing in one direction. In the chat,
-in the language he writes in, three to five sentences:
+he wants to know where the project is and whether it is still growing in one direction. Three to
+five sentences, **in the conversation in which he gave you the work**, in the language he writes in:
 
 - **What** the batch is about.
 - **Why now:** what it follows from and what it unblocks.
@@ -37,6 +37,9 @@ in the language he writes in, three to five sentences:
 
 Dense, not detailed: no file lists, no function names, no plan of steps. Then start; the briefing is
 not a question and does not wait for an answer.
+
+The briefing is spoken to Jan and stays in that conversation. It never goes into a pull request, an
+issue, a commit or a file. Everything written to GitHub is in English.
 
 ## Handing work over
 
