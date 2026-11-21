@@ -321,7 +321,48 @@ test("a drift of 3 px is pulled back; more than 3 px cancels the glide", () => {
   taken.advance(900)
   taken.flush()
   assert.equal(taken.position, 4 / HEIGHT, "a cancelled glide does not resume")
-  assert.equal(taken.store.get().landed, -1)
+  // Not the prototype: the move that cancelled the glide is settled like any other scroll.
+  // Here it left the reader inside the first hold, so the page lands there and writes nothing.
+  assert.equal(taken.store.get().landed, 0)
+  assert.deepEqual(taken.writes, [])
+})
+
+test("a move that takes the page from a glide is settled: it does not strand the reader in a travel", () => {
+  // From the first hold, glide to the second stop (centre 3.5). One frame in, something else
+  // puts the page at 2.0, the middle of the travel between the two holds (1 to 3).
+  const h = setup({ position: 0.5 })
+  h.settle.goTo(1)
+  h.advance(100)
+  h.flush()
+  const written = h.writes.length
+  assert.ok(written > 0, "the glide has started")
+
+  h.position = 2.0
+  // The adapter hears that scroll while the glide is still running: both are ignored.
+  h.settle.scroll()
+  h.settle.scrollEnd()
+  h.flush()
+  assert.equal(h.position, 2.0, "the glide gave way and did not write over the move")
+  assert.equal(h.writes.length, written)
+
+  // Idle, then the page settles forward from where it was put, as after any scroll.
+  restAndFinish(h)
+  assert.equal(h.position, centre(h.track, 1))
+  assert.equal(h.store.get().landed, 1)
+})
+
+test("a move against the glide settles the other way", () => {
+  // Gliding forward to the second stop; the page is pulled back to 1.1, just past the first
+  // hold. Moving back, 5% into the travel is within the returning fraction: back to the hold.
+  const h = setup({ position: 1.6 })
+  h.settle.goTo(1)
+  h.advance(100)
+  h.flush()
+  h.position = 1.1
+  h.flush()
+  restAndFinish(h)
+  assert.equal(h.store.get().landed, 0)
+  assert.ok(h.position <= 1, "back inside the first hold")
 })
 
 test("with motion off, a glide is a single write", () => {
