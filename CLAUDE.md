@@ -15,6 +15,9 @@ Details: the `session` skill (`.claude/skills/session`).
 Before touching `packages/strm-ui` or writing styles in the site: the `strm-ui` skill. Before
 changing copy, content files or schemas: the `content-and-facts` skill.
 
+Other agents work here too, on issues labelled `delegable`. Their contract is `AGENTS.md`; the lead
+session reviews and merges (see the `session` skill, "Delegated work").
+
 ## Where things are
 
 | Path                  | What                                                              |
