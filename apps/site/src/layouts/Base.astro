@@ -3,6 +3,7 @@ import "@strm/ui/index.css"
 import themeInit from "@strm/ui/theme-init.js?raw"
 import recursiveLatin from "@strm/ui/fonts/recursive-latin.woff2?url"
 import { defaultLocale, launched, localePath, type Locale } from "../i18n/locales"
+import { t } from "../i18n/ui"
 
 interface Props {
   title: string
@@ -13,6 +14,9 @@ interface Props {
 }
 const { title, description, locale = defaultLocale, path } = Astro.props
 const absolute = (to: string) => new URL(to, Astro.site).href
+const canonical = path !== undefined ? absolute(localePath(locale, path)) : undefined
+const summary = description ?? t(locale, "site.description")
+const siteName = t(locale, "site.title")
 ---
 
 <!doctype html>
@@ -40,6 +44,22 @@ const absolute = (to: string) => new URL(to, Astro.site).href
         />
       )
     }
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content={locale} />
+    {
+      launched
+        .filter((other) => other !== locale)
+        .map((other) => <meta property="og:locale:alternate" content={other} />)
+    }
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={summary} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={summary} />
+    <link rel="sitemap" type="application/xml" href={absolute("/sitemap-index.xml")} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <script is:inline set:html={themeInit} />

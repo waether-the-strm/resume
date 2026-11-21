@@ -10,6 +10,7 @@
     "test": "node --test \"src/**/*.test.ts\""
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.6",
     "@strm/narrative": "workspace:*",
     "@strm/ui": "workspace:*",
     "astro": "^7.4.13"

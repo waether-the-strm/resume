@@ -23,6 +23,9 @@ importers:
 
   apps/site:
     dependencies:
+      '@astrojs/sitemap':
+        specifier: ^3.7.6
+        version: 3.7.6
       '@strm/narrative':
         specifier: workspace:*
         version: link:../../packages/narrative
@@ -167,6 +170,9 @@ packages:
 
   '@astrojs/runtime@0.1.2':
     resolution: {integrity: sha512-qLNoKPjASZmKtkvQNYqax7DHIe5+0TC1PX8n2AkA87Bv+JxiaFZtPepdm0lwcRbL/jLoiRvHXVCliFC1CRFQxA==}
+
+  '@astrojs/sitemap@3.7.6':
+    resolution: {integrity: sha512-QEKD3ubC0iJxpNzC4KvcKdxSP97U5SjuQ16+VkmUwx1TT+Hq7TIV8QGm/d2pvkN6+3GqGXLRzm7j6lZxHETm3A==}
 
   '@astrojs/telemetry@3.4.2':
     resolution: {integrity: sha512-2JOMRUxJrBSfiVDfeKLv1wBmvSIx1Y6u2YEO8awZ9qSq3u/rNAiUyFdOYi8dHv91kHrmYEQX7pRDw0J4xyj3UA==}
@@ -1213,6 +1219,9 @@ packages:
   '@types/parse-path@7.1.0':
     resolution: {integrity: sha512-EULJ8LApcVEPbrfND0cRQqutIOdiIgJ1Mgrhpy755r14xMohPTEpkV/k28SJvuOs9bHRFW8x+KeDAEPiGQPB9Q==}
     deprecated: This is a stub types definition. parse-path provides its own type definitions, so you do not need this installed.
+
+  '@types/sax@1.2.7':
+    resolution: {integrity: sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -2445,6 +2454,11 @@ packages:
     resolution: {integrity: sha512-2WCqLdt12eN6ehLI50S2/ZxoowXU3DD1KVPRyVP0WEsFahrGZZmCdq1K59qjJljMRIDTwx1D9YaRK+hDneBUMg==}
     engines: {node: '>=20'}
 
+  sitemap@10.0.0:
+    resolution: {integrity: sha512-KSjl4H4KBEnGX5KXgzInPAycdOFhwLar0EmksDcYn6NqW2O+zLiMGeV2THE6tpuv3LCVdv+6xsSo2SWLGaBDKw==}
+    engines: {node: '>=22.22.1', npm: '>=10.8.2'}
+    hasBin: true
+
   smart-buffer@4.2.0:
     resolution: {integrity: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==}
     engines: {node: '>= 6.0.0', npm: '>= 3.0.0'}
@@ -3090,6 +3104,11 @@ snapshots:
     dependencies:
       '@oslojs/encoding': 1.1.0
       clsx: 2.1.1
+
+  '@astrojs/sitemap@3.7.6':
+    dependencies:
+      sitemap: 10.0.0
+      zod: 4.6.7
 
   '@astrojs/telemetry@3.4.2':
     dependencies:
@@ -3911,6 +3930,10 @@ snapshots:
   '@types/parse-path@7.1.0':
     dependencies:
       parse-path: 7.1.0
+
+  '@types/sax@1.2.7':
+    dependencies:
+      '@types/node': 24.19.2
 
   '@types/unist@3.0.3': {}
 
@@ -5253,6 +5276,12 @@ snapshots:
   signal-exit@4.1.0: {}
 
   sisteransi@2.0.0: {}
+
+  sitemap@10.0.0:
+    dependencies:
+      '@types/node': 24.19.2
+      '@types/sax': 1.2.7
+      sax: 1.6.1
 
   smart-buffer@4.2.0: {}
 
