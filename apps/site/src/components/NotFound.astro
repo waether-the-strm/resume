@@ -1,6 +1,6 @@
 ---
-// The 404 page, in the locale the route was built for. The host serves the root
-// 404.html for any unknown URL; /pl/404 is the Polish page itself.
+// The 404 page, in the locale the route was built for. It does not pass a path,
+// so the layout does not treat it as a localized document.
 import Base from "../layouts/Base.astro"
 import { defaultLocale, launched, localeNames, localePath, type Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
@@ -9,19 +9,14 @@ interface Props {
   locale: Locale
 }
 const { locale } = Astro.props
-// Match Base.astro: the root 404 is /404, a localized 404 is a directory.
+// The root 404 is /404. A localized 404 is a directory, so the switch adds the slash.
 const notFoundPath = (other: Locale) => {
   const url = localePath(other, "/404")
   return other === defaultLocale || url.endsWith("/") ? url : `${url}/`
 }
 ---
 
-<Base
-  title={t(locale, "notFound.title")}
-  description={t(locale, "notFound.lead")}
-  locale={locale}
-  path="/404"
->
+<Base title={t(locale, "notFound.title")} description={t(locale, "notFound.lead")} locale={locale}>
   <main class="not-found">
     <p class="type-micro kicker">404</p>
     <h1 class="type-title">{t(locale, "notFound.title")}</h1>

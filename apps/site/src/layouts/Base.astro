@@ -13,14 +13,7 @@ interface Props {
 }
 const { title, description, locale = defaultLocale, path } = Astro.props
 const absolute = (to: string) => new URL(to, Astro.site).href
-// The root 404 is emitted as /404.html and served at /404. A localized 404 is a
-// directory, so it needs the trailing slash the rest of the site uses.
-const pagePath = (other: Locale, page: string) => {
-  const url = localePath(other, page)
-  if (page === "/404" && other !== defaultLocale) return url.endsWith("/") ? url : `${url}/`
-  return url
-}
-const canonical = absolute(path !== undefined ? pagePath(locale, path) : Astro.url.pathname)
+const canonical = path !== undefined ? absolute(localePath(locale, path)) : undefined
 const summary = description ?? t(locale, "site.description")
 const siteName = t(locale, "site.title")
 ---
@@ -37,15 +30,19 @@ const siteName = t(locale, "site.title")
     {
       path !== undefined &&
         launched.map((other) => (
-          <link rel="alternate" hreflang={other} href={absolute(pagePath(other, path))} />
+          <link rel="alternate" hreflang={other} href={absolute(localePath(other, path))} />
         ))
     }
     {
       path !== undefined && (
-        <link rel="alternate" hreflang="x-default" href={absolute(pagePath(defaultLocale, path))} />
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={absolute(localePath(defaultLocale, path))}
+        />
       )
     }
-    <link rel="canonical" href={canonical} />
+    {canonical && <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content={locale} />
@@ -54,7 +51,7 @@ const siteName = t(locale, "site.title")
         .filter((other) => other !== locale)
         .map((other) => <meta property="og:locale:alternate" content={other} />)
     }
-    <meta property="og:url" content={canonical} />
+    {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={summary} />
     <meta name="twitter:card" content="summary" />
