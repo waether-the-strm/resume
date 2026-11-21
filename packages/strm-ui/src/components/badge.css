@@ -1,0 +1,31 @@
+/*
+ * Badge: the small mark to the left of a stop's title in the rail and the blob. One to three
+ * characters (0, +, =, 1, 2.3). Decoration, deliberately faint: the glyph is the page's own colour
+ * on the soft ink half dissolved into the page. It sizes from the text beside it.
+ * What a stop is called is its title, real text beside the mark. The mark is decoration, so it is
+ * paint, not a text node: it is not in the accessibility tree and not in a text-contrast scan.
+ *   <span class="ui-badge" data-mark="2.3" aria-hidden="true"></span>
+ */
+.ui-badge:not([data-mark]),
+.ui-badge[data-mark=""] {
+  display: none;
+}
+.ui-badge::before {
+  content: attr(data-mark);
+}
+.ui-badge {
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  min-width: var(--badge-min);
+  height: var(--badge-min);
+  padding: var(--badge-pad);
+  border-radius: var(--radius-pill);
+  background: var(--badge-ground);
+  color: var(--badge-ink);
+  font-size: var(--badge-size);
+  line-height: 1;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 700;
+}
