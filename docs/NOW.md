@@ -1,6 +1,6 @@
 # NOW
 
-Updated 21 Nov 2026, end of the second session.
+Updated 21 Nov 2026, during the third session, after the tour was merged.
 
 ## Goal
 
@@ -26,47 +26,56 @@ queue is `who:Jan is:open`, each with a kind (Decide, Brief, Write, Verify) and 
 ## State
 
 - `rebuild` is v2 and the default branch. `main` and the live site are untouched (v1, `v1.2.0`).
-- The page: static home in English and Polish, `/cv`, 404 pages, social meta, sitemap. One font file
-  of 49 KB, no synthesized italics.
-- strm-ui: tokens, themes, primitives, tested tier rules.
-- The engine, in `packages/narrative`, all unit-tested and none of it wired to the page yet:
-  `stops`, `map`, `url`, `store`, `phases`, `settle`, `sound`. `transitions` is in review (#66).
-- Preferences (theme, motion, sound) in `apps/site/src/lib/prefs.ts`.
-- CI: format, types, unit tests, build, 52 Playwright tests including accessibility scans.
-- The spec is in `docs/spec`. Decisions: ADR 0001 to 0008, all accepted.
+- **The tour runs.** With motion allowed, scrolling takes the one message through the equation (at
+  rest), the words, the structure with its notes, and the look. Reduced motion and no JavaScript
+  keep the finished page. The adapter is `apps/site/src/scripts/tour.ts`, the looks are
+  `apps/site/src/styles/tour.css` (ADR 0009, proposed).
+- The narrative is content: `equation`, `guide`, `stops` per locale; `track` and `structure` for
+  every language. `narrative(locale)` in `i18n/content.ts` reads and joins them.
+- The engine, `packages/narrative`: `stops`, `map`, `url`, `store`, `phases`, `settle`, `sound`,
+  `transitions`, `keys`, `scenes`. Wired to the page: store, scenes, transitions, settle. Not yet:
+  phases, sound, keys.
+- The page: home in English and Polish, `/cv` with a real italic face, 404 pages, prefetch on
+  intent, a production-only indexing flag (not yet set in `deploy.yml`, see #47).
+- CI: format, types, unit tests, build, 66 Playwright tests. The older specs ask for reduced motion
+  (they check the finished page); `tour.spec.ts` asks for motion.
+- Decisions: ADR 0001 to 0008 accepted, 0009 proposed.
 
 ## How the work is split
 
 The lead session keeps judgement; the rest is given away (the `session` skill, "Delegated work").
 Cursor runs delegable issues in parallel worktrees and hands each pull request over through a local
 file, `pr-<number>-claude-review.md`, in the repository root. Its instructions are in the local,
-uncommitted `cursor-tasks.md`.
+uncommitted `cursor-tasks.md`. The lead session gives the reading of a delegated pull request to a
+subagent and keeps the decision.
 
 **On starting a session:** look for hand-off files with `Status: ready for review` before anything
-else, and start a watcher for new ones.
+else, and start a watcher for new ones. Brief Jan before each batch (`AGENTS.md`, "The briefing").
 
 ## In progress
 
-- With Cursor: #66 transitions (third round), then batch 3: #75 load ahead of need and real italics,
-  #36 key bindings, #44 performance budget, #45 release preparation, #78 words rendering, #41
-  project page template.
-- Nothing is half-done in the lead session.
+- In review, from Cursor: #86 the performance budget (#44), #88 project pages (#41). Both were
+  written before the tour was merged; check them against it.
+- #36 key bindings: the registry is merged; wiring it and the G4 spec wait for the lead session.
 
 ## Waiting for Jan
 
+- **#89 Verify the tour in motion** (22 Nov, 20 min), with ADR 0009 and the four-second fallback. It
+  comes before the equation is built on top.
 - #33 what the blob holds (22 Nov, 20 min). It blocks the blob.
-- #46 device check before the domain (23 to 24 Nov).
-- #12 Polish copy; #42 the case studies, in a session of their own.
-- The dates of milestones 3 to 6 are proposals until he confirms them.
+- #12 Polish copy, now also the drafts in `equation`, `guide` and `stops`.
+- #47: whether `/ui` is indexed; what the parity table leaves out (v1 analytics, klosy.pl,
+  Biletomat's status).
+- #46 device check before the domain (23 to 24 Nov). #42 the case studies.
+- "staff‑level" on the card renders with a gap after the hyphen. Not investigated.
 
 ## Next step
 
-The lead session's own work, in this order:
+The lead session, in this order, once #89 is answered:
 
-1. #22 narrative content as data: the equation, the guide, the stops with names per locale, the
-   per-block data of the structure scene. Polish drafts are marked for Jan.
-2. The adapter that wires store, settle, phases, sound and transitions to the page, and #30 the
-   scenes, starting with the words scene. Then open a `Verify` issue for Jan with the preview URL.
-3. #31 the equation, from the table of what each phase triggers (pull request #67).
+1. #31 the equation: the phases wired to the markup that is already on the page.
+2. What #30 still lacks: colour arriving in the look, the rule travelling from the equation to above
+   the name line, the band and the haze under the guide, scenarios C6 and D7.
+3. Wire keys (#36) and sound; set `STRM_PRODUCTION` on the production job (#47).
 
 Also the lead session's: #57 the 404 page and caching on the host, #23 the visual baseline.
