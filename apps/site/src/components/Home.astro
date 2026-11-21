@@ -3,6 +3,7 @@
 // reader without JavaScript, or with reduced motion, gets. The engine is a layer on top.
 import Base from "../layouts/Base.astro"
 import { launched, localeNames, localePath, type Locale } from "../i18n/locales"
+import { narrative } from "../i18n/content"
 import { t } from "../i18n/ui"
 import Card from "./Card.astro"
 import Message from "./Message.astro"
@@ -12,6 +13,10 @@ interface Props {
   locale: Locale
 }
 const { locale } = Astro.props
+
+// Read here so that a missing or inconsistent piece of the narrative fails this build, and a
+// missing translation is reported. The scenes that render it come with the engine (#30).
+await narrative(locale)
 ---
 
 <Base

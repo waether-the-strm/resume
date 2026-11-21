@@ -1,0 +1,19 @@
+names:
+  start: the start
+  what: what?
+  why: why?
+  who: who?
+  equation: the equation
+  answer: the answer, alone
+  words: the words
+  structure: the structure
+  components: components
+  tokens: tokens
+  tiles: the tiles
+  look: the look
+rail:
+  equation: equation
+  words: words
+  structure: structure
+  look: look
+after: the card
