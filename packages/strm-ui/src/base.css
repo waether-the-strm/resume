@@ -19,6 +19,8 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font);
+  /* Never let the browser fake a weight or a slant the font does not have. */
+  font-synthesis: none;
   font-size: var(--type-body-size);
   line-height: var(--type-body-leading);
   font-variation-settings:
