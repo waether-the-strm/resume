@@ -42,6 +42,16 @@
   /* mark: the monogram */
   --mark-size: 36px;
 
+  /*
+   * badge: the faint mark beside a title. Decoration: low contrast is intended, so the ground
+   * is the soft ink half dissolved into the page and the glyph is the page's own colour.
+   */
+  --badge-ground: color-mix(in oklab, var(--ink-soft) 52%, var(--paper));
+  --badge-ink: var(--paper);
+  --badge-size: 0.74em;
+  --badge-min: 1.5em;
+  --badge-pad: 0 0.34em;
+
   /* paths: ways out of a panel */
   --paths-pad: 15px;
   --paths-nudge: 6px;
