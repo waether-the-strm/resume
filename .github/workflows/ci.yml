@@ -31,3 +31,20 @@ jobs:
         run: pnpm test
       - name: Build
         run: pnpm build
+
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
+      - name: Install Chromium
+        run: pnpm --filter @strm/tests exec playwright install --with-deps chromium
+      - name: Static page
+        run: pnpm --filter @strm/tests e2e
