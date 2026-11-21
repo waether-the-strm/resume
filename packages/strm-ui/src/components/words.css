@@ -1,8 +1,12 @@
 /*
- * Words: text rendered one word at a time. A word is the unit of continuity in the narrative,
- * and it can carry a role. The role is in the content, not in the position of the word.
+ * Words. The message renders one element per word (.ui-w): the narrative moves single
+ * words, and the server renders the elements it will animate.
  *   <span class="ui-w">Your </span><span class="ui-w" data-role="accent">clear </span>
  *
+ * Everywhere else a marked run is one span and the rest is plain text.
+ *   Your product, <span data-role="accent">clear at a glance.</span>
+ *
+ * Role styles select by [data-role]. .ui-w is the per-word layout only.
  * The accent role is a signal in large type and small text elsewhere, so it follows the
  * signal and text pair.
  */
@@ -10,14 +14,14 @@
   display: inline-block;
   white-space: pre;
 }
-.ui-w[data-role="accent"] {
+[data-role="accent"] {
   color: var(--accent-text);
 }
-.type-display .ui-w[data-role="accent"],
-.type-title .ui-w[data-role="accent"] {
+.type-display [data-role="accent"],
+.type-title [data-role="accent"] {
   color: var(--accent);
 }
-.ui-w[data-role="name"] {
+[data-role="name"] {
   font-variation-settings:
     "MONO" var(--voice-sans),
     "wght" 800;

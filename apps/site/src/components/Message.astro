@@ -1,6 +1,7 @@
 ---
 // The message in its finished state: the look. One element per block; the engine later
-// drives the same elements through the earlier scenes.
+// drives the same elements through the earlier scenes. Each word is its own span: the
+// narrative moves single words, and these are the elements it will animate.
 import { single } from "../i18n/content"
 import type { Locale } from "../i18n/locales"
 import Words from "./Words.astro"
@@ -13,23 +14,25 @@ const message = await single("message", locale)
 ---
 
 <div class="message" data-skin="look">
-  <h1 class="type-display headline"><Words text={message.headline} locale={locale} /></h1>
-  <p class="lead"><Words text={message.lead} locale={locale} /></p>
+  <h1 class="type-display headline">
+    <Words text={message.headline} locale={locale} mode="words" />
+  </h1>
+  <p class="lead"><Words text={message.lead} locale={locale} mode="words" /></p>
   <ol class="ui-tiles list">
     {
       message.list.map((item) => (
         <li>
-          <Words text={item} locale={locale} />
+          <Words text={item} locale={locale} mode="words" />
         </li>
       ))
     }
   </ol>
   <div class="who">
     <hr class="ui-rule" />
-    <p><Words text={message.who} locale={locale} /></p>
+    <p><Words text={message.who} locale={locale} mode="words" /></p>
   </div>
   <p class="call">
-    <span><Words text={message.call.text} locale={locale} /></span>
+    <span><Words text={message.call.text} locale={locale} mode="words" /></span>
     <a class="ui-pill" href={message.call.action.href}>{message.call.action.label}</a>
   </p>
 </div>
