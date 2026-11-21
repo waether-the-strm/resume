@@ -1,0 +1,240 @@
+/*
+ * Rail: the stops of the tour as navigation. Chapter stops are ticks with a label
+ * and a quiet chapter number; the stops between them are dots. Two arrows step one
+ * stop. Hidden until the tour is on (`data-tour` on an ancestor, ADR 0009).
+ *
+ *   <nav class="ui-rail" aria-label="Tour steps">
+ *     <button type="button" class="ui-rail__arrow" data-dir="-1" aria-label="previous stop"></button>
+ *     <button type="button" class="ui-rail__stop is-chapter" aria-label="the words">
+ *       <span class="ui-rail__label">words</span>
+ *       <span class="ui-rail__mark"><span class="ui-rail__num" data-chapter="1" aria-hidden="true"></span><span class="ui-rail__tick" aria-hidden="true"></span></span>
+ *     </button>
+ *     <button type="button" class="ui-rail__stop is-dot" aria-label="tokens">
+ *       <span class="ui-rail__label">tokens</span>
+ *       <span class="ui-rail__dot" aria-hidden="true"></span>
+ *     </button>
+ *     <button type="button" class="ui-rail__arrow" data-dir="1" aria-label="next stop"></button>
+ *   </nav>
+ *
+ * States, written by the page: `[aria-current="true"]` is the chapter on show,
+ * `is-nearest` is the nearest stop, `is-landed` plays the landing cue once,
+ * `is-after` fades the rail once the tour is behind the reader.
+ */
+.ui-rail {
+  display: none;
+}
+
+[data-tour] .ui-rail {
+  display: grid;
+  position: fixed;
+  z-index: 2;
+  right: var(--rail-inset);
+  top: var(--rail-top);
+  bottom: var(--rail-bottom);
+  width: var(--rail-gutter);
+  translate: 0 var(--rail-shift);
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  transition: opacity var(--motion-enter) var(--ease-out);
+}
+
+.ui-rail.is-after {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ui-rail__stop,
+.ui-rail__arrow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: var(--rail-align);
+  gap: var(--space-hair);
+  box-sizing: border-box;
+  min-width: var(--rail-hit);
+  height: var(--rail-hit);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--type-micro-size);
+  cursor: pointer;
+}
+
+.ui-rail__stop.is-dot {
+  display: var(--rail-dot-display);
+  height: var(--rail-dot-hit);
+}
+
+.ui-rail__arrow {
+  height: var(--rail-arrow-hit);
+  padding-right: var(--rail-arrow-pad);
+}
+
+.ui-rail__arrow:disabled {
+  opacity: var(--rail-off);
+  pointer-events: none;
+}
+
+.ui-rail__arrow::before {
+  content: "";
+  width: var(--rail-arrow);
+  height: var(--rail-arrow);
+  border: solid var(--ink-mute);
+  border-width: 0 var(--rail-arrow-weight) var(--rail-arrow-weight) 0;
+  rotate: 45deg;
+  transition: border-color var(--motion-micro) var(--ease-out);
+}
+
+.ui-rail__arrow[data-dir="-1"]::before {
+  rotate: -135deg;
+}
+
+.ui-rail__arrow:hover::before,
+.ui-rail__arrow:focus-visible::before {
+  border-color: var(--ink);
+}
+
+.ui-rail__label {
+  position: absolute;
+  right: var(--rail-label-gap);
+  display: var(--rail-caption);
+  color: var(--ink-mute);
+  font-size: var(--type-micro-size);
+  letter-spacing: var(--type-micro-tracking);
+  line-height: var(--type-micro-leading);
+  white-space: nowrap;
+  opacity: 0;
+  translate: var(--rail-label-shift) 0;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" var(--type-micro-weight);
+  transition:
+    opacity var(--motion-micro) var(--ease-out),
+    translate var(--motion-micro) var(--ease-out);
+}
+
+.ui-rail__stop:hover .ui-rail__label,
+.ui-rail__stop:focus-visible .ui-rail__label,
+.ui-rail__stop[aria-current="true"] .ui-rail__label,
+.ui-rail__stop.is-nearest .ui-rail__label {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.ui-rail__stop[aria-current="true"] .ui-rail__label {
+  color: var(--accent-text);
+}
+
+.ui-rail__mark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-hair);
+}
+
+.ui-rail__num {
+  display: var(--rail-caption);
+  color: var(--ink-mute);
+  font-size: var(--type-micro-size);
+  letter-spacing: 0;
+  line-height: 1;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" var(--type-micro-weight);
+}
+
+/* The digit is paint, not a text node: the button's accessible name stays the
+   stop's name (the short label is already inside that name). */
+.ui-rail__num::before {
+  content: attr(data-chapter);
+}
+
+.ui-rail__tick {
+  --rail-tick-x: 1;
+  width: var(--rail-tick);
+  height: var(--rail-tick-weight);
+  background: var(--ink-soft);
+  transform-origin: right center;
+  scale: var(--rail-tick-x) 1;
+  transition:
+    scale var(--motion-micro) var(--ease-out),
+    background-color var(--motion-micro) var(--ease-out);
+}
+
+.ui-rail__stop:hover .ui-rail__tick,
+.ui-rail__stop:focus-visible .ui-rail__tick,
+.ui-rail__stop.is-nearest .ui-rail__tick {
+  --rail-tick-x: calc(var(--rail-tick-wide) / var(--rail-tick));
+  background: var(--rail-tick-hover);
+}
+
+/* Current wins over nearest and hover: the chapter on show stays the long tick. */
+.ui-rail__stop[aria-current="true"] .ui-rail__tick,
+.ui-rail__stop[aria-current="true"]:hover .ui-rail__tick,
+.ui-rail__stop[aria-current="true"]:focus-visible .ui-rail__tick,
+.ui-rail__stop[aria-current="true"].is-nearest .ui-rail__tick {
+  --rail-tick-x: calc(var(--rail-tick-current) / var(--rail-tick));
+  background: var(--accent);
+}
+
+.ui-rail__stop.is-landed .ui-rail__tick {
+  animation: ui-rail-land var(--motion-move) var(--ease-out);
+}
+
+.ui-rail__dot {
+  width: var(--rail-dot);
+  height: var(--rail-dot);
+  margin-right: var(--rail-dot-inset);
+  border-radius: var(--radius-pill);
+  background: var(--ink-soft);
+  opacity: var(--rail-dot-opacity);
+  transition:
+    scale var(--motion-micro) var(--ease-out),
+    background-color var(--motion-micro) var(--ease-out),
+    opacity var(--motion-micro) var(--ease-out);
+}
+
+.ui-rail__stop:hover .ui-rail__dot,
+.ui-rail__stop:focus-visible .ui-rail__dot {
+  scale: var(--rail-dot-hover-scale);
+  background: var(--ink);
+  opacity: 1;
+}
+
+.ui-rail__stop.is-nearest .ui-rail__dot {
+  background: var(--accent);
+  opacity: 1;
+}
+
+.ui-rail__stop.is-landed .ui-rail__dot {
+  animation: ui-rail-land-dot var(--motion-move) var(--ease-out);
+}
+
+/* The pulse multiplies the resting scale, so a wide tick grows from where it is. */
+@keyframes ui-rail-land {
+  0% {
+    scale: var(--rail-tick-x, 1) 1;
+  }
+  35% {
+    scale: calc(var(--rail-tick-x, 1) * var(--rail-land-scale)) 1;
+  }
+  100% {
+    scale: var(--rail-tick-x, 1) 1;
+  }
+}
+
+@keyframes ui-rail-land-dot {
+  0% {
+    scale: 1;
+  }
+  35% {
+    scale: var(--rail-land-dot-scale);
+  }
+  100% {
+    scale: 1;
+  }
+}
