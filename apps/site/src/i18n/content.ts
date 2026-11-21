@@ -11,21 +11,29 @@ function reportFallback(what: string, locale: Locale) {
   console.warn(`[i18n] ${what}: no "${locale}" entry, falling back to "${defaultLocale}"`)
 }
 
-/** A collection with one entry per locale (message, card). */
-export async function single<C extends "message" | "card">(
+/** A collection with one entry per locale, and the locale the words came from. */
+export async function singleWithLocale<C extends "message" | "card" | "cv">(
   collection: C,
   locale: Locale
-): Promise<CollectionEntry<C>["data"]> {
+): Promise<{ data: CollectionEntry<C>["data"]; locale: Locale }> {
   const own = await getEntry(collection, locale)
-  if (own) return own.data
+  if (own) return { data: own.data, locale }
   reportFallback(collection, locale)
   const fallback = await getEntry(collection, defaultLocale)
   if (!fallback) throw new Error(`Content missing: ${collection}/${defaultLocale}`)
-  return fallback.data
+  return { data: fallback.data, locale: defaultLocale }
 }
 
-/** A collection with many entries per locale, stored as <locale>/<slug> (projects). */
-export async function many<C extends "projects">(
+/** A collection with one entry per locale (message, card, cv). */
+export async function single<C extends "message" | "card" | "cv">(
+  collection: C,
+  locale: Locale
+): Promise<CollectionEntry<C>["data"]> {
+  return (await singleWithLocale(collection, locale)).data
+}
+
+/** A collection with many entries per locale, stored as <locale>/<slug>. */
+export async function many<C extends "projects" | "experience" | "education" | "skills">(
   collection: C,
   locale: Locale
 ): Promise<{ slug: string; data: CollectionEntry<C>["data"] }[]> {

@@ -1,0 +1,21 @@
+company: CD Projekt Red, Warsaw
+order: 3
+roles:
+  - title: Senior Frontend Developer · Tech Lead · UX Designer
+    period: Aug 2019 – Aug 2021
+descriptions:
+  - item: false
+    text: >-
+      I led the team that designed and built the GWENT admin panel in React and TypeScript, the internal
+      tool behind a game played by millions of players worldwide. Team of 2 frontend and 3 backend
+      developers. I owned the panel's UX design, set the technical direction, wrote the documentation, ran
+      React sessions for backend developers new to the frontend, and presented our progress to the
+      ~100-person GWENT team every month.
+tools:
+  - React
+  - TypeScript
+  - Redux
+  - Ant Design
+  - Jest
+  - RTL
+  - Docker
