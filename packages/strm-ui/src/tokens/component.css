@@ -84,6 +84,29 @@
   --rail-label-gap: 30px;
   --rail-label-shift: 6px;
   --rail-caption: block;
+
+  /*
+   * Blob: the floating place-marker. Lengths are the prototype's. The shadow is the
+   * raised surface's: a new shadow colour would be a look decision.
+   */
+  --blob-size: var(--type-label-size);
+  --blob-title-size: var(--type-micro-size);
+  --blob-radius: 22px;
+  --blob-radius-open: var(--radius-panel);
+  --blob-pad: 6px;
+  --blob-blur: 12px;
+  --blob-bottom: 22px;
+  --blob-gutter: var(--space-loose);
+  --blob-tldr-right: 40px;
+  --blob-tldr-bottom: 28px;
+  --blob-row: 44px;
+  --blob-row-pad: 10px;
+  --blob-title-pad: 8px 10px 6px;
+  --blob-title-gap: 20px;
+  --blob-name-pad: 6px 10px 9px;
+  --blob-note: 11px;
+  --blob-shadow: var(--shadow-raised);
+  --blob-shadow-open: var(--shadow-raised);
 }
 
 @media (max-width: 760px) {
@@ -94,6 +117,8 @@
     --panel-pad: 28px 24px 20px;
     --paths-pad: 18px;
     --work-visual: 150px;
+    --blob-size: 12.5px;
+    --blob-bottom: 12px;
     --message-gap: 18px;
     --message-who-space: 22px;
 

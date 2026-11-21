@@ -1,0 +1,269 @@
+/*
+ * Blob: where the reader is, and a few controls. It floats at the bottom of the page;
+ * the page places it. Folded, it is the step and the name. Unfolded, three rows.
+ *
+ *   <nav class="ui-blob" aria-label="Where you are, and a few controls">
+ *     <div class="ui-blob__menu" id="blob-menu" inert>
+ *       <div class="ui-blob__menu-clip">
+ *         <button type="button" data-blob="sound" aria-pressed="true">
+ *           <span>sound</span><span class="ui-blob__value"><span class="ui-blob__on">on</span></span>
+ *         </button>
+ *         <button type="button" data-blob="start"><span>the start</span></button>
+ *         <a href="#work" data-blob="work"><span>the work</span></a>
+ *       </div>
+ *     </div>
+ *     <button type="button" class="ui-blob__title" aria-expanded="false" aria-controls="blob-menu">
+ *       <span class="ui-blob__stops">
+ *         <span class="ui-blob__stop is-current"><span class="ui-blob__num">2.3</span><span class="ui-blob__label">tokens</span></span>
+ *       </span>
+ *       <span class="ui-blob__note" aria-hidden="true"><svg>…</svg></span>
+ *     </button>
+ *     <a class="ui-blob__id" href="#jan"><span class="ui-blob__id-clip"><span><b>Jan Mirecki</b> · design engineer · Oslo</span></span></a>
+ *   </nav>
+ *   <a class="ui-blob__tldr" href="#jan">tldr</a>
+ *
+ * Open is `is-open`. The name row folds with `is-slim`. The current stop is `is-current`.
+ * `data-sound="off"` strikes the note. `data-after` on the tldr link hides it.
+ */
+.ui-blob {
+  display: grid;
+  width: max-content;
+  max-width: 100%;
+  padding-inline: var(--blob-pad);
+  border-radius: var(--blob-radius);
+  background: var(--veil);
+  -webkit-backdrop-filter: blur(var(--blob-blur));
+  backdrop-filter: blur(var(--blob-blur));
+  box-shadow: var(--blob-shadow);
+  color: var(--ink-mute);
+  font-size: var(--blob-size);
+  line-height: var(--type-label-leading);
+  white-space: nowrap;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 400;
+  transition:
+    box-shadow var(--motion-enter) var(--ease-out),
+    border-radius var(--motion-move) var(--ease-out);
+}
+.ui-blob.is-open {
+  border-radius: var(--blob-radius-open);
+  box-shadow: var(--blob-shadow-open);
+  animation: ui-blob-pop var(--motion-move) var(--ease-spring);
+}
+@keyframes ui-blob-pop {
+  0% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.035 0.965;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+.ui-blob button,
+.ui-blob a {
+  font: inherit;
+  font-variation-settings: inherit;
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ui-blob :focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--radius-control);
+}
+
+.ui-blob__menu {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--motion-move) var(--ease-spring),
+    opacity var(--motion-enter) var(--ease-out);
+}
+.ui-blob.is-open .ui-blob__menu {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.ui-blob__menu-clip {
+  overflow: hidden;
+  min-height: 0;
+  display: grid;
+}
+.ui-blob__menu button,
+.ui-blob__menu a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-snug);
+  height: var(--blob-row);
+  padding-inline: var(--blob-row-pad);
+  color: var(--ink);
+  text-align: left;
+}
+.ui-blob__menu-clip > * + * {
+  border-top: 1px solid var(--line);
+}
+.ui-blob__menu button:hover,
+.ui-blob__menu a:hover {
+  color: var(--accent-text);
+}
+.ui-blob__value,
+.ui-blob__mark {
+  color: var(--accent-text);
+}
+.ui-blob__off {
+  display: none;
+}
+.ui-blob [aria-pressed="false"] .ui-blob__on {
+  display: none;
+}
+.ui-blob [aria-pressed="false"] .ui-blob__off {
+  display: inline;
+}
+
+.ui-blob__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--blob-title-gap);
+  width: 100%;
+  padding: var(--blob-title-pad);
+  font-size: var(--blob-title-size);
+}
+.ui-blob.is-open .ui-blob__title {
+  border-top: 1px solid var(--line);
+}
+.ui-blob__stops {
+  display: flex;
+  min-width: 0;
+}
+.ui-blob__stop {
+  display: none;
+  align-items: baseline;
+  gap: var(--space-snug);
+  min-width: 0;
+}
+.ui-blob__stop.is-current {
+  display: flex;
+}
+.ui-blob__num {
+  color: var(--ink-mute);
+}
+.ui-blob__label {
+  color: var(--accent-text);
+}
+.ui-blob__stop.is-swap .ui-blob__label {
+  animation: ui-blob-swap var(--motion-move) var(--ease-out);
+}
+@keyframes ui-blob-swap {
+  from {
+    opacity: 0;
+    translate: 0 0.35em;
+  }
+  to {
+    opacity: 1;
+    translate: 0;
+  }
+}
+.ui-blob__note {
+  position: relative;
+  display: inline-grid;
+  color: var(--accent-text);
+}
+.ui-blob__note svg {
+  display: block;
+  width: var(--blob-note);
+  height: auto;
+  fill: currentColor;
+}
+.ui-blob[data-sound="off"] .ui-blob__note {
+  color: var(--ink-soft);
+}
+.ui-blob[data-sound="off"] .ui-blob__note::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  top: 55%;
+  height: 1px;
+  background: currentColor;
+}
+
+.ui-blob__id {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--motion-move) var(--ease-spring),
+    opacity var(--motion-enter) var(--ease-out);
+}
+.ui-blob__id-clip {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-snug);
+  padding: var(--blob-name-pad);
+  border-top: 1px solid var(--line);
+}
+.ui-blob__id b {
+  color: var(--ink);
+  font-weight: 500;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 500;
+}
+.ui-blob__go {
+  color: var(--accent);
+  opacity: 0;
+  translate: -4px 0;
+  transition:
+    opacity var(--motion-enter) var(--ease-out),
+    translate var(--motion-enter) var(--ease-out);
+}
+.ui-blob.is-open .ui-blob__go,
+.ui-blob__id:hover .ui-blob__go,
+.ui-blob__id:focus-visible .ui-blob__go {
+  opacity: 1;
+  translate: 0;
+}
+/* Folded away: the name is on the page, or the tour is behind the reader. */
+.ui-blob.is-slim .ui-blob__id {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ui-blob__tldr {
+  font-size: var(--blob-size);
+  line-height: var(--type-label-leading);
+  color: var(--ink-mute);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 400;
+  transition: opacity var(--motion-move) var(--ease-out);
+}
+.ui-blob__tldr[data-after] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (max-width: 760px) {
+  .ui-blob__tldr {
+    display: none;
+  }
+}
