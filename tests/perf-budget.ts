@@ -87,18 +87,25 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * missed by 7 B. Document `/` 5079 (+361) and `/pl/` 5351 (+371). Font and layout
  * shift did not move. Paint this round stayed under the ceiling, so that ceiling stays:
  * `/` 1942.5, 1937.2, 1958.4; `/pl/` 1894.3, 1923.9, 1904.1.
+ *
+ * Measured again the same day, with the blob on that rail. Three cold loads, the same
+ * bytes each time. CSS 10104 (+2353): the blob's stylesheet is on the home page.
+ * Script 11399 (+808): the blob part. Document came out lower and stable, `/` 4947
+ * and `/pl/` 5228. Font and layout shift did not move. Paint stayed under the
+ * ceiling, so that ceiling stays: `/` 2417.8, 2421.0, 2422.3; `/pl/` 2421.7, 2392.4,
+ * 2408.8.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 5079, css: 7751, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 5351, css: 7751, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 4947, css: 10104, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 5228, css: 10104, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 10591 },
-    "/pl/": { cls: 0, script: 10591 },
+    "/": { cls: 0, script: 11399 },
+    "/pl/": { cls: 0, script: 11399 },
   },
 }
 
