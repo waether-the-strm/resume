@@ -94,14 +94,24 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * and `/pl/` 5228. Font and layout shift did not move. Paint stayed under the
  * ceiling, so that ceiling stays: `/` 2417.8, 2421.0, 2422.3; `/pl/` 2421.7, 2392.4,
  * 2408.8.
+ *
+ * That paint was the blob's placement rules joining the page's component sheet. The sheet
+ * had been inlined (3199 B). With the blob it was 4136 B, over the build's inline limit, so
+ * the build emitted it as `/_astro/Work.*.css`: a third render-blocking stylesheet. On this
+ * profile that is another round trip before paint. The rules are inlined in the document
+ * now, and the home page is back to rebuild's two stylesheets. Three cold loads after that.
+ * Paint is back with rebuild, so the ceiling stays: `/` 1957.0, 1930.4, 1944.3; `/pl/`
+ * 1915.7, 1904.4, 1904.0. CSS is those two files, 5404 and 3214, 8618 together (the recorded
+ * rebuild total was 7751; the third file, 1486, is gone). Document holds the blob and the
+ * inlined rules: `/` 6062, `/pl/` 6354. Script, font and layout shift did not move.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 4947, css: 10104, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 5228, css: 10104, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 6062, css: 8618, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 6354, css: 8618, font: 49656 },
   },
   tour: {
     "/": { cls: 0, script: 11399 },
