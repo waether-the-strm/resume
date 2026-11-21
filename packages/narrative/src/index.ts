@@ -45,3 +45,18 @@ export type {
   TransitionDeps,
   ViewTransitionHandle,
 } from "./transitions.ts"
+// keys.ts
+export { createKeys, keyBindings } from "./keys.ts" // keys.ts
+export type {
+  Binding,
+  BindingAction,
+  FocusKind,
+  HintRow,
+  HintSlot,
+  KeyActions,
+  KeyEvent,
+  KeyHintText,
+  KeyPattern,
+  Keys,
+  ModifierRule,
+} from "./keys.ts" // keys.ts
