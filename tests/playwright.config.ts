@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test"
+import { phoneProfile } from "./perf-budget.ts"
 
 // The suite hits the built site. `astro preview` defaults to 4321, which other work on this
 // machine uses, so the static server stays on 4333. E2E_PORT moves it when that port is taken.
@@ -22,7 +23,23 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testIgnore: "**/perf-budget.spec.ts",
       use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // A timed cold load. It starts after the other project so those browsers are gone.
+      name: "performance",
+      testMatch: "**/perf-budget.spec.ts",
+      dependencies: ["chromium"],
+      use: {
+        viewport: phoneProfile.viewport,
+        screen: phoneProfile.viewport,
+        deviceScaleFactor: phoneProfile.deviceScaleFactor,
+        isMobile: true,
+        hasTouch: true,
+        userAgent: phoneProfile.userAgent,
+        defaultBrowserType: "chromium",
+      },
     },
   ],
   webServer: {
