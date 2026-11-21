@@ -8,15 +8,22 @@ import { t } from "../i18n/ui"
 import Card from "./Card.astro"
 import Message from "./Message.astro"
 import Work from "./Work.astro"
+import "../styles/tour.css"
 
 interface Props {
   locale: Locale
 }
 const { locale } = Astro.props
 
-// Read here so that a missing or inconsistent piece of the narrative fails this build, and a
-// missing translation is reported. The scenes that render it come with the engine (#30).
-await narrative(locale)
+const story = await narrative(locale)
+// What the tour needs to place the reader: the stops and the scene weights. Names stay in the
+// markup, where they are text.
+const track = {
+  weights: story.weights,
+  stops: story.stops.map(({ name: _name, label: _label, ...stop }) => stop),
+}
+const length = story.stops.reduce((sum, stop) => sum + stop.travel + stop.hold, 0)
+const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.guide.scenes.look]
 ---
 
 <Base
@@ -25,11 +32,66 @@ await narrative(locale)
   locale={locale}
   path="/"
 >
+  <!--
+    Before the first paint: if the tour may run, say so, so the finished page does not flash
+    before the first scene. If the tour's script never arrives, the page shows itself again.
+  -->
+  <script is:inline>
+    ;(() => {
+      const root = document.documentElement
+      const motion = root.getAttribute("data-motion")
+      const reduced =
+        motion === "reduced" ||
+        (motion !== "full" && matchMedia("(prefers-reduced-motion: reduce)").matches)
+      if (reduced) return
+      root.setAttribute("data-tour", "pending")
+      setTimeout(() => {
+        if (root.getAttribute("data-tour") === "pending") root.removeAttribute("data-tour")
+      }, 4000)
+    })()
+  </script>
   <a class="skip" href="#jan">{t(locale, "nav.skip")}</a>
+  <!-- The guide: one sentence per scene. Only the tour shows it. -->
+  <p class="guide type-label" data-step="0">
+    <span class="how">{story.guide.label}</span>
+    {
+      scenes.map((text, index) => (
+        <span class="step" data-for={index + 1}>
+          <span class="n">{index + 1}</span>
+          <span class="txt">
+            {text}
+            {index === 2 && <span class="pay">{story.guide.payoff}</span>}
+          </span>
+        </span>
+      ))
+    }
+  </p>
   <main>
-    <section class="stage" aria-label={t(locale, "site.title")}>
-      <Message locale={locale} />
-    </section>
+    <div
+      class="track"
+      style={`--track-length:${length.toFixed(3)}`}
+      data-track={JSON.stringify(track)}
+    >
+      <section class="stage" aria-label={t(locale, "site.title")} data-scene="3">
+        <!-- The equation, at rest. Its choreography is the next step (#31). -->
+        <div class="equation" aria-hidden="true">
+          {
+            story.equation.questions.map((row) => (
+              <p>
+                <b>{row.question}</b> {row.answer}
+              </p>
+            ))
+          }
+          <hr class="ui-rule" />
+          <p>
+            <span class="op">=</span>
+            <b>{story.equation.how.question}</b>{" "}
+            {story.equation.how.answer}
+          </p>
+        </div>
+        <Message locale={locale} />
+      </section>
+    </div>
     <section class="jan" id="jan">
       <Card locale={locale} />
       <h2 class="type-micro work-heading" id="work">{t(locale, "work.heading")}</h2>
@@ -53,6 +115,10 @@ await narrative(locale)
     </nav>
   </footer>
 </Base>
+
+<script>
+  import "../scripts/tour.ts"
+</script>
 
 <style>
   .skip {

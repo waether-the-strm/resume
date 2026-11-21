@@ -60,3 +60,6 @@ export type {
   Keys,
   ModifierRule,
 } from "./keys.ts" // keys.ts
+// scenes.ts
+export { BEAT_MS, createScenes } from "./scenes.ts"
+export type { Scenes, ScenesClock, ScenesDeps } from "./scenes.ts"

@@ -1,0 +1,403 @@
+/*
+ * The tour: the layer the engine adds on top of the finished page. Nothing here applies
+ * until <html> has `data-tour`, which only the tour's script sets, and only when motion is
+ * allowed. Without it the page is the finished look, untouched.
+ *
+ * `data-tour`: `pending` before the script has run, `on` while scroll drives the story,
+ * `moment` for a state frozen by the URL.
+ *
+ * One message, three skins. `data-skin` picks the skin and `--t` is the progress through
+ * the scene, 0 to 1, written by the script. Everything continuous derives from `--t` here,
+ * so scrolling back is the same function evaluated backwards. The numbers are the
+ * prototype's (docs/spec/prototype-v0.16.0.html, lines 116 to 176 of the file).
+ */
+
+/* ---------- the track and the stage ---------- */
+
+[data-tour="on"] .track {
+  height: calc((var(--track-length) + 1) * 100vh);
+  height: calc((var(--track-length) + 1) * 100svh);
+}
+[data-tour] .stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+[data-tour="pending"] .stage > * {
+  visibility: hidden;
+}
+
+/* Scene switches are view transitions: every word flies to its new place. */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(*) {
+  animation-duration: var(--motion-scene);
+  animation-timing-function: var(--ease-in-out);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--motion-micro);
+}
+
+/* ---------- the guide ---------- */
+
+.guide {
+  display: none;
+}
+[data-tour] .guide:not([data-step="0"]) {
+  position: fixed;
+  left: 40px;
+  top: 28px;
+  z-index: 2;
+  margin: 0;
+  max-width: 56ch;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 1ch;
+  align-items: start;
+  color: var(--ink-mute);
+  line-height: 1.7;
+  transition: opacity var(--motion-enter) var(--ease-out);
+}
+.guide .how {
+  color: var(--accent-text);
+}
+.guide .step {
+  display: none;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 1ch;
+  min-width: 0;
+}
+.guide[data-step="1"] .step[data-for="1"],
+.guide[data-step="2"] .step[data-for="2"],
+.guide[data-step="3"] .step[data-for="3"] {
+  display: grid;
+}
+.guide .n {
+  color: var(--ink);
+}
+.guide .txt {
+  display: block;
+  animation: guide-in var(--motion-move) var(--ease-out) both;
+}
+.guide .pay {
+  display: block;
+  margin-top: 0.6em;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity var(--motion-move) var(--ease-out);
+}
+.guide[data-pay] .pay {
+  opacity: 1;
+}
+.guide[data-after] {
+  opacity: 0;
+  pointer-events: none;
+}
+@keyframes guide-in {
+  from {
+    opacity: 0;
+    translate: -28px 0;
+    filter: blur(4px);
+  }
+}
+@media (max-width: 760px) {
+  [data-tour] .guide:not([data-step="0"]) {
+    left: 20px;
+    top: 16px;
+    width: calc(100vw - 40px);
+    max-width: none;
+  }
+}
+
+/* ---------- scene 0: the equation, at rest ---------- */
+
+.equation {
+  display: none;
+}
+[data-tour] .stage[data-scene="0"] .equation {
+  display: block;
+  max-width: 62ch;
+  font-size: 18px;
+  line-height: 1.8;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 400;
+  opacity: clamp(0, calc((0.86 - var(--t, 0)) * 12), 1);
+}
+.equation p {
+  margin: 0;
+}
+.equation b {
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 700;
+}
+.equation .ui-rule {
+  margin-block: 0.6em;
+  border-color: var(--ink);
+}
+.equation .op {
+  color: var(--accent-text);
+}
+[data-tour] .stage[data-scene="0"] .message {
+  display: none;
+}
+
+/* ---------- words and structure share a voice: one face, set by --mono and --wght ---------- */
+
+[data-tour] .message:is([data-skin="words"], [data-skin="structure"]) {
+  --mono: 1;
+  --wght: 400;
+  display: block;
+  max-width: 62ch;
+}
+[data-tour]
+  .message:is([data-skin="words"], [data-skin="structure"])
+  :is(h1, p, li, a, .ui-w, [data-role]) {
+  margin: 0;
+  max-width: none;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: 0;
+  color: inherit;
+  font-variation-settings:
+    "MONO" var(--mono),
+    "wght" var(--wght);
+}
+[data-tour] .message:is([data-skin="words"], [data-skin="structure"]) .ui-rule {
+  display: none;
+}
+[data-tour] .message:is([data-skin="words"], [data-skin="structure"]) li::before,
+[data-tour] .message:is([data-skin="words"], [data-skin="structure"]) .ui-pill::before {
+  content: none;
+}
+[data-tour] .message:is([data-skin="words"], [data-skin="structure"]) :is(ol, li, .ui-pill) {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-decoration: none;
+}
+[data-tour] .message:is([data-skin="words"], [data-skin="structure"]) .blk {
+  grid-column: auto;
+  grid-row: auto;
+  margin-top: 0;
+  font-size: inherit;
+}
+
+/* ---------- scene 1, words: one compact block, sentences in the order they will be split ---------- */
+
+[data-tour] .message[data-skin="words"] {
+  font-size: 18px;
+  line-height: 1.8;
+}
+[data-tour] .message[data-skin="words"] :is(.blk, h1, p, ol, li, .call > span, .ui-pill) {
+  display: inline;
+}
+[data-tour] .message[data-skin="words"] .blk {
+  opacity: clamp(0, calc((var(--t) - var(--i) * 0.14) * 5), 1);
+}
+[data-tour] .message[data-skin="words"] :is(.blk, li, .call > span)::after {
+  content: " ";
+}
+
+/* ---------- scene 2, structure: each block gets a place, a name and a rule ---------- */
+
+[data-tour] .message[data-skin="structure"] {
+  --late: max(0, var(--t) - 0.55);
+  --mono: calc(1 - var(--late) * 2.2);
+  font-size: calc(17px + var(--late) * 1px);
+  line-height: calc(1.75 - var(--late) * 0.4);
+  color: color-mix(in oklab, var(--ink) calc(var(--t) * 100%), var(--ink-mute));
+}
+[data-tour] .message[data-skin="structure"] .blk {
+  position: relative;
+  border: 1px solid color-mix(in oklab, transparent calc(var(--late) * 220%), var(--ink));
+  padding: 1.1em 2ch 0.8em;
+  margin: 0 0 1em;
+}
+[data-tour] .message[data-skin="structure"] h1 {
+  --wght: calc(400 + var(--late) * 600);
+  font-size: calc(1em + var(--late) * 2.2em);
+  line-height: 1.15;
+  letter-spacing: calc(var(--late) * -0.04em);
+}
+[data-tour] .message[data-skin="structure"] li {
+  padding: 0.15em 0;
+}
+[data-tour] .message[data-skin="structure"] .who {
+  --wght: calc(400 + var(--late) * 400);
+}
+[data-tour] .message[data-skin="structure"] .call {
+  display: block;
+}
+[data-tour] .message[data-skin="structure"] .call > span::after {
+  content: " ";
+}
+
+/* The note on each block. It grows in place: name, capital, element, tokens. */
+[data-tour] .message[data-skin="structure"] .note {
+  display: block;
+  position: absolute;
+  top: -0.8em;
+  left: 1.5ch;
+  max-width: calc(100% - 3ch);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0.5ch;
+  background: var(--paper);
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 400;
+}
+.note .name {
+  color: var(--note-sem-text);
+}
+.note em {
+  color: var(--note-el-text);
+  font-style: normal;
+}
+.note b {
+  color: var(--note-tok-text);
+  font-weight: inherit;
+}
+.note i {
+  color: var(--ink-mute);
+  font-style: normal;
+}
+.note .cap {
+  position: relative;
+  display: inline-block;
+}
+.note .cap .uc {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  transition: opacity var(--motion-enter);
+}
+.note .cap .lc {
+  transition: opacity var(--motion-enter);
+}
+.note .part {
+  display: inline-block;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  vertical-align: bottom;
+  transition:
+    max-width var(--motion-move) var(--ease-out),
+    opacity var(--motion-enter);
+}
+[data-tour] .message:is([data-note="1"], [data-note="2"], [data-note="3"]) .cap .uc {
+  opacity: 1;
+}
+[data-tour] .message:is([data-note="1"], [data-note="2"], [data-note="3"]) .cap .lc {
+  opacity: 0;
+}
+[data-tour] .message:is([data-note="2"], [data-note="3"]) .part.syn {
+  max-width: 30ch;
+  opacity: 1;
+}
+[data-tour] .message[data-note="3"] .part.tok {
+  max-width: 60ch;
+  opacity: 1;
+}
+
+/* ---------- scene 3, the look: the finished page, arriving in order ---------- */
+
+[data-tour] .message[data-skin="look"] li {
+  --in: clamp(0, calc((var(--t) - 0.06 - var(--k) * 0.09) * 9), 1);
+  opacity: var(--in);
+  translate: 0 calc((1 - var(--in)) * 10px);
+}
+[data-tour] .message[data-skin="look"] [data-block="who"] {
+  /* The crest of the weight wave, counted in words. */
+  --w: calc((var(--t) - 0.38) * 52 - 2);
+  opacity: clamp(0, calc((var(--t) - 0.36) * 10), 1);
+}
+/*
+ * The wave lifts each word as it passes. Behind it, the words with the `name` role stay
+ * heavy: the role decides, not the position of the word (ADR 0007).
+ */
+[data-tour] .message[data-skin="look"] .who .ui-w {
+  --near: clamp(0, calc(1 - max(var(--w) - var(--j), var(--j) - var(--w)) / 2.2), 1);
+  --kept: clamp(0, calc(var(--w) - var(--j) - 2), 1);
+  font-variation-settings:
+    "MONO" var(--voice-sans),
+    "wght"
+      calc(
+        400 + 450 * var(--near) * (1 - var(--nm, 0) * var(--kept)) + 400 * var(--nm, 0) *
+          var(--kept)
+      );
+}
+[data-tour] .message[data-skin="look"] .who [data-role="name"] {
+  --nm: 1;
+}
+[data-tour] .message[data-skin="look"] [data-block="call"] {
+  --in: clamp(0, calc((var(--t) - 0.68) * 8), 1);
+  opacity: var(--in);
+  translate: 0 calc((1 - var(--in)) * 8px);
+}
+
+/* ---------- smaller screens: the prototype's sizes, so each scene fits the stage ---------- */
+
+@media (max-height: 760px) {
+  [data-tour] .stage {
+    padding-block: 104px 56px;
+  }
+  [data-tour] .guide:not([data-step="0"]) {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  [data-tour] .message[data-skin="structure"] {
+    font-size: calc(15px + var(--late) * 1px);
+  }
+  [data-tour] .message[data-skin="structure"] .blk {
+    padding: 0.9em 1.5ch 0.6em;
+    margin: 0 0 0.75em;
+  }
+  [data-tour] .message[data-skin="structure"] .note {
+    font-size: 12.5px;
+  }
+}
+@media (max-width: 760px) {
+  [data-tour] .stage {
+    padding-block: 150px 64px;
+  }
+  [data-tour] .guide:not([data-step="0"]) {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  [data-tour] .message[data-skin="words"] {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  [data-tour] .message[data-skin="structure"] {
+    font-size: calc(14.5px + var(--late) * 1px);
+    line-height: calc(1.6 - var(--late) * 0.3);
+  }
+  [data-tour] .message[data-skin="structure"] .blk {
+    padding: 0.85em 1.5ch 0.55em;
+    margin: 0 0 0.8em;
+  }
+  [data-tour] .message[data-skin="structure"] .note {
+    font-size: 12px;
+  }
+}
+@media (max-width: 760px) and (max-height: 800px) {
+  [data-tour] .stage {
+    padding-block: 118px 88px;
+  }
+  [data-tour] .message[data-skin="structure"] .blk {
+    padding: 0.7em 1.5ch 0.4em;
+    margin: 0 0 0.55em;
+  }
+}

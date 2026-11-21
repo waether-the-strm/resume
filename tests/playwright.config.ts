@@ -14,6 +14,10 @@ export default defineConfig({
   use: {
     baseURL: `http://${host}:${port}`,
     trace: "retain-on-failure",
+    // The specs here check the finished page: what the server renders, and what a reader who
+    // asks for reduced motion keeps. With motion allowed the tour takes the page over; its
+    // specs opt back in with `test.use({ contextOptions: { reducedMotion: "no-preference" } })`.
+    contextOptions: { reducedMotion: "reduce" },
   },
   projects: [
     {

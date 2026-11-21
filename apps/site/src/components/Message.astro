@@ -1,8 +1,9 @@
 ---
-// The message in its finished state: the look. One element per block; the engine later
-// drives the same elements through the earlier scenes. Each word is its own span: the
-// narrative moves single words, and these are the elements it will animate.
-import { single } from "../i18n/content"
+// The message: five blocks, one element each, the same elements in every scene. The server
+// renders the finished look; the tour (scripts/tour.ts) changes `data-skin` and `--t` on this
+// element and nothing else. Each word is its own span: the narrative moves single words.
+// Each block carries a note for the structure scene, hidden in every other skin.
+import { narrative, single } from "../i18n/content"
 import type { Locale } from "../i18n/locales"
 import Words from "./Words.astro"
 
@@ -11,34 +12,87 @@ interface Props {
 }
 const { locale } = Astro.props
 const message = await single("message", locale)
+const { blocks } = await narrative(locale)
+
+// The note grows in place: `headline`, then `Headline`, then `<Headline as="h1" />`, then
+// its tokens. One string with no stray whitespace, because the parts are inline boxes.
+// Everything in it comes from the structure collection, whose schema limits each value.
+function noteHtml(
+  name: string,
+  block: { component: string; element: string; tokens: readonly string[] }
+): string {
+  const tokens = block.tokens.map((token) => token.replace(/^--/, "")).join(" ")
+  return (
+    `<span class="part syn"><i>&lt;</i></span>` +
+    `<span class="name"><span class="cap"><span class="lc">${name[0]}</span>` +
+    `<span class="uc">${block.component[0]}</span></span>${name.slice(1)}</span>` +
+    `<span class="part syn">&nbsp;<i>as=</i><em>"${block.element}"</em></span>` +
+    `<span class="part tok">&nbsp;<i>tokens=</i><b>"${tokens}"</b></span>` +
+    `<span class="part syn">&nbsp;<i>/&gt;</i></span>`
+  )
+}
+
+const order = ["headline", "lead", "list", "who", "call"] as const
+const note = (name: (typeof order)[number]) => ({
+  name,
+  index: order.indexOf(name),
+  ...blocks[name],
+  html: noteHtml(name, blocks[name]),
+})
 ---
 
 <div class="message" data-skin="look">
-  <h1 class="type-display headline">
-    <Words text={message.headline} locale={locale} mode="words" />
-  </h1>
-  <p class="lead"><Words text={message.lead} locale={locale} mode="words" /></p>
-  <ol class="ui-tiles list">
-    {
-      message.list.map((item) => (
-        <li>
-          <Words text={item} locale={locale} mode="words" />
-        </li>
-      ))
-    }
-  </ol>
-  <div class="who">
-    <hr class="ui-rule" />
-    <p><Words text={message.who} locale={locale} mode="words" /></p>
-  </div>
-  <p class="call">
-    <span><Words text={message.call.text} locale={locale} mode="words" /></span>
-    <a class="ui-pill" href={message.call.action.href}>{message.call.action.label}</a>
-  </p>
+  {
+    order.map((name) => {
+      const block = note(name)
+      return (
+        <div class="blk" data-block={name} style={`--i:${block.index}`}>
+          <span class="note" aria-hidden="true" set:html={block.html} />
+          {name === "headline" && (
+            <h1 class="type-display headline">
+              <Words text={message.headline} locale={locale} mode="words" />
+            </h1>
+          )}
+          {name === "lead" && (
+            <p class="lead">
+              <Words text={message.lead} locale={locale} mode="words" />
+            </p>
+          )}
+          {name === "list" && (
+            <ol class="ui-tiles list">
+              {message.list.map((item, k) => (
+                <li style={`--k:${k}`}>
+                  <Words text={item} locale={locale} mode="words" />
+                </li>
+              ))}
+            </ol>
+          )}
+          {name === "who" && (
+            <>
+              <hr class="ui-rule" />
+              <p class="who">
+                <Words text={message.who} locale={locale} mode="words" />
+              </p>
+            </>
+          )}
+          {name === "call" && (
+            <p class="call">
+              <span>
+                <Words text={message.call.text} locale={locale} mode="words" />
+              </span>
+              <a class="ui-pill" href={message.call.action.href}>
+                {message.call.action.label}
+              </a>
+            </p>
+          )}
+        </div>
+      )
+    })
+  }
 </div>
 
 <style>
-  /* two columns: the list beside the headline and the lead */
+  /* The look: two columns, the list beside the headline and the lead. */
   .message {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
@@ -51,35 +105,42 @@ const message = await single("message", locale)
   p {
     margin: 0;
   }
-  .headline {
+  .note {
+    display: none;
+  }
+  [data-block="headline"],
+  [data-block="lead"] {
     grid-column: 1;
+  }
+  .headline {
     font-size: var(--message-headline-size);
     line-height: 1;
     margin-bottom: var(--message-headline-space);
   }
   .lead {
-    grid-column: 1;
     max-width: 40ch;
     font-size: var(--message-lead-size);
     line-height: var(--message-lead-leading);
     color: var(--ink-mute);
   }
-  .list {
+  [data-block="list"] {
     grid-column: 2;
     grid-row: 1 / 3;
     margin-top: 6px;
   }
-  .who {
+  [data-block="who"] {
     grid-column: 1 / -1;
     margin-top: var(--message-who-space);
     font-size: var(--message-who-size);
   }
-  .who .ui-rule {
+  [data-block="who"] .ui-rule {
     margin-bottom: var(--message-who-rule);
   }
-  .call {
+  [data-block="call"] {
     grid-column: 1 / -1;
     margin-top: var(--message-call-space);
+  }
+  .call {
     display: flex;
     align-items: center;
     gap: 22px;
@@ -92,7 +153,7 @@ const message = await single("message", locale)
     .message {
       grid-template-columns: minmax(0, 1fr);
     }
-    .list {
+    [data-block="list"] {
       grid-column: 1;
       grid-row: auto;
     }
