@@ -7,6 +7,36 @@ const locales = ["/", "/pl/"] as const
 
 for (const path of locales) {
   test.describe(`the tour at ${path}`, () => {
+    test("A8: the equation complete, with `how?` on the left and answered", async ({ page }) => {
+      await page.goto(`${path}?stage=0&t=0.58`)
+      const equation = page.locator(".equation")
+      await expect(equation).toBeVisible()
+      await expect(equation).toHaveAttribute("data-left", "")
+      await expect(equation.locator(".row[data-asked]")).toHaveCount(3)
+      await expect(equation.locator('.a[data-melt="in"]')).toHaveCount(4)
+      await expect(page.locator(".guide")).toBeHidden()
+    })
+
+    test("A4: the question comes before its answer", async ({ page }) => {
+      await page.goto(`${path}?stage=0&t=0.13`)
+      const equation = page.locator(".equation")
+      await expect(equation.locator(".row[data-asked]")).toHaveCount(1)
+      await expect(equation.locator(".a[data-melt]")).toHaveCount(0)
+    })
+
+    test("t=0.9 is not an empty page: `how` is already in the corner", async ({ page }) => {
+      await page.goto(`${path}?stage=0&t=0.9`)
+      await expect(page.locator(".equation")).toHaveAttribute("data-gone", "")
+      await expect(page.locator(".guide .how")).toBeVisible()
+      await expect(page.locator(".guide .how")).toHaveCSS("opacity", "1")
+    })
+
+    test("A12: the equation is off the page and the guide has `how`", async ({ page }) => {
+      await page.goto(`${path}?stage=0&t=0.95`)
+      await expect(page.locator(".equation")).toBeHidden()
+      await expect(page.locator(".guide .how")).toBeVisible()
+    })
+
     test("B3: the words scene is one block, with no notes and no boxes", async ({ page }) => {
       await page.goto(`${path}?stage=1&t=1`)
       const message = page.locator(".message")

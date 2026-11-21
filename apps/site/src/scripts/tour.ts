@@ -17,6 +17,7 @@ import {
   type Track,
 } from "@strm/narrative"
 import { createPrefs } from "../lib/prefs"
+import { createEquationView } from "./equation"
 import { parts } from "./parts"
 
 const SKINS = ["none", "words", "structure", "look"] as const
@@ -59,6 +60,33 @@ function start(): void {
     })
   }
 
+  const sign: HTMLElement = guide
+
+  // `how` belongs to the guide from the moment it leaves the equation, and through every
+  // later scene.
+  let current: Stage = 0
+  const equationRoot = document.querySelector<HTMLElement>(".equation")
+  const equation = equationRoot
+    ? createEquationView(equationRoot, (on) => sign.toggleAttribute("data-how", on || current > 0))
+    : null
+
+  // A sentence of the guide leaves before the next one arrives (the prototype's 400 ms).
+  let leaving = 0
+  function say(step: Stage): void {
+    window.clearTimeout(leaving)
+    const from = sign.dataset.step ?? "0"
+    if (from === "0" || step === 0 || from === String(step)) {
+      sign.removeAttribute("data-leaving")
+      sign.dataset.step = String(step)
+      return
+    }
+    sign.setAttribute("data-leaving", "")
+    leaving = window.setTimeout(() => {
+      sign.removeAttribute("data-leaving")
+      sign.dataset.step = String(step)
+    }, 400)
+  }
+
   const scenes = createScenes({
     clock: {
       setTimeout: (callback, ms) => window.setTimeout(callback, ms),
@@ -71,8 +99,10 @@ function start(): void {
           : undefined,
       motionAllowed: () => prefs.motionAllowed(),
     }),
-    heading(scene) {
-      guide.dataset.step = String(scene)
+    heading(next) {
+      current = next
+      say(next)
+      guide.toggleAttribute("data-how", next > 0 || (equation?.corner() ?? false))
     },
     show(scene) {
       stage.dataset.scene = String(scene)
@@ -81,7 +111,7 @@ function start(): void {
     progress(scene, t) {
       const value = t.toFixed(3)
       if (scene === 0) {
-        stage.style.setProperty("--t", value)
+        equation?.update(t)
         return
       }
       message.style.setProperty("--t", value)

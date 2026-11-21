@@ -47,7 +47,7 @@
 .guide {
   display: none;
 }
-[data-tour] .guide:not([data-step="0"]) {
+[data-tour] .guide:is([data-how], :not([data-step="0"])) {
   position: fixed;
   left: 40px;
   top: 28px;
@@ -64,6 +64,11 @@
 }
 .guide .how {
   color: var(--accent-text);
+  opacity: 0;
+  transition: opacity var(--motion-micro);
+}
+.guide[data-how] .how {
+  opacity: 1;
 }
 .guide .step {
   display: none;
@@ -81,7 +86,11 @@
 }
 .guide .txt {
   display: block;
-  animation: guide-in var(--motion-move) var(--ease-out) both;
+  animation: melt-in 0.55s var(--ease-out) both;
+}
+/* The sentence being replaced leaves first; the script waits for it. */
+.guide[data-leaving] .txt {
+  animation: melt-out 0.42s ease-in forwards;
 }
 .guide .pay {
   display: block;
@@ -97,15 +106,8 @@
   opacity: 0;
   pointer-events: none;
 }
-@keyframes guide-in {
-  from {
-    opacity: 0;
-    translate: -28px 0;
-    filter: blur(4px);
-  }
-}
 @media (max-width: 760px) {
-  [data-tour] .guide:not([data-step="0"]) {
+  [data-tour] .guide:is([data-how], :not([data-step="0"])) {
     left: 20px;
     top: 16px;
     width: calc(100vw - 40px);
@@ -113,38 +115,195 @@
   }
 }
 
-/* ---------- scene 0: the equation, at rest ---------- */
+/* ---------- scene 0: the equation ---------- */
 
-.equation {
+/*
+ * The script sets which parts are on show, as attributes on .equation; how each part
+ * arrives is here. Timings and curves are the prototype's (lines 58 to 88 of the file).
+ */
+.equation,
+.equation-filter {
   display: none;
 }
-[data-tour] .stage[data-scene="0"] .equation {
+.equation-filter {
+  position: absolute;
+}
+[data-tour] .stage[data-scene="0"] .equation:not([data-hidden]) {
   display: block;
-  max-width: 62ch;
-  font-size: 18px;
-  line-height: 1.8;
+  width: 100%;
+  max-width: 46ch;
+  margin: 0 auto;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.7;
   font-variation-settings:
     "MONO" var(--voice-mono),
     "wght" 400;
-  opacity: clamp(0, calc((0.86 - var(--t, 0)) * 12), 1);
+}
+[data-tour] .stage[data-scene="0"] .message {
+  display: none;
 }
 .equation p {
   margin: 0;
 }
-.equation b {
+.equation .q {
+  color: var(--accent);
   font-variation-settings:
     "MONO" var(--voice-mono),
-    "wght" 700;
+    "wght" 500;
 }
-.equation .ui-rule {
-  margin-block: 0.6em;
-  border-color: var(--ink);
+.equation .op,
+.equation .plus {
+  color: var(--ink-mute);
 }
-.equation .op {
-  color: var(--accent-text);
+.equation :is(.row > p, .how) {
+  display: grid;
+  grid-template-columns: 2ch max(6ch, var(--q, 6ch)) 1fr;
+  gap: 0 1ch;
 }
-[data-tour] .stage[data-scene="0"] .message {
-  display: none;
+
+/* The questions: a row opens, its question rises in, its answer melts in after. */
+.equation .above {
+  position: relative;
+  opacity: calc(1 - var(--warp, 0));
+}
+.equation[data-warped] .above {
+  filter: url(#equation-warp);
+}
+.equation .plus {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  opacity: 0;
+  scale: 0.4;
+  transition:
+    opacity 0.3s,
+    scale 0.4s var(--ease-spring);
+}
+.equation[data-plus] .plus {
+  opacity: 1;
+  scale: 1;
+}
+.equation .row {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.45s var(--ease-spring),
+    opacity 0.3s;
+}
+.equation .row > p {
+  min-height: 0;
+  overflow: hidden;
+}
+.equation .row[data-asked] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.equation .row .q {
+  opacity: 0;
+  translate: 0 0.35em;
+  transition:
+    opacity 0.3s,
+    translate 0.4s var(--ease-out);
+}
+.equation .row[data-asked] .q {
+  opacity: 1;
+  translate: 0;
+}
+.equation .a {
+  display: inline-block;
+  opacity: 0;
+}
+.equation .a[data-melt="in"] {
+  animation: melt-in 0.5s var(--ease-out) both;
+}
+.equation .a[data-melt="out"] {
+  animation: melt-out 0.35s ease-in forwards;
+}
+
+/* The line draws from the centre, and pulses once when the questions are all answered. */
+.equation .line {
+  height: 2px;
+  margin: 0.6em 0;
+  background: var(--ink);
+  scale: 0 1;
+  opacity: calc(1 - var(--warp, 0));
+  transition: scale 0.9s var(--ease-out);
+}
+.equation[data-line] .line {
+  scale: 1 1;
+}
+.equation[data-pulsed] .line {
+  animation: line-pulse 0.8s ease-out 1;
+}
+@keyframes line-pulse {
+  25% {
+    background: var(--accent);
+    box-shadow: 0 0 24px 6px color-mix(in oklab, var(--accent) 45%, transparent);
+  }
+}
+
+/* `how?` arrives centred, moves left to its `=`, and its answer melts in. */
+.equation .how {
+  opacity: 0;
+  translate: 0 -0.6em;
+  transition:
+    opacity 0.4s 0.2s,
+    translate 0.5s 0.2s var(--ease-spring);
+}
+.equation[data-how] .how {
+  opacity: 1;
+  translate: 0;
+}
+.equation .how .op {
+  opacity: 0;
+  transition: opacity 0.4s 0.2s;
+}
+.equation[data-left]:not([data-alone]) .how .op {
+  opacity: 1;
+}
+.equation .how .q {
+  display: inline-block;
+  justify-self: start;
+  translate: var(--how-shift, 0) 0;
+  transition:
+    translate 0.6s var(--ease-out),
+    opacity 0.15s;
+}
+.equation[data-gone] .how .q {
+  opacity: 0;
+}
+
+/* The dissolve ends with the row alone: the questions close, the plus and the `=` go. */
+.equation[data-alone] :is(.above, .line) {
+  opacity: 0;
+}
+.equation[data-alone] .row {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+@keyframes melt-in {
+  from {
+    opacity: 0;
+    translate: -28px 0;
+    transform: skewX(6deg);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes melt-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    translate: -28px 0;
+    transform: skewX(-6deg);
+    filter: blur(4px);
+  }
 }
 
 /* ---------- words and structure share a voice: one face, set by --mono and --wght ---------- */
@@ -313,6 +472,22 @@
 
 /* ---------- scene 3, the look: the finished page, arriving in order ---------- */
 
+/* Colour lands in the first quarter of the scene. Until then the look is ink on paper. */
+[data-tour] .message[data-skin="look"] {
+  --c: min(1, calc(var(--t) * 4));
+}
+[data-tour] .message[data-skin="look"] .headline [data-role="accent"] {
+  color: color-mix(in oklab, var(--accent) calc(var(--c) * 100%), var(--ink));
+}
+[data-tour] .message[data-skin="look"] .lead {
+  color: color-mix(in oklab, var(--ink-mute) calc(var(--c) * 100%), var(--ink));
+}
+[data-tour] .message[data-skin="look"] li + li {
+  border-top-color: color-mix(in oklab, var(--line) calc(var(--c) * 100%), var(--ink));
+}
+[data-tour] .message[data-skin="look"] li::before {
+  color: color-mix(in oklab, var(--tiles-number) calc(var(--c) * 100%), var(--ink));
+}
 [data-tour] .message[data-skin="look"] li {
   --in: clamp(0, calc((var(--t) - 0.06 - var(--k) * 0.09) * 9), 1);
   opacity: var(--in);
@@ -353,7 +528,7 @@
   [data-tour] .stage {
     padding-block: 104px 56px;
   }
-  [data-tour] .guide:not([data-step="0"]) {
+  [data-tour] .guide:is([data-how], :not([data-step="0"])) {
     font-size: 13px;
     line-height: 1.6;
   }
@@ -372,7 +547,7 @@
   [data-tour] .stage {
     padding-block: 150px 64px;
   }
-  [data-tour] .guide:not([data-step="0"]) {
+  [data-tour] .guide:is([data-how], :not([data-step="0"])) {
     font-size: 13px;
     line-height: 1.6;
   }

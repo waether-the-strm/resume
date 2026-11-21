@@ -7,6 +7,7 @@ import { narrative } from "../i18n/content"
 import { t } from "../i18n/ui"
 import Blob from "./Blob.astro"
 import Card from "./Card.astro"
+import Equation from "./Equation.astro"
 import Message from "./Message.astro"
 import Rail from "./Rail.astro"
 import Work from "./Work.astro"
@@ -77,22 +78,7 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
       data-track={JSON.stringify(track)}
     >
       <section class="stage" aria-label={t(locale, "site.title")} data-scene="3">
-        <!-- The equation, at rest. Its choreography is the next step (#31). -->
-        <div class="equation" aria-hidden="true">
-          {
-            story.equation.questions.map((row) => (
-              <p>
-                <b>{row.question}</b> {row.answer}
-              </p>
-            ))
-          }
-          <hr class="ui-rule" />
-          <p>
-            <span class="op">=</span>
-            <b>{story.equation.how.question}</b>{" "}
-            {story.equation.how.answer}
-          </p>
-        </div>
+        <Equation locale={locale} />
         <Message locale={locale} />
       </section>
     </div>
