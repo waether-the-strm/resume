@@ -5,10 +5,46 @@ function tickScale(tick: Element): number {
   return raw === "none" ? 1 : Number(raw.split(" ")[0])
 }
 
-async function chapterDigits(page: Page): Promise<string[]> {
-  return page
-    .locator(".ui-rail__num")
-    .evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node, "::before").content))
+const marks = ["0", "+", "+", "+", "=", "=", "1", "2.1", "2.2", "2.3", "3.1", "3.2"]
+const ids = [
+  "start",
+  "what",
+  "why",
+  "who",
+  "equation",
+  "answer",
+  "words",
+  "structure",
+  "components",
+  "tokens",
+  "tiles",
+  "look",
+]
+
+async function expectMarks(page: Page) {
+  await expect(page.locator(".ui-rail__stop")).toHaveCount(12)
+  for (const [index, id] of ids.entries()) {
+    const stop = page.locator(`.ui-rail__stop[data-id="${id}"]`)
+    await expect(stop).toHaveAttribute("data-index", String(index))
+    const badge = stop.locator(".ui-rail__label .ui-badge")
+    await expect(badge).toHaveCount(1)
+    await expect(badge).toHaveAttribute("data-mark", marks[index]!)
+    await expect(badge).toHaveText("")
+    await expect(badge).toHaveAttribute("aria-hidden", "true")
+  }
+  // Nothing is painted on the tick or the dot, and no chapter number is left.
+  await expect(page.locator(".ui-rail__num")).toHaveCount(0)
+  await expect(page.locator(".ui-rail__tick")).toHaveText(["", "", "", ""])
+  await expect(page.locator(".ui-rail__dot")).toHaveText(["", "", "", "", "", "", "", ""])
+  const painted = await page
+    .locator(".ui-rail__tick, .ui-rail__dot")
+    .evaluateAll((nodes) =>
+      nodes.map(
+        (node) =>
+          getComputedStyle(node, "::before").content + getComputedStyle(node, "::after").content
+      )
+    )
+  for (const content of painted) expect(content).toMatch(/^(none|normal)+$/)
 }
 
 // Reduced motion is the suite default: the rail is in the HTML and stays hidden,
@@ -22,18 +58,15 @@ test.describe("the rail on the finished page", () => {
     await expect(page.locator(".ui-rail__stop")).toHaveCount(12)
     await expect(page.locator(".ui-rail__stop.is-chapter")).toHaveCount(4)
     await expect(page.locator(".ui-rail__stop.is-dot")).toHaveCount(8)
-    expect(await chapterDigits(page)).toEqual(['"0"', '"1"', '"2"', '"3"'])
-    await expect(page.locator(".ui-rail__stop.is-chapter .ui-rail__label")).toHaveText([
-      "equation",
-      "words",
-      "structure",
-      "look",
-    ])
-    await expect(page.locator('.ui-rail__stop[data-number="0.5"]')).toHaveAttribute(
+    await expectMarks(page)
+    await expect(
+      page.locator(".ui-rail__stop.is-chapter .ui-rail__label > span:not(.ui-badge)")
+    ).toHaveText(["equation", "words", "structure", "look"])
+    await expect(page.locator('.ui-rail__stop[data-id="equation"]')).toHaveAttribute(
       "aria-label",
       "the equation"
     )
-    await expect(page.locator('.ui-rail__stop[data-number="2.3"]')).toHaveAttribute(
+    await expect(page.locator('.ui-rail__stop[data-id="tokens"]')).toHaveAttribute(
       "aria-label",
       "tokens"
     )
@@ -51,17 +84,14 @@ test.describe("the rail on the finished page", () => {
 
   test("Polish names come from the content", async ({ page }) => {
     await page.goto("/pl/")
-    await expect(page.locator('.ui-rail__stop[data-number="2.3"]')).toHaveAttribute(
+    await expect(page.locator('.ui-rail__stop[data-id="tokens"]')).toHaveAttribute(
       "aria-label",
       "tokeny"
     )
-    await expect(page.locator(".ui-rail__stop.is-chapter .ui-rail__label")).toHaveText([
-      "równanie",
-      "słowa",
-      "struktura",
-      "wygląd",
-    ])
-    expect(await chapterDigits(page)).toEqual(['"0"', '"1"', '"2"', '"3"'])
+    await expect(
+      page.locator(".ui-rail__stop.is-chapter .ui-rail__label > span:not(.ui-badge)")
+    ).toHaveText(["równanie", "słowa", "struktura", "wygląd"])
+    await expectMarks(page)
     await expect(page.locator(".ui-rail")).toHaveAttribute("aria-label", "Tour steps")
     await expect(page.locator('.ui-rail__arrow[data-dir="-1"]')).toHaveAttribute(
       "aria-label",
@@ -71,6 +101,35 @@ test.describe("the rail on the finished page", () => {
       "aria-label",
       "next stop"
     )
+  })
+
+  test("on the Polish page the notation titles are English, the others are not", async ({
+    page,
+  }) => {
+    await page.goto("/pl/")
+    const notation = ["start", "what", "why", "who"]
+    for (const id of ids) {
+      const stop = page.locator(`.ui-rail__stop[data-id="${id}"]`)
+      const title = stop.locator(".ui-rail__label > span:not(.ui-badge)")
+      if (notation.includes(id)) await expect(title).toHaveAttribute("lang", "en")
+      else await expect(title).not.toHaveAttribute("lang", /.*/)
+    }
+    await expect(page.locator('.ui-rail__stop[data-id="what"]')).toHaveAttribute(
+      "aria-label",
+      "what?"
+    )
+    await expect(page.locator('.ui-rail__stop[data-id="start"]')).toHaveAttribute(
+      "aria-label",
+      "w+w+w"
+    )
+
+    await page.goto("/pl/?stage=0&t=0")
+    const labels = page.locator(".ui-blob__stop[data-stop] .ui-blob__label")
+    for (const [index, id] of ids.entries()) {
+      const label = labels.nth(index)
+      if (notation.includes(id)) await expect(label).toHaveAttribute("lang", "en")
+      else await expect(label).not.toHaveAttribute("lang", /.*/)
+    }
   })
 })
 
@@ -91,11 +150,11 @@ test.describe("the rail in the tour", () => {
     await page.goto("/?stage=2&t=0.78")
     await expect(page.locator("html")).toHaveAttribute("data-tour", "moment")
     await expect(page.locator(".ui-rail")).toBeVisible()
-    await expect(page.locator('.ui-rail__stop[data-number="2.1"]')).toHaveAttribute(
+    await expect(page.locator('.ui-rail__stop[data-id="structure"]')).toHaveAttribute(
       "aria-current",
       "true"
     )
-    await expect(page.locator('.ui-rail__stop[data-number="2.3"]')).toHaveClass(/is-nearest/)
+    await expect(page.locator('.ui-rail__stop[data-id="tokens"]')).toHaveClass(/is-nearest/)
     await expect(page.locator(".ui-rail__stop.is-landed")).toHaveCount(0)
     const currentTick = page.locator('.ui-rail__stop[aria-current="true"] .ui-rail__tick')
     await expect
@@ -125,12 +184,12 @@ test.describe("the rail in the tour", () => {
       return {
         chapter: document
           .querySelector(".ui-rail__stop[aria-current='true']")
-          ?.getAttribute("data-number"),
-        nearest: document.querySelector(".ui-rail__stop.is-nearest")?.getAttribute("data-number"),
+          ?.getAttribute("data-index"),
+        nearest: document.querySelector(".ui-rail__stop.is-nearest")?.getAttribute("data-index"),
         skin: document.querySelector(".message")?.getAttribute("data-skin"),
       }
     })
-    expect(sample).toEqual({ chapter: "1.1", nearest: "1.1", skin: "none" })
+    expect(sample).toEqual({ chapter: "6", nearest: "6", skin: "none" })
   })
 
   test("G5: ticks, dots and arrows go to a stop, and the landed marker animates once", async ({
@@ -164,7 +223,7 @@ test.describe("the rail in the tour", () => {
     )
 
     const before = await page.evaluate(() => window.scrollY)
-    const tokens = page.locator('.ui-rail__stop[data-number="2.3"]')
+    const tokens = page.locator('.ui-rail__stop[data-id="tokens"]')
     await tokens.evaluate((button) => {
       const mark = button.querySelector(".ui-rail__dot")
       if (!mark) throw new Error("tokens has no dot")
@@ -176,7 +235,7 @@ test.describe("the rail in the tour", () => {
     })
     await tokens.click()
     await expect(tokens).toHaveClass(/is-landed/, { timeout: 5_000 })
-    await expect(page.locator('.ui-rail__stop[data-number="2.1"]')).toHaveAttribute(
+    await expect(page.locator('.ui-rail__stop[data-id="structure"]')).toHaveAttribute(
       "aria-current",
       "true"
     )
@@ -200,7 +259,7 @@ test.describe("the rail in the tour", () => {
     })
     expect(starts).toBe(1)
 
-    const words = page.locator('.ui-rail__stop[data-number="1.1"]')
+    const words = page.locator('.ui-rail__stop[data-id="words"]')
     await words.click()
     await expect(words).toHaveClass(/is-landed/, { timeout: 5_000 })
     const tick = await words.locator(".ui-rail__tick").evaluate((mark) => {
@@ -219,7 +278,12 @@ test.describe("the rail in the tour", () => {
     expect(box!.width).toBeCloseTo(44, 0)
     expect(box!.x + box!.width).toBeCloseTo(390, 0)
     await expect(page.locator(".ui-rail__stop.is-dot").first()).toBeHidden()
-    await expect(page.locator(".ui-rail__num").first()).toBeHidden()
+    // The labels carry the badges, and a phone shows no label (--rail-caption: none).
+    await expect(page.locator(".ui-rail__stop.is-chapter .ui-rail__label").first()).toBeHidden()
+    await expect(page.locator(".ui-rail__stop.is-chapter .ui-badge").first()).toBeHidden()
+    for (const label of await page.locator(".ui-rail__label").all()) {
+      await expect(label).toBeHidden()
+    }
     await expect(page.locator(".ui-rail__stop.is-chapter").first()).toBeVisible()
     await expect(page.locator(".ui-rail__arrow").first()).toBeVisible()
     await expect(page.locator('.ui-rail__stop[aria-current="true"]')).toHaveCount(1)
