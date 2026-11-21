@@ -63,3 +63,6 @@ export type {
 // scenes.ts
 export { BEAT_MS, createScenes } from "./scenes.ts"
 export type { Scenes, ScenesClock, ScenesDeps } from "./scenes.ts"
+// equation.ts
+export { equationAt } from "./equation.ts"
+export type { EquationRow, EquationState } from "./equation.ts"

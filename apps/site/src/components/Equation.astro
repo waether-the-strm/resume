@@ -1,0 +1,52 @@
+---
+// The equation that opens the tour: three questions above a line, `how?` below it. All of
+// it is here, in the page's language; scripts/equation.ts sets which parts are on show, and
+// styles/tour.css says how they arrive. Only the tour shows it.
+import { narrative } from "../i18n/content"
+import type { Locale } from "../i18n/locales"
+
+interface Props {
+  locale: Locale
+}
+const { equation } = await narrative(Astro.props.locale)
+// The questions share one column, as wide as the longest of them in this language.
+const widest = Math.max(
+  ...[...equation.questions, equation.how].map((row) => [...row.question].length)
+)
+---
+
+<!-- The dissolve of the questions and the line. The script sets its scale. -->
+<svg class="equation-filter" width="0" height="0" aria-hidden="true">
+  <filter id="equation-warp" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.009 0.03" numOctaves="2" seed="7" result="n"
+    ></feTurbulence>
+    <feDisplacementMap
+      in="SourceGraphic"
+      in2="n"
+      scale="0"
+      xChannelSelector="R"
+      yChannelSelector="G"></feDisplacementMap>
+  </filter>
+</svg>
+<div class="equation" style={`--q:${widest}ch`}>
+  <div class="above">
+    <span class="plus" aria-hidden="true">+</span>
+    {
+      equation.questions.map((row) => (
+        <div class="row">
+          <p>
+            <span class="op" />
+            <b class="q">{row.question}</b>
+            <span class="a">{row.answer}</span>
+          </p>
+        </div>
+      ))
+    }
+  </div>
+  <div class="line"></div>
+  <p class="how">
+    <span class="op" aria-hidden="true">=</span>
+    <b class="q">{equation.how.question}</b>
+    <span class="a">{equation.how.answer}</span>
+  </p>
+</div>
