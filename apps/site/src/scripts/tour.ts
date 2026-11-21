@@ -66,8 +66,21 @@ function start(): void {
   // later scene.
   let current: Stage = 0
   const equationRoot = document.querySelector<HTMLElement>(".equation")
+  const howMoves = new Set<(direction: 1 | -1) => void>()
+  const onHowMoves = (listener: (direction: 1 | -1) => void) => {
+    howMoves.add(listener)
+    return () => {
+      howMoves.delete(listener)
+    }
+  }
   const equation = equationRoot
-    ? createEquationView(equationRoot, (on) => sign.toggleAttribute("data-how", on || current > 0))
+    ? createEquationView(
+        equationRoot,
+        (on) => sign.toggleAttribute("data-how", on || current > 0),
+        (direction) => {
+          for (const listener of [...howMoves]) listener(direction)
+        }
+      )
     : null
 
   // A sentence of the guide leaves before the next one arrives (the prototype's 400 ms).
@@ -132,7 +145,7 @@ function start(): void {
     const state = store.get()
     scenes.jump(state.stage as Stage, state.t)
     guide.toggleAttribute("data-pay", state.named)
-    for (const part of parts) part({ store, track: laid, settle: null, prefs })
+    for (const part of parts) part({ store, track: laid, settle: null, prefs, onHowMoves })
     return
   }
 
@@ -185,7 +198,7 @@ function start(): void {
   store.setPosition(read())
   const state = store.get()
   scenes.jump(state.stage, state.t)
-  for (const part of parts) part({ store, track: laid, settle, prefs })
+  for (const part of parts) part({ store, track: laid, settle, prefs, onHowMoves })
 }
 
 start()

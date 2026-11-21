@@ -16,6 +16,13 @@ export interface Tour {
   settle: Settle | null
   /** Theme, motion and sound, as the reader set them. */
   prefs: Prefs
+  /**
+   * `how` changes place: it leaves the equation for the guide's corner (direction 1) or
+   * comes back from it (direction -1). Called when the reader crosses that point, not when
+   * the page lands on a state past it. The prototype fires a spark at each end. Returns the
+   * function that stops listening.
+   */
+  onHowMoves(listener: (direction: 1 | -1) => void): () => void
 }
 
 /** Called once, after the first scene is on show. */
