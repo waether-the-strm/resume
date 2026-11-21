@@ -104,18 +104,27 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * 1915.7, 1904.4, 1904.0. CSS is those two files, 5404 and 3214, 8618 together (the recorded
  * rebuild total was 7751; the third file, 1486, is gone). Document holds the blob and the
  * inlined rules: `/` 6062, `/pl/` 6354. Script, font and layout shift did not move.
+ *
+ * Measured again the same day, with the theme switch in the footer. Three cold loads, the
+ * same bytes each time. Document `/` 6193 (+131) and `/pl/` 6484 (+130). CSS 9055 (+437).
+ * Script 11838 (+439). Font and layout shift did not move. A rebuild load on this machine
+ * the same day, before the switch, was document `/` 6081 and `/pl/` 6371, CSS 8924, script
+ * 11405, so the switch itself is document +112 and +113, CSS +131 (the home sheet, 3520 to
+ * 3651; still two stylesheets), and script +433 (the switch module; prefs was already
+ * requested). Paint stayed with that rebuild load, so the ceiling stays: `/` 1933.2,
+ * 1909.1, 1883.8 (rebuild 1936.4); `/pl/` 1913.2, 1885.9, 1911.7 (rebuild 1907.5).
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 6062, css: 8618, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 6354, css: 8618, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 6193, css: 9055, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 6484, css: 9055, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 11399 },
-    "/pl/": { cls: 0, script: 11399 },
+    "/": { cls: 0, script: 11838 },
+    "/pl/": { cls: 0, script: 11838 },
   },
 }
 

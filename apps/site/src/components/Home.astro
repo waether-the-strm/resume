@@ -10,6 +10,7 @@ import Card from "./Card.astro"
 import Equation from "./Equation.astro"
 import Message from "./Message.astro"
 import Rail from "./Rail.astro"
+import ThemeSwitch from "./ThemeSwitch.astro"
 import Work from "./Work.astro"
 import "../styles/tour.css"
 
@@ -103,6 +104,7 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
         ))
       }
     </nav>
+    <ThemeSwitch locale={locale} />
   </footer>
 </Base>
 
