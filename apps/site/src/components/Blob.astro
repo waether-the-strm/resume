@@ -1,0 +1,10 @@
+---
+// The blob: where the reader is, and a few controls (#35, ADR 0010). Not built yet. Its
+// markup is rendered here, on the server, in the page's language; scripts/parts/blob.ts
+// brings it to life.
+import type { Locale } from "../i18n/locales"
+
+interface Props {
+  locale: Locale
+}
+---
