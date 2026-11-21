@@ -80,6 +80,18 @@ labelled `delegable`. Their contract is `AGENTS.md`.
   closes itself through `Closes #n`; check that it did. Unblock what it blocked: move the next
   issues to "now".
 - A pull request from a bot may need its workflows approved before CI runs.
+- **Agents in the same clone** hand over through `.handoff/`, which is never committed (`AGENTS.md`,
+  "Working beside the lead session"). On starting a session, look in `.handoff/reviews/` for
+  `Status: ready for review` or `blocked`, and watch it for new files.
+- **A batch** is `.handoff/batch.md`, overwritten each time: the issues, their branches, and what is
+  new in the repository since the last batch. A note about one task goes on its issue as a comment,
+  not in the batch. Before overwriting, check that every issue of the old batch is merged or carried
+  over.
+- **A review is posted on the pull request** when it is written, and the hand-off file is deleted
+  once the pull request is merged. The file is the signal; the pull request is the record.
+- The reading of a delegated pull request can go to a subagent on a cheaper model, briefed with the
+  issue, `AGENTS.md` and what changed on `rebuild` since the branch was cut. The decision to merge
+  stays with the lead session.
 
 ## Jan's queue
 

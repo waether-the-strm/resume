@@ -38,6 +38,74 @@ in the language he writes in, three to five sentences:
 Dense, not detailed: no file lists, no function names, no plan of steps. Then start; the briefing is
 not a question and does not wait for an answer.
 
+## Working beside the lead session, on one machine
+
+When several agents work in one clone at once (Cursor in parallel worktrees, the lead session in the
+main checkout), they pass work through a folder that is never committed: `.handoff/` in the main
+checkout. The main checkout is the first line of `git worktree list`.
+
+| Path                         | What                                                       | Lives                       |
+| ---------------------------- | ---------------------------------------------------------- | --------------------------- |
+| `.handoff/batch.md`          | the current batch: which issues, which branch, what is new | overwritten with each batch |
+| `.handoff/reviews/pr-<n>.md` | one pull request handed over for review, and the review    | removed once merged         |
+| `.handoff/shots/pr-<n>/`     | evidence images for that pull request                      | removed once merged         |
+
+Nothing in `.handoff/` is a record. What has to last goes where it belongs: a note on a task is a
+comment on its issue, a review is a comment on its pull request, a decision is an ADR.
+
+**Start.** Read `.handoff/batch.md`, then your issue with its comments
+(`gh issue view <n> --comments`). Take only an issue the batch lists. One worktree per issue:
+
+```bash
+git fetch origin
+git worktree add ../resume-wt/<branch> -b <branch> origin/rebuild
+cd ../resume-wt/<branch> && nvm use && pnpm install
+```
+
+Never work in the main checkout and never switch its branch: the lead session is in it.
+
+**Finish.**
+
+1. `git fetch origin && git rebase origin/rebuild`, then the four commands. Rebase before you
+   measure: CI tests your branch merged with `rebuild`, and a number taken on an old base is wrong.
+2. Push, and open the pull request into `rebuild` from `.github/pull_request_template.md`.
+3. Wait for the checks (`gh pr checks <n> --watch`). A failing check is yours to fix.
+4. Only then write `.handoff/reviews/pr-<n>.md` in the main checkout:
+
+   ```markdown
+   # PR <n>: <title>
+
+   Status: ready for review
+
+   - Issue: #<issue>
+   - Branch: <branch>
+   - Checks: verify <pass|fail>, preview <pass|fail>, playwright <pass|fail>
+   - Model: <the model that did the work>
+
+   ## What changed
+
+   ## Evidence
+
+   ## Not verified
+
+   ## Decisions I made that the issue did not spell out
+
+   ## Questions for the reviewer
+   ```
+
+**After review.** The lead session answers in the same file under `## Review` and changes the status
+line. The same review is posted on the pull request.
+
+- `Status: changes requested`: do what it asks on the same branch, push, wait for the checks, add
+  `## Round 2` with what you changed, and set the line back to `Status: ready for review`.
+- `Status: merged`: done. Remove your worktree (`git worktree remove ../resume-wt/<branch>`).
+
+**Stuck.** Do not guess and do not widen the scope. Write the file with `Status: blocked` and a
+`## Blocked` section. With no pull request yet, name it `issue-<issue>.md`.
+
+**Never**, in addition to "Not yours to change": push to `rebuild` or `main`, merge, tag, run
+`wrangler deploy`, edit `docs/NOW.md` or `docs/log`, or commit anything from `.handoff/`.
+
 ## The spec
 
 The home page is a port of a prototype. A frozen copy is in `docs/spec`: the HTML file, the test
