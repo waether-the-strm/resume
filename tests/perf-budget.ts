@@ -78,6 +78,9 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * Finished `/` paint ms: 2008.4, 1903.2, 1913.6.
  * Finished `/pl/` paint ms: 1875.9, 1903.1, 1888.0.
  * Tour `/` and `/pl/` layout shift: 0, 0, 0. Script bytes: 8874, 8874, 8874.
+ *
+ * Script bytes measured again the same day, when the keys and sound were wired to the tour
+ * (two new parts, 1312 B): 10186, 10186, 10186. Nothing else moved.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
@@ -88,8 +91,8 @@ export const firstMeasurement: {
     "/pl/": { finishedPaintMs: 1904, cls: 0, document: 4980, css: 6720, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 8874 },
-    "/pl/": { cls: 0, script: 8874 },
+    "/": { cls: 0, script: 10186 },
+    "/pl/": { cls: 0, script: 10186 },
   },
 }
 
