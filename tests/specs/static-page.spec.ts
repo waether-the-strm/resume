@@ -23,16 +23,20 @@ const alternates = [
 
 async function openFinishedPage(page: Page, path: string) {
   await page.goto(path)
-  // Measure only after Recursive is the face in use. A fallback is narrower, so a fit
-  // check against it would pass for the wrong reason.
+  // A fallback face is narrower, so the fit check must not run until a Recursive face
+  // has actually loaded. `fonts.check` can be true when the browser gives up and
+  // substitutes, which is not the same thing.
   await expect
     .poll(() =>
       page.evaluate(async () => {
         await document.fonts.ready
-        return document.fonts.check('36px "Recursive Variable"')
+        return [...document.fonts]
+          .filter((face) => face.family === "Recursive Variable")
+          .map((face) => face.status)
+          .join(" ")
       })
     )
-    .toBe(true)
+    .toContain("loaded")
 }
 
 async function expectFinishedPage(page: Page) {
