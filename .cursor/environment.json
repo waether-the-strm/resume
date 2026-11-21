@@ -1,0 +1,4 @@
+{
+  "install": "[ ! -d '/agent/repos/resume' ] || cd '/agent/repos/resume' || exit $?\nexport PATH=\"/usr/local/bin:${PATH}\"\nNODE_VERSION=24.22.2\nif ! /usr/local/bin/node -v 2>/dev/null | grep -qx \"v${NODE_VERSION}\"; then\n  tmp=\"$(mktemp -d)\"\n  curl -fsSL \"https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz\" -o \"${tmp}/node.tar.xz\"\n  sudo tar -xJf \"${tmp}/node.tar.xz\" -C /usr/local --strip-components=1 --no-same-owner\n  rm -rf \"${tmp}\"\n  hash -r\nfi\nsudo corepack enable\nsudo corepack prepare pnpm@10.34.9 --activate\npnpm install --frozen-lockfile\npnpm --filter @strm/tests exec playwright install --with-deps chromium\n",
+  "start": "[ ! -d '/agent/repos/resume' ] || cd '/agent/repos/resume' || exit $?\nexport PATH=\"/usr/local/bin:${PATH}\"\nif curl -sf -o /dev/null --max-time 2 http://127.0.0.1:4321/; then\n  exit 0\nfi\nexec pnpm --filter @strm/site exec astro dev --host 0.0.0.0 --port 4321\n"
+}
