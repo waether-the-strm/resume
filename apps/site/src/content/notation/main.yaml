@@ -1,0 +1,11 @@
+# The notation of the page: the words that are the same in every language. They are set in
+# the monospace voice and the accent, like operators, and they are never translated: the four
+# questions, the word that travels to the guide's corner, and the title of the first stop.
+# What, why and who are the web, and they are the three terms the equation adds (ADR 0011).
+questions:
+  what: what?
+  why: why?
+  who: who?
+how: how?
+label: how
+start: w+w+w

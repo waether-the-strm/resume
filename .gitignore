@@ -33,3 +33,6 @@ blob-report/
 
 # local scratch of an agent; never part of a hand-over
 .handoff/
+
+# worktrees of subagents of a lead session
+.claude/worktrees/

@@ -28,33 +28,40 @@ const message = defineCollection({
   }),
 })
 
-// The equation that opens the page: three questions above the line, `how?` below it. Always
-// three; the phases of the scene count on it.
-const asked = z.strictObject({ question: z.string(), answer: z.string() })
-const equation = defineCollection({
-  loader: glob({ pattern: "*.yaml", base: "./src/content/equation" }),
+// The notation: the words that are the same in every language (ADR 0011). The four questions,
+// the word in the guide's corner and the title of the first stop are notation, like `+` and
+// `=`: one file, never one per locale, so a translation cannot replace them.
+const notation = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/notation" }),
   schema: z.strictObject({
-    questions: z.tuple([
-      asked.extend({ id: z.literal("what") }),
-      asked.extend({ id: z.literal("why") }),
-      asked.extend({ id: z.literal("who") }),
-    ]),
-    how: asked,
+    questions: z.strictObject({ what: z.string(), why: z.string(), who: z.string() }),
+    how: z.string(),
+    label: z.string(),
+    start: z.string(),
   }),
 })
 
-// The guide in the corner: the word that travels there from the equation, one sentence per
-// scene, and the payoff under the last one.
+// The equation that opens the page, per locale: the answers. Always three above the line and
+// one below it; the phases of the scene count on it. The questions are notation.
+const equation = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/equation" }),
+  schema: z.strictObject({
+    answers: z.strictObject({ what: z.string(), why: z.string(), who: z.string() }),
+    how: z.string(),
+  }),
+})
+
+// The guide in the corner, per locale: one sentence per scene, and the payoff under the last
+// one. The word that travels there from the equation is notation.
 const guide = defineCollection({
   loader: glob({ pattern: "*.yaml", base: "./src/content/guide" }),
   schema: z.strictObject({
-    label: z.string(),
     scenes: z.strictObject({ words: z.string(), structure: z.string(), look: z.string() }),
     payoff: z.string(),
   }),
 })
 
-// The words of the stops, per locale: a name for every stop of the track, a short label for
+// The words of the stops, per locale: a name for every stop of the track that is not notation, a short label for
 // the four chapters on the rail, and the name of what comes after the tour. Keys are stop ids;
 // they are checked against the track when the two are joined (`lib/narrative.ts`).
 const stops = defineCollection({
@@ -272,6 +279,7 @@ const skills = defineCollection({
 
 export const collections = {
   message,
+  notation,
   equation,
   guide,
   stops,

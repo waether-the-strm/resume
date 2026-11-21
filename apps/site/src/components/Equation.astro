@@ -1,6 +1,7 @@
 ---
-// The equation that opens the tour: three questions above a line, `how?` below it. All of
-// it is here, in the page's language; scripts/equation.ts sets which parts are on show, and
+// The equation that opens the tour: three questions above a line, `how?` below it. The
+// answers are in the page's language; the questions are notation, the same in every language
+// and marked as English (ADR 0011). scripts/equation.ts sets which parts are on show, and
 // styles/tour.css says how they arrive. Only the tour shows it.
 import { narrative } from "../i18n/content"
 import type { Locale } from "../i18n/locales"
@@ -9,7 +10,7 @@ interface Props {
   locale: Locale
 }
 const { equation } = await narrative(Astro.props.locale)
-// The questions share one column, as wide as the longest of them in this language.
+// The questions share one column, as wide as the longest of them.
 const widest = Math.max(
   ...[...equation.questions, equation.how].map((row) => [...row.question].length)
 )
@@ -36,7 +37,9 @@ const widest = Math.max(
         <div class="row">
           <p>
             <span class="op" />
-            <b class="q">{row.question}</b>
+            <b class="q" lang="en">
+              {row.question}
+            </b>
             <span class="a">{row.answer}</span>
           </p>
         </div>
@@ -50,7 +53,7 @@ const widest = Math.max(
   </div>
   <p class="how">
     <span class="op" aria-hidden="true">=</span>
-    <b class="q">{equation.how.question}</b>
+    <b class="q" lang="en">{equation.how.question}</b>
     <span class="a">{equation.how.answer}</span>
   </p>
 </div>

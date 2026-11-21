@@ -1,14 +1,8 @@
 # DRAFT. Polish copy is written, not translated word for word, and goes through Jan.
-questions:
-  - id: what
-    question: co?
-    answer: strona, która buduje się sama, kiedy przewijasz.
-  - id: why
-    question: po co?
-    answer: żeby pokazać, że układ niesie znaczenie.
-  - id: who
-    question: dla kogo?
-    answer: dla kogoś, kto decyduje, czy ze mną budować.
-how:
-  question: jak?
-  answer: przewiń. Buduje się po drodze.
+# The questions stay in English in every language (notation/main.yaml), so each answer
+# answers the English question: `who?` takes a nominative.
+answers:
+  what: strona, która buduje się sama, kiedy przewijasz.
+  why: żeby pokazać, że układ niesie znaczenie.
+  who: ktoś, kto decyduje, czy ze mną budować.
+how: przewiń. Buduje się po drodze.

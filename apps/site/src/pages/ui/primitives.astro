@@ -97,9 +97,9 @@ import Work from "../../components/Work.astro"
 
   // One chapter current, one stop nearest and just landed, so the states are visible here.
   document
-    .querySelector<HTMLElement>('.specimen [data-number="2.1"]')
+    .querySelector<HTMLElement>('.specimen [data-id="structure"]')
     ?.setAttribute("aria-current", "true")
-  document.querySelector(".specimen [data-number='2.3']")?.classList.add("is-nearest", "is-landed")
+  document.querySelector(".specimen [data-id='tokens']")?.classList.add("is-nearest", "is-landed")
 </script>
 
 <style>

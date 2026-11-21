@@ -49,6 +49,9 @@ The ADRs in `docs/adr` win. Known differences, all on purpose:
   product's.
 - The phone scroll hint in casual italic ("pssst… swipe it up") is not ported; the hint will be
   visual, and the font no longer carries those axes.
+- The stops are not counted `n/12`, the first is not called `the start`, and the questions are not
+  translated. Each stop has a mark (`0`, `+`, `=`, `1`, `2.3`), the first is `w+w+w`, and the four
+  questions are English in every language (ADR 0010, ADR 0011).
 - The first frame is not empty paper (scenario A1). The equation's line is there as a seed: a
   few pixels at the centre that appear with one glint and breathe sideways until the reader
   scrolls. It is the line itself and it is the scroll hint. Jan's idea, 21 Nov 2026.
