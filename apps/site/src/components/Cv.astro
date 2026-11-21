@@ -355,6 +355,9 @@ function blocks(descriptions: Description[]) {
   .job {
     padding-block: var(--space-loose);
   }
+  .tools {
+    font-style: italic;
+  }
   .selected h3 {
     font-size: var(--type-body-size);
     line-height: var(--type-body-leading);
@@ -374,9 +377,9 @@ function blocks(descriptions: Description[]) {
   .skill dd {
     margin: 0;
   }
-  /* The font has no slant axis. Emphasis is upright; the browser must not slant it. */
+  /* The quote's source title. The tools line above is the other italic. */
   em {
-    font-style: normal;
+    font-style: italic;
   }
 
   @media (max-width: 760px) {

@@ -1,13 +1,16 @@
 /*
  * Recursive, the one variable family (OFL-1.1, see OFL.txt).
  *
- * One file for English, Polish and Norwegian. Subset of Recursive 1.085
+ * Two files for English, Polish and Norwegian. Subset of Recursive 1.085
  * (Google Fonts v44, the same outlines as @fontsource-variable/recursive 5.3.0).
- * Axes kept: MONO 0 to 1, wght 300 to 1000. CASL and slnt are pinned to 0
- * and dropped, so the face is upright. The cursive axis is pinned to its
- * default (0.5) and dropped. Layout features kept: rvrn (mono and sans forms
- * of a few letters) and kern. Stylistic sets and the other alternates are not
- * shipped. U+2011 has no glyph in Recursive; it uses the hyphen (U+2010).
+ * The upright file keeps MONO 0 to 1 and wght 300 to 1000. CASL, slnt and the
+ * cursive axis are pinned and dropped, so that face is upright.
+ * The italic file is the same characters with slnt pinned to its italic end.
+ * MONO is pinned to 1 and dropped: italic is only used at the mono voice.
+ * A browser downloads a face only when text on the page uses it, so pages
+ * without italics never fetch the second file. It is not preloaded.
+ * Layout features kept: rvrn and kern. Stylistic sets and the other alternates
+ * are not shipped. U+2011 has no glyph in Recursive; it uses the hyphen (U+2010).
  *
  * Rebuild when the source gains a character:
  *   node packages/strm-ui/src/fonts/subset.mjs --fetch
@@ -18,7 +21,7 @@
  * "Recursive Fallback" is a local proportional face (Arial, and the
  * metric-compatible Liberation Sans and Arimo) with size-adjust and metric
  * overrides measured at the body voice: MONO 0, wght 400. That is the face
- * the page shows while the file swaps in.
+ * the page shows while the upright file swaps in.
  */
 
 @font-face {
@@ -27,6 +30,18 @@
   font-weight: 300 1000;
   font-display: swap;
   src: url("./recursive.woff2") format("woff2");
+  unicode-range:
+    U+0020-007E, U+00A0, U+00AB, U+00AD, U+00B0, U+00B7, U+00BB, U+00C5-00C6, U+00D3, U+00D7-00D8,
+    U+00E5-00E6, U+00F3, U+00F8, U+0104-0107, U+0118-0119, U+0141-0144, U+015A-015B, U+0179-017C,
+    U+2010-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+2190-2193, U+2212, U+2264-2265;
+}
+
+@font-face {
+  font-family: "Recursive Variable";
+  font-style: italic;
+  font-weight: 300 1000;
+  font-display: swap;
+  src: url("./recursive-italic.woff2") format("woff2");
   unicode-range:
     U+0020-007E, U+00A0, U+00AB, U+00AD, U+00B0, U+00B7, U+00BB, U+00C5-00C6, U+00D3, U+00D7-00D8,
     U+00E5-00E6, U+00F3, U+00F8, U+0104-0107, U+0118-0119, U+0141-0144, U+015A-015B, U+0179-017C,

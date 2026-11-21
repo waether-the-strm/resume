@@ -17,6 +17,13 @@ export default defineConfig({
       }),
     },
   },
+  // Internal links only: Astro skips anything on another origin. Hover also
+  // prefetches on focus. Touch is the tap strategy, and a slow connection or
+  // data saver falls back to tap. That check stays on. No client prerender.
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "hover",
+  },
   i18n: {
     locales: ["en", "pl", "no"],
     defaultLocale: "en",
