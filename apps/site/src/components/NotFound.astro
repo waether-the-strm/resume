@@ -2,13 +2,18 @@
 // The 404 page, in the locale the route was built for. The host serves the root
 // 404.html for any unknown URL; /pl/404 is the Polish page itself.
 import Base from "../layouts/Base.astro"
-import { launched, localeNames, localePath, type Locale } from "../i18n/locales"
+import { defaultLocale, launched, localeNames, localePath, type Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
 
 interface Props {
   locale: Locale
 }
 const { locale } = Astro.props
+// Match Base.astro: the root 404 is /404, a localized 404 is a directory.
+const notFoundPath = (other: Locale) => {
+  const url = localePath(other, "/404")
+  return other === defaultLocale || url.endsWith("/") ? url : `${url}/`
+}
 ---
 
 <Base
@@ -26,7 +31,7 @@ const { locale } = Astro.props
       {
         launched.map((other) => (
           <a
-            href={localePath(other, "/404")}
+            href={notFoundPath(other)}
             lang={other}
             hreflang={other}
             aria-current={other === locale ? "true" : undefined}
