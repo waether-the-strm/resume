@@ -46,39 +46,50 @@ test("the first frame holds a seed of the line: it glints once, and coming back 
   const read = () =>
     equation.evaluate((root) => {
       const line = root.querySelector(".line")
+      const seed = root.querySelector(".seed")
       const glint = root.querySelector(".glint")
-      if (!line || !glint) return null
-      const box = line.getBoundingClientRect()
+      if (!line || !seed || !glint) return null
+      const box = seed.getBoundingClientRect()
       return {
-        clip: getComputedStyle(line).clipPath,
-        lineAnimations: getComputedStyle(line).animationName,
+        window: getComputedStyle(line).clipPath,
+        seed: getComputedStyle(seed).animationName,
+        seedOpacity: Number(getComputedStyle(seed).opacity),
         glint: getComputedStyle(glint).animationName,
-        centred: Math.abs(box.left + box.width / 2 - innerWidth / 2) < 1,
+        centred: Math.abs(box.left + box.width / 2 - innerWidth / 2) < 2,
       }
     })
 
-  // Before any scroll: not drawn, a window of a few pixels at the centre, the glint armed.
+  // Before any scroll: the line's window is closed, the seed is at the centre, the glint armed.
   await expect(equation).not.toHaveAttribute("data-line")
   await expect(equation).not.toHaveAttribute("data-met")
   const first = await read()
-  expect(first?.clip).toContain("50%")
-  expect(first?.lineAnimations).toContain("seed-breathe")
+  expect(first).not.toBeNull()
+  expect(first?.window).toBe("inset(-30px 50%)")
+  expect(first?.seed).toContain("seed-breathe")
   expect(first?.glint).toBe("seed-glint")
   expect(first?.centred).toBe(true)
+  await expect.poll(async () => (await read())?.seedOpacity, { timeout: 5000 }).toBe(1)
 
-  // A little scroll draws the line from that seed: the window is open.
+  // A little scroll draws the line from that point. It grows; it does not jump to full length.
   const screen = await page.evaluate(() => innerHeight)
   await page.evaluate((y) => scrollTo(0, y), Math.round(0.2 * screen))
   await expect(equation).toHaveAttribute("data-line", "")
   await expect(equation).toHaveAttribute("data-met", "")
-  await expect.poll(async () => (await read())?.clip).toBe("inset(-30px)")
+  const growing = await read()
+  expect(growing?.window, "the window is still opening just after the scroll").not.toBe(
+    "inset(-30px)"
+  )
+  await expect.poll(async () => (await read())?.window).toBe("inset(-30px)")
+  await expect.poll(async () => (await read())?.seedOpacity).toBe(0)
 
-  // Back at the top it is a seed again, breathing, with no second glint.
+  // Back at the top the window closes, and the seed returns with no second glint.
   await page.evaluate(() => scrollTo(0, 0))
   await expect(equation).not.toHaveAttribute("data-line")
+  await expect.poll(async () => (await read())?.window).toBe("inset(-30px 50%)")
   const back = await read()
   expect(back?.glint).toBe("none")
-  expect(back?.lineAnimations).toBe("seed-breathe")
+  expect(back?.seed).toBe("seed-breathe")
+  await expect.poll(async () => (await read())?.seedOpacity, { timeout: 5000 }).toBe(1)
 })
 
 test.describe("keys and sound", () => {
