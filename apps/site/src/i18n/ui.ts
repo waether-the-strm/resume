@@ -10,6 +10,11 @@ const en = {
   "nav.paths": "Ways in",
   "nav.language": "Language",
   "work.heading": "Selected work",
+  // CV chrome. The page is not translated: /pl/cv reuses these English strings.
+  "cv.nav": "Page",
+  "cv.back": "← Back",
+  "cv.download": "Download PDF",
+  "cv.live": "live",
 }
 
 export type UiKey = keyof typeof en
@@ -22,6 +27,11 @@ const pl: Record<UiKey, string> = {
   "nav.paths": "Wejścia",
   "nav.language": "Język",
   "work.heading": "Wybrane prace",
+  // Untranslated: the CV page falls back to English.
+  "cv.nav": "Page",
+  "cv.back": "← Back",
+  "cv.download": "Download PDF",
+  "cv.live": "live",
 }
 
 // Not launched: Norwegian reuses English until its copy is written. Listed here on purpose,

@@ -1,0 +1,8 @@
+area: Systems
+order: 1
+items:
+  - Design systems
+  - Design tokens
+  - Theming
+  - Frontend architecture
+  - Migrations (Angular → React)

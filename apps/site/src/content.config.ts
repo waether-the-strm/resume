@@ -64,4 +64,95 @@ const projects = defineCollection({
   }),
 })
 
-export const collections = { message, card, projects }
+// The CV document: one entry per locale. Section headings travel with the entry so a
+// missing translation falls back together with the prose.
+const cv = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/cv" }),
+  schema: z.strictObject({
+    name: z.string(),
+    role: z.string(),
+    subtitle: z.string(),
+    tagline: z.string(),
+    contacts: z
+      .array(
+        z.strictObject({
+          kind: z.enum(["place", "mail", "phone", "web", "linkedin"]),
+          label: z.string(),
+          href: z.string().optional(),
+        })
+      )
+      .min(1),
+    headings: z.strictObject({
+      profile: z.string(),
+      process: z.string(),
+      experience: z.string(),
+      work: z.string(),
+      skills: z.string(),
+      education: z.string(),
+    }),
+    profile: z.strictObject({
+      quote: rich,
+      author: z.string(),
+      work: z.string(),
+      source: z.string(),
+      paragraphs: z.array(rich).min(1),
+    }),
+    process: z
+      .array(
+        z.strictObject({
+          title: z.string(),
+          text: rich,
+        })
+      )
+      .min(1),
+  }),
+})
+
+// Jobs, newest first. `order` is reading order, not a fact about the work.
+// A description is a bullet unless `item` is false, in which case it is a paragraph.
+const experience = defineCollection({
+  loader: glob({ pattern: "*/*.yaml", base: "./src/content/experience" }),
+  schema: z.strictObject({
+    company: z.string(),
+    order: z.number().int(),
+    roles: z
+      .array(
+        z.strictObject({
+          title: z.string(),
+          period: z.string(),
+        })
+      )
+      .min(1),
+    descriptions: z
+      .array(
+        z.strictObject({
+          text: rich,
+          label: z.string().optional(),
+          item: z.boolean().default(true),
+        })
+      )
+      .min(1),
+    tools: z.array(z.string()).default([]),
+  }),
+})
+
+const education = defineCollection({
+  loader: glob({ pattern: "*/*.yaml", base: "./src/content/education" }),
+  schema: z.strictObject({
+    school: z.string(),
+    detail: z.string(),
+    period: z.string(),
+    order: z.number().int(),
+  }),
+})
+
+const skills = defineCollection({
+  loader: glob({ pattern: "*/*.yaml", base: "./src/content/skills" }),
+  schema: z.strictObject({
+    area: z.string(),
+    items: z.array(z.string()).min(1),
+    order: z.number().int(),
+  }),
+})
+
+export const collections = { message, card, projects, cv, experience, education, skills }

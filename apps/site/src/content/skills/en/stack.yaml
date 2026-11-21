@@ -1,0 +1,16 @@
+area: Stack
+order: 3
+items:
+  - TypeScript
+  - React
+  - HTML
+  - CSS
+  - Storybook
+  - Next.js
+  - Astro
+  - Tailwind CSS
+  - Lit
+  - Bun
+  - Jest
+  - React Testing Library
+  - git
