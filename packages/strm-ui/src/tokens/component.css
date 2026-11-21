@@ -52,7 +52,8 @@
 
   /*
    * Rail: the stops as navigation. Sizes are the prototype's (v0.16.0).
-   * The tick grows by scale, not by width, so the cue does not move layout.
+   * The tick's box stays `--rail-tick`. Wide and current are the lengths that
+   * scale reaches, so the cue does not move layout.
    * Phone values are the overrides below: a 44px gutter, ticks only.
    */
   --rail-inset: 28px;

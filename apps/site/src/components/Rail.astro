@@ -5,6 +5,7 @@
 // (`html[data-tour]`, ADR 0009). Chapter marks carry their chapter number (ADR 0010).
 import type { Locale } from "../i18n/locales"
 import { narrative } from "../i18n/content"
+import { t } from "../i18n/ui"
 import { stopNumber } from "../lib/stop-number"
 
 interface Props {
@@ -13,12 +14,9 @@ interface Props {
 
 const { locale } = Astro.props
 const { stops } = await narrative(locale)
-
-// The prototype's names for the arrows and the nav (v0.16.0). Polish for these
-// three strings is copy, and this task does not change ui.ts.
-const railLabel = "Tour steps"
-const previousStop = "previous stop"
-const nextStop = "next stop"
+const railLabel = t(locale, "rail.label")
+const previousStop = t(locale, "rail.previous")
+const nextStop = t(locale, "rail.next")
 ---
 
 <nav class="ui-rail" aria-label={railLabel}>

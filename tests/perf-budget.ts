@@ -81,18 +81,24 @@ export type BudgetMetric = FinishedMetric | TourMetric
  *
  * Script bytes measured again the same day, when the keys and sound were wired to the tour
  * (two new parts, 1312 B): 10186, 10186, 10186. Nothing else moved.
+ *
+ * Measured again the same day, with the rail on that tour. Three cold loads, the same
+ * bytes each time. Script 10591 (+405). CSS 7751 (+1031), which the previous margin
+ * missed by 7 B. Document `/` 5079 (+361) and `/pl/` 5351 (+371). Font and layout
+ * shift did not move. Paint this round stayed under the ceiling, so that ceiling stays:
+ * `/` 1942.5, 1937.2, 1958.4; `/pl/` 1894.3, 1923.9, 1904.1.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 4718, css: 6720, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 4980, css: 6720, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 5079, css: 7751, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 5351, css: 7751, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 10186 },
-    "/pl/": { cls: 0, script: 10186 },
+    "/": { cls: 0, script: 10591 },
+    "/pl/": { cls: 0, script: 10591 },
   },
 }
 

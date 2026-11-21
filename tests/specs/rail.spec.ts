@@ -1,5 +1,10 @@
 import { expect, test, type Page } from "@playwright/test"
 
+function tickScale(tick: Element): number {
+  const raw = getComputedStyle(tick).scale
+  return raw === "none" ? 1 : Number(raw.split(" ")[0])
+}
+
 async function chapterDigits(page: Page): Promise<string[]> {
   return page
     .locator(".ui-rail__num")
@@ -33,6 +38,15 @@ test.describe("the rail on the finished page", () => {
       "tokens"
     )
     await expect(page.locator(".ui-rail__arrow")).toHaveCount(2)
+    await expect(page.locator(".ui-rail")).toHaveAttribute("aria-label", "Tour steps")
+    await expect(page.locator('.ui-rail__arrow[data-dir="-1"]')).toHaveAttribute(
+      "aria-label",
+      "previous stop"
+    )
+    await expect(page.locator('.ui-rail__arrow[data-dir="1"]')).toHaveAttribute(
+      "aria-label",
+      "next stop"
+    )
   })
 
   test("Polish names come from the content", async ({ page }) => {
@@ -48,6 +62,15 @@ test.describe("the rail on the finished page", () => {
       "wygląd",
     ])
     expect(await chapterDigits(page)).toEqual(['"0"', '"1"', '"2"', '"3"'])
+    await expect(page.locator(".ui-rail")).toHaveAttribute("aria-label", "Tour steps")
+    await expect(page.locator('.ui-rail__arrow[data-dir="-1"]')).toHaveAttribute(
+      "aria-label",
+      "previous stop"
+    )
+    await expect(page.locator('.ui-rail__arrow[data-dir="1"]')).toHaveAttribute(
+      "aria-label",
+      "next stop"
+    )
   })
 })
 
@@ -74,6 +97,11 @@ test.describe("the rail in the tour", () => {
     )
     await expect(page.locator('.ui-rail__stop[data-number="2.3"]')).toHaveClass(/is-nearest/)
     await expect(page.locator(".ui-rail__stop.is-landed")).toHaveCount(0)
+    const currentTick = page.locator('.ui-rail__stop[aria-current="true"] .ui-rail__tick')
+    await expect
+      .poll(async () => currentTick.evaluate(tickScale), { timeout: 1_000 })
+      .toBeCloseTo(22 / 12, 2)
+    expect(await currentTick.evaluate((tick) => getComputedStyle(tick).width)).toBe("12px")
     await expect(page.locator('.ui-rail__arrow[data-dir="-1"]')).toBeDisabled()
     await expect(page.locator('.ui-rail__arrow[data-dir="1"]')).toBeDisabled()
   })
@@ -115,18 +143,37 @@ test.describe("the rail in the tour", () => {
     const next = page.locator('.ui-rail__arrow[data-dir="1"]')
     const previous = page.locator('.ui-rail__arrow[data-dir="-1"]')
     await expect(previous).toBeDisabled()
+    const startAttr = await page.locator(".ui-rail__stop.is-nearest").getAttribute("data-index")
+    expect(startAttr).not.toBeNull()
+    const start = Number(startAttr)
     await next.click()
-    const what = page.locator('.ui-rail__stop[data-index="1"]')
-    await expect(what).toHaveClass(/is-landed/, { timeout: 5_000 })
-    await expect(page.locator('.ui-rail__stop[data-index="2"]')).not.toHaveClass(/is-landed/)
+    await expect(page.locator(".ui-rail__stop.is-landed")).toHaveAttribute(
+      "data-index",
+      String(start + 1),
+      { timeout: 5_000 }
+    )
+    await expect(page.locator(`.ui-rail__stop[data-index="${start + 2}"]`)).not.toHaveClass(
+      /is-landed/
+    )
 
     await previous.click()
-    await expect(page.locator('.ui-rail__stop[data-index="0"]')).toHaveClass(/is-landed/, {
-      timeout: 5_000,
-    })
+    await expect(page.locator(".ui-rail__stop.is-landed")).toHaveAttribute(
+      "data-index",
+      String(start),
+      { timeout: 5_000 }
+    )
 
     const before = await page.evaluate(() => window.scrollY)
     const tokens = page.locator('.ui-rail__stop[data-number="2.3"]')
+    await tokens.evaluate((button) => {
+      const mark = button.querySelector(".ui-rail__dot")
+      if (!mark) throw new Error("tokens has no dot")
+      let starts = 0
+      mark.addEventListener("animationstart", () => {
+        starts += 1
+      })
+      Object.assign(button, { starts: () => starts })
+    })
     await tokens.click()
     await expect(tokens).toHaveClass(/is-landed/, { timeout: 5_000 })
     await expect(page.locator('.ui-rail__stop[data-number="2.1"]')).toHaveAttribute(
@@ -144,6 +191,14 @@ test.describe("the rail in the tour", () => {
       }
     })
     expect(dot).toEqual({ name: "ui-rail-land-dot", count: "1", duration: "0.5s" })
+
+    // At rest the cue must not start again. A loop would fire animationstart once more.
+    await page.waitForTimeout(2_000)
+    const starts = await tokens.evaluate((button) => {
+      const read = (button as { starts?: () => number }).starts
+      return read ? read() : -1
+    })
+    expect(starts).toBe(1)
 
     const words = page.locator('.ui-rail__stop[data-number="1.1"]')
     await words.click()
@@ -167,5 +222,11 @@ test.describe("the rail in the tour", () => {
     await expect(page.locator(".ui-rail__num").first()).toBeHidden()
     await expect(page.locator(".ui-rail__stop.is-chapter").first()).toBeVisible()
     await expect(page.locator(".ui-rail__arrow").first()).toBeVisible()
+    await expect(page.locator('.ui-rail__stop[aria-current="true"]')).toHaveCount(1)
+    const phoneTick = page.locator('.ui-rail__stop[aria-current="true"] .ui-rail__tick')
+    await expect
+      .poll(async () => phoneTick.evaluate(tickScale), { timeout: 1_000 })
+      .toBeCloseTo(18 / 10, 2)
+    expect(await phoneTick.evaluate((tick) => getComputedStyle(tick).width)).toBe("10px")
   })
 })

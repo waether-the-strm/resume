@@ -18,6 +18,10 @@ const en = {
   "cv.back": "← Back",
   "cv.download": "Download PDF",
   "cv.live": "live",
+  // The rail (#34). The prototype's names for the nav and the two arrows (v0.16.0).
+  "rail.label": "Tour steps",
+  "rail.previous": "previous stop",
+  "rail.next": "next stop",
 }
 
 export type UiKey = keyof typeof en
@@ -38,6 +42,10 @@ const pl: Record<UiKey, string> = {
   "cv.back": "← Back",
   "cv.download": "Download PDF",
   "cv.live": "live",
+  // DRAFT for Jan: the prototype's English, repeated until the Polish is written.
+  "rail.label": "Tour steps",
+  "rail.previous": "previous stop",
+  "rail.next": "next stop",
 }
 
 // Not launched: Norwegian reuses English until its copy is written. Listed here on purpose,

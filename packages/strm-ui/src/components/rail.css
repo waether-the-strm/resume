@@ -154,24 +154,30 @@
 }
 
 .ui-rail__tick {
+  --rail-tick-x: 1;
   width: var(--rail-tick);
   height: var(--rail-tick-weight);
   background: var(--ink-soft);
   transform-origin: right center;
+  scale: var(--rail-tick-x) 1;
   transition:
-    width var(--motion-micro) var(--ease-out),
+    scale var(--motion-micro) var(--ease-out),
     background-color var(--motion-micro) var(--ease-out);
 }
 
 .ui-rail__stop:hover .ui-rail__tick,
 .ui-rail__stop:focus-visible .ui-rail__tick,
 .ui-rail__stop.is-nearest .ui-rail__tick {
-  width: var(--rail-tick-wide);
+  --rail-tick-x: calc(var(--rail-tick-wide) / var(--rail-tick));
   background: var(--rail-tick-hover);
 }
 
-.ui-rail__stop[aria-current="true"] .ui-rail__tick {
-  width: var(--rail-tick-current);
+/* Current wins over nearest and hover: the chapter on show stays the long tick. */
+.ui-rail__stop[aria-current="true"] .ui-rail__tick,
+.ui-rail__stop[aria-current="true"]:hover .ui-rail__tick,
+.ui-rail__stop[aria-current="true"]:focus-visible .ui-rail__tick,
+.ui-rail__stop[aria-current="true"].is-nearest .ui-rail__tick {
+  --rail-tick-x: calc(var(--rail-tick-current) / var(--rail-tick));
   background: var(--accent);
 }
 
@@ -208,15 +214,16 @@
   animation: ui-rail-land-dot var(--motion-move) var(--ease-out);
 }
 
+/* The pulse multiplies the resting scale, so a wide tick grows from where it is. */
 @keyframes ui-rail-land {
   0% {
-    scale: 1 1;
+    scale: var(--rail-tick-x, 1) 1;
   }
   35% {
-    scale: var(--rail-land-scale) 1;
+    scale: calc(var(--rail-tick-x, 1) * var(--rail-land-scale)) 1;
   }
   100% {
-    scale: 1 1;
+    scale: var(--rail-tick-x, 1) 1;
   }
 }
 
