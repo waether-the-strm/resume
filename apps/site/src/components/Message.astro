@@ -39,10 +39,10 @@ const message = await single("message", locale)
   .message {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    gap: 12px 64px;
+    gap: var(--message-gap);
     align-items: start;
-    font-size: 17px;
-    line-height: 1.55;
+    font-size: var(--message-size);
+    line-height: var(--message-leading);
   }
   h1,
   p {
@@ -50,12 +50,15 @@ const message = await single("message", locale)
   }
   .headline {
     grid-column: 1;
+    font-size: var(--message-headline-size);
     line-height: 1;
-    margin-bottom: 10px;
+    margin-bottom: var(--message-headline-space);
   }
   .lead {
     grid-column: 1;
     max-width: 40ch;
+    font-size: var(--message-lead-size);
+    line-height: var(--message-lead-leading);
     color: var(--ink-mute);
   }
   .list {
@@ -65,27 +68,26 @@ const message = await single("message", locale)
   }
   .who {
     grid-column: 1 / -1;
-    margin-top: 44px;
-    font-size: 19px;
+    margin-top: var(--message-who-space);
+    font-size: var(--message-who-size);
   }
   .who .ui-rule {
-    margin-bottom: 18px;
+    margin-bottom: var(--message-who-rule);
   }
   .call {
     grid-column: 1 / -1;
-    margin-top: 34px;
+    margin-top: var(--message-call-space);
     display: flex;
     align-items: center;
     gap: 22px;
     flex-wrap: wrap;
     color: var(--ink-mute);
-    font-size: 16px;
+    font-size: var(--message-call-size);
   }
 
   @media (max-width: 760px) {
     .message {
       grid-template-columns: minmax(0, 1fr);
-      gap: 18px;
     }
     .list {
       grid-column: 1;
@@ -93,9 +95,6 @@ const message = await single("message", locale)
     }
     .lead {
       max-width: none;
-    }
-    .who {
-      margin-top: 22px;
     }
   }
 </style>

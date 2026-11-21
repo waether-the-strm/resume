@@ -13,7 +13,26 @@
   /* tiles: a numbered list on a text axis */
   --tiles-indent: 44px;
   --tiles-pad: 14px;
+  --tiles-size: 18px;
   --tiles-number: var(--accent-text);
+
+  /*
+   * Message: the finished look. The page places the blocks; these are the sizes
+   * and the gaps it reads. The lead follows the message until a shorter phone
+   * sets its own size.
+   */
+  --message-gap: 12px 64px;
+  --message-size: 17px;
+  --message-leading: 1.55;
+  --message-headline-size: var(--type-display-size);
+  --message-headline-space: 10px;
+  --message-lead-size: var(--message-size);
+  --message-lead-leading: var(--message-leading);
+  --message-who-space: 44px;
+  --message-who-rule: 18px;
+  --message-who-size: 19px;
+  --message-call-space: 34px;
+  --message-call-size: 16px;
 
   /* panel: the one raised surface */
   --panel-fill: var(--paper-raised);
@@ -36,8 +55,35 @@
   :root {
     --tiles-indent: 34px;
     --tiles-pad: 10px;
+    --tiles-size: 16px;
     --panel-pad: 28px 24px 20px;
     --paths-pad: 18px;
     --work-visual: 150px;
+    --message-gap: 18px;
+    --message-who-space: 22px;
+  }
+}
+
+/*
+ * A short phone: narrow, and not tall. Less air and a smaller headline, so the
+ * finished look can sit in the viewport. A tall phone keeps the rules above.
+ */
+@media (max-width: 760px) and (max-height: 800px) {
+  :root {
+    --message-gap: 10px;
+    --message-size: 16px;
+    --message-leading: 1.45;
+    --message-headline-size: 32px;
+    --message-headline-space: 4px;
+    --message-lead-size: 15px;
+    --message-lead-leading: 1.4;
+    --tiles-indent: 36px;
+    --tiles-pad: 6px;
+    --tiles-size: 16px;
+    --message-who-space: 10px;
+    --message-who-rule: 12px;
+    --message-who-size: 17px;
+    --message-call-space: 4px;
+    --message-call-size: 15px;
   }
 }

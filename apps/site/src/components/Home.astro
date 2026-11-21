@@ -114,4 +114,16 @@ const { locale } = Astro.props
       gap: 24px;
     }
   }
+
+  /*
+   * A short phone. The prototype inset (118px / 88px) reserved a fixed guide
+   * and a bottom control; neither is on the page. 64px / 32px is one step
+   * down the space scale from the phone inset above, and it keeps the whole
+   * stage inside a 664px viewport.
+   */
+  @media (max-width: 760px) and (max-height: 800px) {
+    .stage {
+      padding-block: 64px 32px;
+    }
+  }
 </style>
