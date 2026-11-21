@@ -1,0 +1,14 @@
+---
+import ProjectPage from "../../../components/ProjectPage.astro"
+import { projectPages } from "../../../i18n/content"
+
+export async function getStaticPaths() {
+  const pages = await projectPages("pl")
+  return pages.map((page) => ({ params: { slug: page.slug } }))
+}
+
+const slug = Astro.params.slug
+if (!slug) throw new Error("Missing project slug")
+---
+
+<ProjectPage locale="pl" slug={slug} />
