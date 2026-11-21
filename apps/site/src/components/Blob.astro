@@ -23,12 +23,10 @@ const { locale, flow = false, open = false, slim = true } = Astro.props
 const story = await narrative(locale)
 const last = story.stops.length - 1
 
-// The signature from the prototype, and a fact: the name, the role, the city. Polish
-// keeps these words, as the card already keeps "design engineer" and "Oslo". The
-// accessible name adds where the link goes, from the stops' `after`, so it is not a
-// new sentence.
-const signatureName = "Jan Mirecki"
-const signatureRest = " · design engineer · Oslo"
+// The name row's words live in ui.ts. The accessible name adds where the link goes,
+// from the stops' `after`, so it is not a new sentence.
+const signatureName = t(locale, "blob.name")
+const signatureRest = t(locale, "blob.signature")
 const signature = `${signatureName}${signatureRest}`
 const nameLabel = `${signature}, ${story.after}`
 

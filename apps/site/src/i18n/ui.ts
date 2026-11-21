@@ -32,6 +32,10 @@ const en = {
   "blob.work": "the work",
   "blob.tldr": "tldr",
   "blob.tldr.long": "tldr, go to the card",
+  // The name row. The name is a fact; the role and the city are the words the card
+  // already keeps in English.
+  "blob.name": "Jan Mirecki",
+  "blob.signature": " · design engineer · Oslo",
 }
 
 export type UiKey = keyof typeof en
@@ -67,6 +71,10 @@ const pl: Record<UiKey, string> = {
   // DRAFT for Jan: the accessible name. The visible text stays "tldr". The rest reuses
   // `nav.skip` ("Przejdź do wizytówki"), so the name says where the link goes.
   "blob.tldr.long": "tldr, przejdź do wizytówki",
+  // The same words as English. The card keeps "design engineer" and "Oslo"; Jan rewrites
+  // them if he wants them in Polish.
+  "blob.name": "Jan Mirecki",
+  "blob.signature": " · design engineer · Oslo",
 }
 
 // Not launched: Norwegian reuses English until its copy is written. Listed here on purpose,

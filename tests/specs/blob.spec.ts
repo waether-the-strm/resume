@@ -110,6 +110,17 @@ test.describe("the blob on the tour", () => {
     expect(polishLabel).toContain("wizytówki")
   })
 
+  test("tldr is visible at the desktop widths and hidden at 390", async ({ page }) => {
+    const tldr = page.locator(".ui-blob__tldr")
+    await page.setViewportSize({ width: 1280, height: 820 })
+    await page.goto("/")
+    await expect(tldr).toBeVisible()
+    await page.setViewportSize({ width: 1280, height: 700 })
+    await expect(tldr).toBeVisible()
+    await page.setViewportSize({ width: 390, height: 664 })
+    await expect(tldr).toBeHidden()
+  })
+
   test("G12: three controls, sound is the preference, and the menu folds back", async ({
     page,
   }) => {
