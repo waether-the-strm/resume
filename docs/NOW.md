@@ -41,6 +41,9 @@ first two milestones, Start and Target dates. Issues labelled `delegable` go to 
 
 ## Waiting for Jan
 
+His queue is the board filtered by `who:Jan is:open`, ordered by Target, each with a kind (Decide,
+Brief, Write, Verify) and a timebox in minutes.
+
 - #16 confirm words with roles, before the scenes.
 - #40 how deep a case study goes and which is first; it blocks the project page template (#41).
 - #33 what the blob holds; it blocks the blob (#35).
