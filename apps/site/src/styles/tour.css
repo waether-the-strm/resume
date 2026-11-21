@@ -222,11 +222,16 @@
 }
 
 /*
- * The line. On the empty first frame it is already there as a seed: four pixels of itself
- * at the centre, breathing sideways, the way it will grow. It is one element throughout,
- * shown through a window (clip-path) that opens from the centre: no layout changes, and
- * scrolling back closes the window again. The window is taller than the line so the glow of
- * the pulse is not cut off.
+ * The line, and the seed it grows from. The line is one element in every state, seen
+ * through a window (clip-path) that opens from the centre: closed on the first frame, open
+ * once the reader scrolls, closed again on the way back. No layout changes. The window is
+ * taller than the line so the glow of the pulse is not cut off.
+ *
+ * The seed is a few pixels of ink at the very point the window opens from. It breathes
+ * sideways, the way the line will grow, and steps aside the moment the line starts. It is a
+ * separate element because its breath must not sit on the property the window transitions:
+ * a running animation there makes the browser skip the transition, and the line would jump
+ * to full length.
  */
 .equation .rule {
   position: relative;
@@ -235,32 +240,44 @@
 .equation .line {
   height: 2px;
   background: var(--ink);
-  clip-path: inset(-30px calc(50% - 2px));
+  clip-path: inset(-30px 50%);
   opacity: calc(1 - var(--warp, 0));
   transition: clip-path 0.9s var(--ease-out);
-}
-/* The breath waits for the line to close back to a seed when the reader returns. */
-.equation:not([data-line]) .line {
-  animation: seed-breathe 2.6s ease-in-out 0.9s infinite;
 }
 .equation[data-line] .line {
   clip-path: inset(-30px);
 }
+.equation .seed {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 2px;
+  translate: -50% -50%;
+  background: var(--ink);
+  animation: seed-breathe 2.6s ease-in-out infinite;
+  /* Coming back to the top: it returns once the line has closed. */
+  transition: opacity 0.5s ease-out 0.7s;
+}
+.equation[data-line] .seed {
+  opacity: 0;
+  transition: opacity 0.15s linear 0.1s;
+}
 @keyframes seed-breathe {
   50% {
-    clip-path: inset(-30px calc(50% - 5px));
+    scale: 2.5 1;
   }
 }
 
 /*
- * The first time only, before the reader has scrolled: the seed appears out of nothing, with
- * one glint, like a far star. Once the line has been drawn the script marks the equation as
- * met, and coming back to the top is quiet.
+ * The first time only, before the reader has scrolled: a glint, like a far star, and as it
+ * goes the seed fades in where it was. Once the line has been drawn the script marks the
+ * equation as met, and coming back to the top is quiet.
  */
-.equation:not([data-met]):not([data-line]) .line {
+.equation:not([data-met]) .seed {
   animation:
-    seed-in 0.9s var(--ease-out) 0.7s backwards,
-    seed-breathe 2.6s ease-in-out 1.6s infinite;
+    seed-in 1.2s ease-out 1.15s backwards,
+    seed-breathe 2.6s ease-in-out 2.35s infinite;
 }
 .equation .glint {
   position: absolute;
@@ -277,12 +294,11 @@
   opacity: 0;
 }
 .equation:not([data-met]):not([data-line]) .glint {
-  animation: seed-glint 1.5s ease-out 0.75s both;
+  animation: seed-glint 0.7s ease-out 0.9s both;
 }
 @keyframes seed-in {
   from {
     opacity: 0;
-    clip-path: inset(-30px 50%);
   }
 }
 @keyframes seed-glint {
@@ -290,13 +306,13 @@
     opacity: 0;
     scale: 0.2;
   }
-  25% {
+  30% {
     opacity: 0.9;
     scale: 1;
   }
   100% {
     opacity: 0;
-    scale: 1.25;
+    scale: 1.2;
   }
 }
 .equation[data-pulsed] .line {
