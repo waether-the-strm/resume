@@ -129,10 +129,18 @@ export function restProblems(rows: readonly PlacedReading[]): string[] {
 }
 
 /**
+ * Screens a forward walk must reach before its rests count.
+ * The prototype's second hold, `what`, ends at 0.37: the start holds 0.05, then a travel
+ * of 0.2, then a hold of 0.12. Short of 0.4 the gestures never left the opening, which is
+ * what a scroller that did not move looks like.
+ */
+export const OPENING_SCREENS = 0.4
+
+/**
  * A dead gesture looks like a rest in the first hold. Forward input that never leaves the
  * top of the page did not drive the tour, so the measurement is not evidence.
  */
-export function stayedAtTop(rows: readonly PlacedReading[], minimum = 0.4): string[] {
+export function stayedAtTop(rows: readonly PlacedReading[], minimum = OPENING_SCREENS): string[] {
   if (rows.length === 0) return ["no gesture was measured"]
   const furthest = rows.reduce((max, row) => Math.max(max, row.screens), 0)
   if (furthest < minimum) {
@@ -166,6 +174,38 @@ export function repeatHoldProblems(rows: readonly PlacedReading[], tickPx: numbe
 }
 
 const skins = ["none", "words", "structure", "look"] as const
+
+/**
+ * Words, the look and the payoff are opacity 0 or 1 in `tour.css`. Under 0.05 has not
+ * started; over 0.95 has arrived. The band between is the half-shown frame G2 notes
+ * and G7 rejects.
+ */
+export const OPACITY_HIDDEN = 0.05
+export const OPACITY_SHOWN = 0.95
+
+/**
+ * A stop that must be fully in (the words, the finished look). Two hundredths off 1:
+ * the CSS value is 1, and a computed style that has arrived can sit just under it.
+ * Tighter than {@link OPACITY_SHOWN} on purpose, so a frame at 0.96 is still half shown.
+ */
+const FULLY_IN = 0.98
+
+/**
+ * A heading block has come up. Below {@link FULLY_IN}, so a block at 0.95 means the
+ * page is not empty and is still half shown where the stop must be fully in.
+ */
+const BLOCK_UP = 0.9
+
+/**
+ * The look's weight wave rests at 400, and at 800 for a name the wave has passed
+ * (`400 + 450 * near * (1 - nm * kept) + 400 * nm * kept` in `tour.css`). The visual
+ * language asks for 800 against 400. The wave adds 450 at its crest, so a word within
+ * 40 of a rest has arrived and a word still on the wave has not. 40 also covers the
+ * rounding of a computed `wght` axis.
+ */
+const WEIGHT_REST = 400
+const WEIGHT_NAME = 800
+const WEIGHT_TOLERANCE = 40
 
 /**
  * G2. Each hold is one finished state of its stop: the scene agrees with the guide, a
@@ -205,34 +245,39 @@ export function describeHold(row: PlacedReading, index: number): string[] {
       problems.push(`${where}: guide step ${row.guideStep} over scene ${stop.stage}`)
     }
     if (row.skin !== skin) problems.push(`${where}: skin ${row.skin}, expected ${skin}`)
-    const shown = row.blockOpacities.some((block) => block.opacity >= 0.9)
+    const shown = row.blockOpacities.some((block) => block.opacity >= BLOCK_UP)
     if (!shown) problems.push(`${where}: heading over an empty page`)
     if (stop.stage < 3 && row.pay) problems.push(`${where}: the payoff is up before the look`)
     const progress = Number(row.progress)
+    // `--t` is the stop's t. 0.002 is the slack of writing it through a CSS variable and reading it back.
     if (!Number.isFinite(progress) || Math.abs(progress - stop.t) > 0.002) {
       problems.push(`${where}: progress ${row.progress}, the stop holds ${stop.t}`)
     }
   }
   if (stop.id === "words") {
     for (const block of row.blockOpacities) {
-      if (block.opacity < 0.98) {
+      if (block.opacity < FULLY_IN) {
         problems.push(`${where}: ${block.block} is half shown (${block.opacity.toFixed(2)})`)
       }
     }
   }
   if (stop.id === "look") {
-    if ((row.whoOpacity ?? 0) < 0.98) problems.push(`${where}: the name line is not fully there`)
-    if ((row.callOpacity ?? 0) < 0.98) problems.push(`${where}: the call is not fully there`)
+    if ((row.whoOpacity ?? 0) < FULLY_IN)
+      problems.push(`${where}: the name line is not fully there`)
+    if ((row.callOpacity ?? 0) < FULLY_IN) problems.push(`${where}: the call is not fully there`)
     row.tileOpacities.forEach((opacity, tile) => {
-      if (opacity < 0.98) {
+      if (opacity < FULLY_IN) {
         problems.push(`${where}: tile ${tile + 1} is half shown (${opacity.toFixed(2)})`)
       }
     })
     row.whoWeights.forEach((weight, word) => {
-      const settled = Math.abs(weight - 400) < 40 || Math.abs(weight - 800) < 40
+      const settled =
+        Math.abs(weight - WEIGHT_REST) < WEIGHT_TOLERANCE ||
+        Math.abs(weight - WEIGHT_NAME) < WEIGHT_TOLERANCE
       if (!settled) problems.push(`${where}: word ${word} is mid-wave (${Math.round(weight)})`)
     })
-    if (!row.pay || row.payoffOpacity < 0.95) problems.push(`${where}: the payoff is not visible`)
+    if (!row.pay || row.payoffOpacity < OPACITY_SHOWN)
+      problems.push(`${where}: the payoff is not visible`)
   }
   if (stop.stage === 2) {
     const note = stop.t < 0.2 ? "0" : stop.t < 0.4 ? "1" : stop.t < 0.7 ? "2" : "3"
@@ -255,7 +300,7 @@ export function midTileNotes(rows: readonly PlacedReading[]): string[] {
     const stop = row.hold >= 0 ? row.placed[row.hold] : undefined
     if (stop?.id !== "tiles") continue
     row.tileOpacities.forEach((opacity, tile) => {
-      if (opacity > 0.05 && opacity < 0.95) {
+      if (opacity > OPACITY_HIDDEN && opacity < OPACITY_SHOWN) {
         notes.push(
           `tiles: tile ${tile + 1} opacity ${opacity.toFixed(2)} at t=${stop.t} (the hold is this frame)`
         )
@@ -479,6 +524,44 @@ async function swipe(client: CDPSession, page: Page, distance: number): Promise<
     await client.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: point(y) })
   }
   await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] })
+}
+
+/**
+ * A glide the engine skips is shorter than 2px (`ALREADY_THERE_PX` in `settle.ts`).
+ * Drift above that means the glide is still writing.
+ */
+export const GLIDE_DRIFT_PX = 2
+
+/** One finger swipe, for a spec that cancels a glide. The trail is {@link swipe}. */
+export async function touchSwipe(page: Page, distance: number): Promise<void> {
+  const client = await page.context().newCDPSession(page)
+  try {
+    await swipe(client, page, distance)
+  } finally {
+    await client.detach()
+  }
+}
+
+/**
+ * A finger down and not yet up. The glide must not write while this is held.
+ * Call the returned function to lift it.
+ */
+export async function holdFinger(page: Page): Promise<() => Promise<void>> {
+  const client = await page.context().newCDPSession(page)
+  const viewport = page.viewportSize()
+  const x = Math.round((viewport?.width ?? 390) / 2)
+  const y = Math.round((viewport?.height ?? 664) / 2)
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x, y, id: 0 }],
+  })
+  return async () => {
+    try {
+      await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] })
+    } finally {
+      await client.detach()
+    }
+  }
 }
 
 /** Touch swipes of 180, 320 and 520px, then three of 260px back. rest.mjs, mode `touch`. */

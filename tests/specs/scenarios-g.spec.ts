@@ -7,8 +7,12 @@ import {
   driveWheel,
   formatMeasurement,
   formatRestRow,
+  GLIDE_DRIFT_PX,
+  holdFinger,
   holdStateProblems,
   midTileNotes,
+  OPACITY_HIDDEN,
+  OPACITY_SHOWN,
   placeReading,
   readPage,
   readStageFit,
@@ -17,13 +21,15 @@ import {
   scrollToCentre,
   settle,
   stayedAtTop,
+  touchSwipe,
   visitStops,
   WHEEL_TICK_PX,
   writeMeasurement,
   type PlacedReading,
 } from "../rest.ts"
 
-// Scenarios G (docs/spec/TEST-SCENARIOS.md). Live scroll, both languages, three sizes.
+// Scenarios G (docs/spec/TEST-SCENARIOS.md). Live scroll is one language: the rests do not
+// depend on the copy. Both languages stay where the copy or its length matters (G2, G7, G9).
 //
 // Already covered, and not repeated here:
 //   G4 keys, G8 sound          tests/specs/tour.spec.ts
@@ -36,12 +42,19 @@ import {
 // placed against `.track[data-track]`, and checked against the blob's title and the
 // rail's nearest stop. `aria-current` is the chapter (G11), not the hold.
 test.use({ contextOptions: { reducedMotion: "no-preference" } })
-test.describe.configure({ timeout: 180_000 })
+// The longest walk is 31 wheel ticks (26 on, 5 back). A tick is a glide of at most 900ms,
+// the 170ms idle, and the settle poll (9 samples of 50ms once the page is still): about
+// 1.6s, so the walk is about 50s before the page load. 60s fails a settle that has slowed
+// down. 180s did not.
+test.describe.configure({ timeout: 60_000 })
 
 const locales = [
   { path: "/", lang: "en" },
   { path: "/pl/", lang: "pl" },
 ] as const
+
+/** Live scroll. English only: a rest is geometry, not copy. */
+const live = locales[0]
 
 const viewports = [
   { width: 1280, height: 820 },
@@ -101,105 +114,221 @@ function rowsOf(tagged: { tag: string; row: PlacedReading | null }[]): PlacedRea
   return tagged.flatMap((item) => (item.row ? [item.row] : []))
 }
 
+/**
+ * The smallest frame-to-frame move over the next frames.
+ * A wheel is still inside the 170ms idle (`IDLE_MS`): eight frames, and the new glide
+ * #122 re-arms has not started. A touch keeps scrolling for a few frames after the
+ * finger lifts, the tail of the touch trail; twenty frames is that tail, and it ends
+ * still. A glide that was not cancelled writes every frame, so it has no still one.
+ * The input's own scroll can still be landing when the call returns, so the check is
+ * a still frame, not the first sample.
+ */
+async function quietFrame(page: Page, frames = 8): Promise<{ quiet: number; steps: number[] }> {
+  let previous = await page.evaluate(() => window.scrollY)
+  const steps: number[] = []
+  let quiet = Number.POSITIVE_INFINITY
+  for (let sample = 0; sample < frames; sample++) {
+    await page.waitForTimeout(16)
+    const now = await page.evaluate(() => window.scrollY)
+    const step = Math.abs(now - previous)
+    steps.push(Math.round(step))
+    quiet = Math.min(quiet, step)
+    previous = now
+  }
+  return { quiet, steps }
+}
+
+/** A live glide writes every frame. The idle timer is cleared while the finger is down. */
+async function driftWhileHeld(page: Page): Promise<number> {
+  const at = await page.evaluate(() => window.scrollY)
+  let drift = 0
+  for (let sample = 0; sample < 8; sample++) {
+    await page.waitForTimeout(30)
+    drift = Math.max(drift, Math.abs((await page.evaluate(() => window.scrollY)) - at))
+  }
+  return drift
+}
+
+/** Rail click to a far stop, after resting on the first. The glide is what G6 interrupts. */
+async function startGlide(page: Page): Promise<void> {
+  const stops = page.locator(".ui-rail__stop")
+  const count = await stops.count()
+  const visible: number[] = []
+  for (let index = 0; index < count; index++) {
+    if (await stops.nth(index).isVisible()) visible.push(index)
+  }
+  expect(visible.length, "two rail stops to glide between").toBeGreaterThan(1)
+  const first = visible[0]
+  const last = visible[visible.length - 1]
+  if (first === undefined || last === undefined) return
+  await stops.nth(first).click()
+  await settle(page)
+  const before = await page.evaluate(() => window.scrollY)
+  await stops.nth(last).click()
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY), { timeout: 2000 })
+    .toBeGreaterThan(before + 15)
+}
+
 for (const viewport of viewports) {
   test.describe(`${viewport.width}×${viewport.height}`, () => {
     test.use({ viewport: { width: viewport.width, height: viewport.height } })
 
+    test.describe(live.lang, () => {
+      test("G1 G3: a 100px wheel tick comes to rest in a hold", async ({ page }) => {
+        // The assertion is G3. At 820px it fails, and the failure is the finding: a 100px
+        // tick from "the answer, alone" returns to that hold. The hold is 0.12 screens,
+        // 98px, so the exemption (wider than the tick) does not cover it, by two pixels.
+        // Marked expected, the way C6 was: the day the page is fixed, this goes red.
+        test.fail(
+          viewport.height === 820,
+          'G3 at 1280×820: a 100px wheel tick from the hold of "the answer, alone" returns to the same hold. That hold is 0.12 screens, 98px, so the exemption does not cover it, by two pixels.'
+        )
+        const errors = watchErrors(page)
+        await openTour(page, live.path)
+        await page.mouse.move(viewport.width / 2, viewport.height / 2)
+        const { down, up } = await driveWheel(page)
+        const lines = [
+          ...down.map((row) => formatRestRow("tick+100", row)),
+          ...up.map((row) => formatRestRow("tick-100", row)),
+        ]
+        const problems = [
+          ...restProblems(down),
+          ...restProblems(up),
+          ...repeatHoldProblems(down, WHEEL_TICK_PX),
+          ...repeatHoldProblems(up, WHEEL_TICK_PX),
+          ...stayedAtTop(down),
+          ...errors,
+        ]
+        publish(lines, problems)
+        expect(problems, problems.join("\n")).toEqual([])
+      })
+
+      test("G1: a trackpad drag comes to rest in a hold", async ({ page }) => {
+        const errors = watchErrors(page)
+        await openTour(page, live.path)
+        await page.mouse.move(viewport.width / 2, viewport.height / 2)
+        const rows = await driveTrackpad(page)
+        const problems = [...restProblems(rows), ...stayedAtTop(rows), ...errors]
+        publish(
+          rows.map((row, index) => formatRestRow(`drag ${index}`, row)),
+          problems
+        )
+        expect(problems, problems.join("\n")).toEqual([])
+      })
+
+      test.describe("touch", () => {
+        test.use({ hasTouch: true })
+
+        test("G1: a touch swipe comes to rest in a hold", async ({ page }) => {
+          const errors = watchErrors(page)
+          await openTour(page, live.path)
+          const rows = await driveTouch(page)
+          const problems = [...restProblems(rows), ...stayedAtTop(rows), ...errors]
+          publish(
+            rows.map((row) => formatRestRow("swipe", row)),
+            problems
+          )
+          expect(problems, problems.join("\n")).toEqual([])
+        })
+      })
+
+      test("G1: keys come to rest in a hold", async ({ page }) => {
+        // Which key steps where is G4, in tour.spec.ts. Here the keys only have to rest.
+        const errors = watchErrors(page)
+        await openTour(page, live.path)
+        const rows = await driveKeys(page)
+        const problems = [...restProblems(rows), ...stayedAtTop(rows), ...errors]
+        publish(
+          rows.map((row, index) => formatRestRow(`key ${index}`, row)),
+          problems
+        )
+        expect(problems, problems.join("\n")).toEqual([])
+      })
+
+      test("G1: a rail click comes to rest in a hold", async ({ page }) => {
+        // Where a tick, a dot or an arrow goes is G5, in rail.spec.ts.
+        const errors = watchErrors(page)
+        await openTour(page, live.path)
+        const tagged = await driveRail(page)
+        const rows = rowsOf(tagged)
+        const lines = tagged.map((item) =>
+          item.row ? formatRestRow(item.tag, item.row) : `${item.tag}  (not on this page)`
+        )
+        const problems = [...restProblems(rows), ...stayedAtTop(rows), ...errors]
+        publish(lines, problems)
+        expect(problems, problems.join("\n")).toEqual([])
+      })
+
+      test.describe("G6", () => {
+        test.use({ hasTouch: true })
+
+        test("any input cancels a glide, and a finger is not fought", async ({ page }) => {
+          const errors = watchErrors(page)
+          await openTour(page, live.path)
+          await page.mouse.move(viewport.width / 2, viewport.height / 2)
+
+          // 1px is under the 3px diverge check, so only the wheel listener cancels the glide.
+          await startGlide(page)
+          await page.mouse.wheel(0, 1)
+          const wheel = await quietFrame(page)
+          expect(
+            wheel.quiet,
+            `the glide keeps writing after the wheel (${wheel.steps.join(",")})`
+          ).toBeLessThanOrEqual(GLIDE_DRIFT_PX)
+          await settle(page)
+
+          // The prototype's shortest touch, 180px. touchstart cancels; the finger then moves.
+          await startGlide(page)
+          await touchSwipe(page, 180)
+          const touch = await quietFrame(page, 20)
+          expect(
+            touch.quiet,
+            `the glide keeps writing after the touch (${touch.steps.join(",")})`
+          ).toBeLessThanOrEqual(GLIDE_DRIFT_PX)
+          await settle(page)
+
+          // Home is the binding whose action is cancel: it does not start another glide.
+          // The page does not prevent the browser's own Home scroll, so the check is that
+          // once that scroll has landed the glide does not pull the page away.
+          await startGlide(page)
+          await page.keyboard.press("Home")
+          await expect
+            .poll(() => page.evaluate(() => window.scrollY), { timeout: 2000 })
+            .toBeLessThanOrEqual(GLIDE_DRIFT_PX)
+          const home = await quietFrame(page)
+          expect(
+            home.quiet,
+            `the glide keeps writing after Home (${home.steps.join(",")})`
+          ).toBeLessThanOrEqual(GLIDE_DRIFT_PX)
+
+          await startGlide(page)
+          await page.mouse.move(viewport.width / 2, viewport.height / 2)
+          await page.mouse.down()
+          const pointer = await quietFrame(page)
+          expect(
+            pointer.quiet,
+            `the glide keeps writing after the pointer went down (${pointer.steps.join(",")})`
+          ).toBeLessThanOrEqual(GLIDE_DRIFT_PX)
+          await page.mouse.up()
+
+          await startGlide(page)
+          const lift = await holdFinger(page)
+          try {
+            expect(
+              await driftWhileHeld(page),
+              "the page moved by itself while a finger was down"
+            ).toBeLessThanOrEqual(GLIDE_DRIFT_PX)
+          } finally {
+            await lift()
+          }
+          expect(errors, errors.join("\n")).toEqual([])
+        })
+      })
+    })
+
     for (const locale of locales) {
       test.describe(locale.lang, () => {
-        test("G1 G3: a 100px wheel tick comes to rest in a hold", async ({ page }) => {
-          const errors = watchErrors(page)
-          await openTour(page, locale.path)
-          await page.mouse.move(viewport.width / 2, viewport.height / 2)
-          const { down, up } = await driveWheel(page)
-          const lines = [
-            ...down.map((row) => formatRestRow("tick+100", row)),
-            ...up.map((row) => formatRestRow("tick-100", row)),
-          ]
-          const found = [
-            ...restProblems(down),
-            ...restProblems(up),
-            ...repeatHoldProblems(down, WHEEL_TICK_PX),
-            ...repeatHoldProblems(up, WHEEL_TICK_PX),
-            ...stayedAtTop(down),
-            ...errors,
-          ]
-          // At 820px the answer hold is 98px. A 100px tick from its centre enters the
-          // next travel by about 11%, and the settle returns anything under 12%, so the
-          // tick comes back to the same hold. Shorter viewports leave it. Reported, not
-          // tuned: the hold lengths stay as they are.
-          const answerTrap = found.filter((problem) => problem.includes("stayed in answer"))
-          const problems = found.filter((problem) => !problem.includes("stayed in answer"))
-          const notes =
-            viewport.height === 820
-              ? answerTrap.map(
-                  (problem) =>
-                    `Expected at 820px, left for the lead: ${problem}. The answer hold is 98px wide and the travel after it is long, so a 100px tick from the centre is pulled back.`
-                )
-              : []
-          publish(lines, problems, notes)
-          expect(answerTrap, answerTrap.join("\n") || "the 820px answer trap").toHaveLength(
-            viewport.height === 820 ? 1 : 0
-          )
-          expect(problems, problems.join("\n")).toEqual([])
-        })
-
-        test("G1: a trackpad drag comes to rest in a hold", async ({ page }) => {
-          const errors = watchErrors(page)
-          await openTour(page, locale.path)
-          await page.mouse.move(viewport.width / 2, viewport.height / 2)
-          const rows = await driveTrackpad(page)
-          const problems = [...restProblems(rows), ...stayedAtTop(rows), ...errors]
-          publish(
-            rows.map((row, index) => formatRestRow(`drag ${index}`, row)),
-            problems
-          )
-          expect(problems, problems.join("\n")).toEqual([])
-        })
-
-        test.describe("touch", () => {
-          test.use({ hasTouch: true })
-
-          test("G1: a touch swipe comes to rest in a hold", async ({ page }) => {
-            const errors = watchErrors(page)
-            await openTour(page, locale.path)
-            const rows = await driveTouch(page)
-            const problems = [...restProblems(rows), ...stayedAtTop(rows), ...errors]
-            publish(
-              rows.map((row) => formatRestRow("swipe", row)),
-              problems
-            )
-            expect(problems, problems.join("\n")).toEqual([])
-          })
-        })
-
-        test("G1: keys come to rest in a hold", async ({ page }) => {
-          // Which key steps where is G4, in tour.spec.ts. Here the keys only have to rest.
-          const errors = watchErrors(page)
-          await openTour(page, locale.path)
-          const rows = await driveKeys(page)
-          const problems = [...restProblems(rows), ...stayedAtTop(rows), ...errors]
-          publish(
-            rows.map((row, index) => formatRestRow(`key ${index}`, row)),
-            problems
-          )
-          expect(problems, problems.join("\n")).toEqual([])
-        })
-
-        test("G1: a rail click comes to rest in a hold", async ({ page }) => {
-          // Where a tick, a dot or an arrow goes is G5, in rail.spec.ts.
-          const errors = watchErrors(page)
-          await openTour(page, locale.path)
-          const tagged = await driveRail(page)
-          const rows = rowsOf(tagged)
-          const lines = tagged.map((item) =>
-            item.row ? formatRestRow(item.tag, item.row) : `${item.tag}  (not on this page)`
-          )
-          const problems = [...restProblems(rows), ...stayedAtTop(rows), ...errors]
-          publish(lines, problems)
-          expect(problems, problems.join("\n")).toEqual([])
-        })
-
         test("G2: each hold is a complete state", async ({ page }) => {
           const errors = watchErrors(page)
           await openTour(page, locale.path)
@@ -215,57 +344,6 @@ for (const viewport of viewports) {
           expect(problems, problems.join("\n")).toEqual([])
         })
 
-        test("G6: a wheel cancels a glide, and a finger is not fought", async ({ page }) => {
-          const errors = watchErrors(page)
-          await openTour(page, locale.path)
-          const start = await page.evaluate(() => Math.round(window.scrollY))
-          await page.keyboard.press("ArrowDown")
-          await expect
-            .poll(() => page.evaluate(() => Math.round(window.scrollY)), { timeout: 2000 })
-            .toBeGreaterThan(start + 15)
-
-          // Inside the page, so the samples sit inside the 40ms before a new settle can arm.
-          const wheelDrift = await page.evaluate(async () => {
-            window.dispatchEvent(
-              new WheelEvent("wheel", { deltaY: 4, bubbles: true, cancelable: true })
-            )
-            const at = window.scrollY
-            const samples: number[] = []
-            for (let sample = 0; sample < 3; sample++) {
-              await new Promise((resolve) => setTimeout(resolve, 10))
-              samples.push(Math.abs(window.scrollY - at))
-            }
-            return samples
-          })
-          expect(
-            Math.max(...wheelDrift),
-            "the glide keeps writing after the wheel"
-          ).toBeLessThanOrEqual(2)
-
-          await settle(page)
-          const again = await page.evaluate(() => Math.round(window.scrollY))
-          await page.keyboard.press("ArrowDown")
-          await expect
-            .poll(() => page.evaluate(() => Math.round(window.scrollY)), { timeout: 2000 })
-            .toBeGreaterThan(again + 15)
-
-          const fingerDrift = await page.evaluate(async () => {
-            window.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, cancelable: true }))
-            await new Promise((resolve) => setTimeout(resolve, 20))
-            const parked = Math.round(window.scrollY + 90)
-            window.scrollTo(0, parked)
-            await new Promise((resolve) => setTimeout(resolve, 250))
-            const drift = Math.abs(window.scrollY - parked)
-            window.dispatchEvent(new TouchEvent("touchend", { bubbles: true, cancelable: true }))
-            return drift
-          })
-          expect(
-            fingerDrift,
-            "a programmatic scroll moved the page while a finger was down"
-          ).toBeLessThanOrEqual(2)
-          expect(errors, errors.join("\n")).toEqual([])
-        })
-
         test("G7: the payoff is visible only on the finished look", async ({ page }) => {
           const errors = watchErrors(page)
           const lines: string[] = []
@@ -276,8 +354,8 @@ for (const viewport of viewports) {
             let row = await page.evaluate(readPage)
             const deadline = Date.now() + 4000
             while (Date.now() < deadline) {
-              const shown = row.payoffOpacity > 0.95
-              const hidden = row.payoffOpacity < 0.05
+              const shown = row.payoffOpacity > OPACITY_SHOWN
+              const hidden = row.payoffOpacity < OPACITY_HIDDEN
               if (row.pay === moment.visible && (moment.visible ? shown : hidden)) break
               await page.waitForTimeout(50)
               row = await page.evaluate(readPage)
@@ -289,9 +367,9 @@ for (const viewport of viewports) {
             if (row.pay !== moment.visible) problems.push(`${where}: data-pay is ${row.pay}`)
             if (moment.visible) {
               if (row.scene !== "3") problems.push(`${where}: scene ${row.scene}`)
-              if (row.payoffOpacity <= 0.95)
+              if (row.payoffOpacity <= OPACITY_SHOWN)
                 problems.push(`${where}: payoff opacity ${row.payoffOpacity.toFixed(2)}`)
-            } else if (row.payoffOpacity >= 0.05) {
+            } else if (row.payoffOpacity >= OPACITY_HIDDEN) {
               problems.push(`${where}: payoff opacity ${row.payoffOpacity.toFixed(2)}`)
             }
           }

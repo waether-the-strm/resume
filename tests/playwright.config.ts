@@ -8,6 +8,8 @@ const port = Number(process.env.E2E_PORT ?? 4333)
 
 export default defineConfig({
   testDir: "./specs",
+  // Joins the per-test rest files (workers write in parallel) into one measurement for the
+  // job summary. Without it the scenario G evidence never leaves test-results/rest/.
   globalTeardown: "./global-teardown.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -24,14 +26,21 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      testIgnore: "**/perf-budget.spec.ts",
+      testIgnore: ["**/perf-budget.spec.ts", "**/scenarios-g.spec.ts"],
       use: { ...devices["Desktop Chrome"] },
     },
     {
-      // A timed cold load. It starts after the other project so those browsers are gone.
+      // The live-scroll walks. They are their own project so the rest of the suite is not
+      // the thing that takes the time: one language, and still most of the job.
+      name: "scenarios-g",
+      testMatch: "**/scenarios-g.spec.ts",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // A timed cold load. It starts after the other projects so those browsers are gone.
       name: "performance",
       testMatch: "**/perf-budget.spec.ts",
-      dependencies: ["chromium"],
+      dependencies: ["chromium", "scenarios-g"],
       use: {
         viewport: phoneProfile.viewport,
         screen: phoneProfile.viewport,
