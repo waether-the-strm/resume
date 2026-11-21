@@ -1,10 +1,53 @@
 ---
-// The rail: the stops as navigation (#34). Not built yet. Its markup is rendered here, on
-// the server, with the names of the stops in the page's language; scripts/parts/rail.ts
-// brings it to life. Only the tour shows it.
+// The rail: the stops as navigation (#34). Every stop is a button, rendered here on
+// the server from the narrative, in the page's language. scripts/parts/rail.ts marks
+// the chapter and the nearest stop; it does not build markup. Only the tour shows it
+// (`html[data-tour]`, ADR 0009). Chapter marks carry their chapter number (ADR 0010).
 import type { Locale } from "../i18n/locales"
+import { narrative } from "../i18n/content"
+import { stopNumber } from "../lib/stop-number"
 
 interface Props {
   locale: Locale
 }
+
+const { locale } = Astro.props
+const { stops } = await narrative(locale)
+
+// The prototype's names for the arrows and the nav (v0.16.0). Polish for these
+// three strings is copy, and this task does not change ui.ts.
+const railLabel = "Tour steps"
+const previousStop = "previous stop"
+const nextStop = "next stop"
 ---
+
+<nav class="ui-rail" aria-label={railLabel}>
+  <button type="button" class="ui-rail__arrow" data-dir="-1" aria-label={previousStop}></button>
+  {
+    stops.map((stop, index) => {
+      const number = stopNumber(stops, index)
+      const chapter = stop.chapter !== undefined
+      const chapterNo = number.slice(0, number.indexOf("."))
+      return (
+        <button
+          type="button"
+          class:list={["ui-rail__stop", chapter ? "is-chapter" : "is-dot"]}
+          data-index={index}
+          data-number={number}
+          aria-label={stop.name}
+        >
+          <span class="ui-rail__label">{chapter ? stop.label : stop.name}</span>
+          {chapter ? (
+            <span class="ui-rail__mark">
+              <span class="ui-rail__num" data-chapter={chapterNo} aria-hidden="true" />
+              <span class="ui-rail__tick" aria-hidden="true" />
+            </span>
+          ) : (
+            <span class="ui-rail__dot" aria-hidden="true" />
+          )}
+        </button>
+      )
+    })
+  }
+  <button type="button" class="ui-rail__arrow" data-dir="1" aria-label={nextStop}></button>
+</nav>

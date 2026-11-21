@@ -49,6 +49,40 @@
   /* work: a project card */
   --work-visual: 140px;
   --work-lift: -3px;
+
+  /*
+   * Rail: the stops as navigation. Sizes are the prototype's (v0.16.0).
+   * The tick grows by scale, not by width, so the cue does not move layout.
+   * Phone values are the overrides below: a 44px gutter, ticks only.
+   */
+  --rail-inset: 28px;
+  --rail-gutter: auto;
+  --rail-top: 50%;
+  --rail-bottom: auto;
+  --rail-shift: -50%;
+  --rail-align: flex-end;
+  --rail-hit: 34px;
+  --rail-dot-hit: 18px;
+  --rail-dot-display: flex;
+  --rail-arrow-hit: 30px;
+  --rail-arrow-pad: 5px;
+  --rail-arrow: 7px;
+  --rail-arrow-weight: 1.5px;
+  --rail-off: 0.25;
+  --rail-tick: 12px;
+  --rail-tick-wide: 20px;
+  --rail-tick-current: 22px;
+  --rail-tick-weight: 2px;
+  --rail-tick-hover: var(--ink);
+  --rail-land-scale: 1.5;
+  --rail-dot: 5px;
+  --rail-dot-inset: 3px;
+  --rail-dot-opacity: 0.7;
+  --rail-dot-hover-scale: 1.3;
+  --rail-land-dot-scale: 2;
+  --rail-label-gap: 30px;
+  --rail-label-shift: 6px;
+  --rail-caption: block;
 }
 
 @media (max-width: 760px) {
@@ -61,6 +95,23 @@
     --work-visual: 150px;
     --message-gap: 18px;
     --message-who-space: 22px;
+
+    /* phone: ticks only, in a 44px gutter on the right */
+    --rail-inset: 0px;
+    --rail-gutter: 44px;
+    --rail-top: auto;
+    --rail-bottom: 14svh;
+    --rail-shift: 0;
+    --rail-align: center;
+    --rail-hit: 44px;
+    --rail-arrow-hit: 44px;
+    --rail-arrow-pad: 0px;
+    --rail-tick: 10px;
+    --rail-tick-wide: 10px;
+    --rail-tick-current: 18px;
+    --rail-tick-hover: var(--ink-soft);
+    --rail-dot-display: none;
+    --rail-caption: none;
   }
 }
 

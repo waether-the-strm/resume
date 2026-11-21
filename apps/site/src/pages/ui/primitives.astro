@@ -4,6 +4,7 @@
 import Base from "../../layouts/Base.astro"
 import Card from "../../components/Card.astro"
 import Message from "../../components/Message.astro"
+import Rail from "../../components/Rail.astro"
 import Work from "../../components/Work.astro"
 ---
 
@@ -45,6 +46,18 @@ import Work from "../../components/Work.astro"
       <Work locale="en" />
     </section>
 
+    <section aria-labelledby="h-rail">
+      <h2 id="h-rail" class="type-micro part">The rail · ui-rail</h2>
+      <p class="type-lead intro">
+        Chapter ticks with their chapter number, quiet dots between them, and two arrows. The tour
+        hides it until it is on; this section sets that attribute so the primitive can be seen,
+        fixed to the viewport the way the home page uses it.
+      </p>
+      <div class="specimen" data-tour="on">
+        <Rail locale="en" />
+      </div>
+    </section>
+
     <section aria-labelledby="h-rule">
       <h2 id="h-rule" class="type-micro part">Rules · ui-rule · ui-rule is-strong</h2>
       <div class="rules">
@@ -59,6 +72,12 @@ import Work from "../../components/Work.astro"
   import { bindSwitches, createPrefs } from "../../lib/prefs"
 
   bindSwitches(createPrefs())
+
+  // One chapter current, one stop nearest and just landed, so the states are visible here.
+  document
+    .querySelector<HTMLElement>('.specimen [data-number="2.1"]')
+    ?.setAttribute("aria-current", "true")
+  document.querySelector(".specimen [data-number='2.3']")?.classList.add("is-nearest", "is-landed")
 </script>
 
 <style>
