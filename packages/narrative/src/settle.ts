@@ -217,8 +217,17 @@ export function createSettle(deps: SettleDeps): Settle {
         return
       }
       // `scrollY - wrote > 3` in the prototype. Both sides are pixels there.
-      if (Math.abs(scroller.read() - wrote) * screenHeight() > DIVERGE_PX) {
+      const found = scroller.read()
+      if (Math.abs(found - wrote) * screenHeight() > DIVERGE_PX) {
+        // Something else moved the page: the glide gives way. The prototype stops here and
+        // arms nothing, and `scroll` and `scrollEnd` ignored that move because a glide was
+        // still running when they heard it. So the page stayed wherever it was put, which
+        // can be the middle of a travel, with nothing left to settle it. Treat the move as
+        // the scroll it was: remember where it went and which way, and settle from there.
+        direction = found > wrote ? 1 : -1
+        last = found
         halt()
+        arm(IDLE_MS)
         return
       }
       const k = Math.min(1, Math.max(0, (now - started) / duration))
