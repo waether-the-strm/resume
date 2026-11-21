@@ -1,6 +1,7 @@
 # 0010. What the blob holds
 
-Status: accepted, 21 Nov 2026. Decided by Jan (#33).
+Status: accepted, 21 Nov 2026. Decided by Jan (#33). Amended by
+[ADR 0012](0012-the-blob-holds-the-settings.md): language and theme are in the blob after all.
 
 ## Context
 
