@@ -314,9 +314,14 @@
   display: block;
   max-width: 62ch;
 }
+/*
+ * The two resets below use :where, so they stay weaker than the rules of each skin that
+ * follow. With :is, a class in the list out-ranked `… h1` and the headline could not grow
+ * in the structure scene (scenario C6).
+ */
 [data-tour]
   .message:is([data-skin="words"], [data-skin="structure"])
-  :is(h1, p, li, a, .ui-w, [data-role]) {
+  :where(h1, p, li, a, .ui-w, [data-role]) {
   margin: 0;
   max-width: none;
   font-size: inherit;
@@ -334,7 +339,7 @@
 [data-tour] .message:is([data-skin="words"], [data-skin="structure"]) .ui-pill::before {
   content: none;
 }
-[data-tour] .message:is([data-skin="words"], [data-skin="structure"]) :is(ol, li, .ui-pill) {
+[data-tour] .message:is([data-skin="words"], [data-skin="structure"]) :where(ol, li, .ui-pill) {
   padding: 0;
   border: 0;
   background: none;
@@ -544,8 +549,10 @@
   }
 }
 @media (max-width: 760px) {
+  /* The right-hand gutter is the rail's: 44 px in all, with the page's own 20. */
   [data-tour] .stage {
     padding-block: 150px 64px;
+    padding-right: 24px;
   }
   [data-tour] .guide:is([data-how], :not([data-step="0"])) {
     font-size: 13px;

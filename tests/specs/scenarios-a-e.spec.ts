@@ -530,10 +530,7 @@ for (const viewport of viewports) {
           expect(alpha, "box border alpha").toBeLessThan(0.15)
         })
 
-        // The size rule is `.message[data-skin="structure"] h1`. It loses the cascade:
-        // `:is(h1, …, .ui-w)` counts as a class, so `font-size: inherit` wins and the
-        // headline stays at the body size. `tour.css` is the lead session's file.
-        test.fail("C6: the headline grows", async ({ page }) => {
+        test("C6: the headline grows", async ({ page }) => {
           await openMoment(page, locale.path, 2, 1)
           const ratio = await page.locator(".message").evaluate((el) => {
             const headline = el.querySelector("h1")
