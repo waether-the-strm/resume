@@ -1,53 +1,52 @@
 # NOW
 
-Updated 20 Nov 2026.
+Updated 21 Nov 2026.
 
-## Goal of the phase
+## Goal
 
-**Phase 3, the content model and the static finished page**, in English and Polish, with no JS.
-`/cv` from the same data.
+**Milestone 1, the prototype recreated**, due 22 Nov: the whole prototype works in the product
+(engine, scenes, the equation, navigation, sound, effects) in English and Polish, and project pages
+have a template.
+
+## The roadmap
+
+| #   | Milestone                | What                                                              | Due    |
+| --- | ------------------------ | ----------------------------------------------------------------- | ------ |
+| 1   | Prototype recreated      | the narrative works; a template for project pages                 | 22 Nov |
+| 2   | Domain                   | strm.dev serves the new design from Cloudflare, still in progress | 24 Nov |
+| 3   | Content and case studies | Polish copy, how projects are written about, the first case study | open   |
+| 4   | Warmth                   | interactions and decorations                                      | open   |
+| 5   | AI and tokens            | the browser's built-in AI restyles the page through design tokens | open   |
+| 6   | Later                    | Norwegian, analytics, experiments, the insight loop               | open   |
+
+The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3). Every issue has a
+milestone, a Status, a Horizon (now / next / later), a Who (Delegate / Lead / Jan) and, for the
+first two milestones, Start and Target dates. Issues labelled `delegable` go to other agents under
+`AGENTS.md`; the lead session reviews and merges.
 
 ## State
 
-- `rebuild` is v2 in progress; `main` and the live site are untouched (v1, tag `v1.2.0`).
-- Workspace: `apps/site` (Astro 7), `packages/strm-ui`, `packages/narrative` (still empty).
-- CI on every pull request: format, type check, unit tests, build. Every pull request and `rebuild`
-  get a preview on Cloudflare with `noindex`; `rebuild` is at
-  <https://rebuild-strm-dev.mirecki-janek.workers.dev>. Production deploys from a `v*.*.*` tag
-  (written, never run). The strm.dev domain still points at v1 on GitHub Pages (#6).
-- strm-ui: tokens in three tiers, light and dark, type and motion roles, and the first primitives
-  (words, pill, tiles, rule, panel, paths, work). Shown at `/ui` and `/ui/primitives`. Tier rules
-  are tested. Token values are provisional: Jan tunes them on the assembled page.
-- Content: collections with strict schemas for the message, the card and the projects, one file per
-  entry and locale. The home page at `/` and `/pl/` is the finished look, the card and three
-  projects, rendered on the server with no JS.
-- Agent layer: `CLAUDE.md` and the skills `session`, `strm-ui`, `content-and-facts`.
-- Decisions: ADR 0001 workspace, 0002 Cloudflare, 0003 CSS tokens, 0004 transplants from jan-ui,
-  0005 docs at `/ui`, 0006 content in git. ADR 0007 (words with roles) is proposed.
-
-## Plan
-
-The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3). It holds the whole
-plan to `v2.0.0` and the milestones after it: every issue has a phase (milestone), a Horizon (now /
-next / later) and a Who (Delegate / Lead / Jan). Issues labelled `delegable` can go to another agent
-under `AGENTS.md`; the lead session reviews and merges into `rebuild`.
+- `rebuild` is v2 and the default branch. `main` and the live site are untouched (v1, `v1.2.0`).
+- Done: the workspace, CI with previews on Cloudflare, strm-ui (tokens, themes, primitives), the
+  content model, the static home page in English and Polish, `/cv`, the 404 pages, social meta and
+  sitemap, the self-hosted font, the engine's stop table, map, URL contract and store.
+- The behavioural spec is in `docs/spec` (ADR 0008).
+- Decisions: ADR 0001 to 0008. ADR 0007 (words with roles) is still proposed.
 
 ## In progress
 
-- Polish copy is a draft waiting for Jan (#12).
-- The finished look does not fit a 390×664 phone in Polish; the short-phone layout is not ported
-  (#13, delegable).
+- With other agents (batch 2): #20 Playwright (pull request #62, second round), #61 font subset, #29
+  preferences, #26 phases, #27 settle, #28 transitions, #37 sound; #21 accessibility after #62.
+- With the lead session: #22 narrative content, then #30 scenes and #31 the equation.
 
 ## Waiting for Jan
 
-- #15 where the behavioural spec lives. It gates every delegable task of phases 4 to 6: an agent
-  working only in this repository cannot see the prototype.
-- #16 confirm words with roles (ADR 0007), before phase 5.
+- #16 confirm words with roles, before the scenes.
+- #40 how deep a case study goes and which is first; it blocks the project page template (#41).
+- #33 what the blob holds; it blocks the blob (#35).
+- #12 Polish copy, including the selected-work wording on `/cv`.
 
 ## Next step
 
-Ready to delegate now, with no blocker: #17 `/cv` from content, #20 Playwright on the static page,
-#13 the phone fit, #18 site basics, #19 font subsetting. The lead session reviews and merges.
-
-Parked for phase 6, with the engine: rail, blob, hint. The `verify` skill is written with the first
-Playwright checks.
+The lead session ports the narrative content (#22) and starts the scenes (#30) while the engine
+modules come back from review. The first thing Jan sees in motion is the words scene on the preview.
