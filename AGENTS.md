@@ -38,73 +38,49 @@ in the language he writes in, three to five sentences:
 Dense, not detailed: no file lists, no function names, no plan of steps. Then start; the briefing is
 not a question and does not wait for an answer.
 
-## Working beside the lead session, on one machine
+## Handing work over
 
-When several agents work in one clone at once (Cursor in parallel worktrees, the lead session in the
-main checkout), they pass work through a folder that is never committed: `.handoff/` in the main
-checkout. The main checkout is the first line of `git worktree list`.
+Agents work in different places: a worktree beside the lead session, or a remote environment. What
+they share is GitHub, so that is where work is handed over. No file in the repository and no local
+file is part of it.
 
-| Path                         | What                                                       | Lives                       |
-| ---------------------------- | ---------------------------------------------------------- | --------------------------- |
-| `.handoff/batch.md`          | the current batch: which issues, which branch, what is new | overwritten with each batch |
-| `.handoff/reviews/pr-<n>.md` | one pull request handed over for review, and the review    | removed once merged         |
-| `.handoff/shots/pr-<n>/`     | evidence images for that pull request                      | removed once merged         |
+| What                        | Where                                                         |
+| --------------------------- | ------------------------------------------------------------- |
+| The current batch           | issue #96, pinned. Its text is replaced with each batch       |
+| Notes on one task           | a comment on its issue, headed "Notes for whoever takes this" |
+| The hand-over               | the pull request, written from the template                   |
+| "Ready", "changes", "stuck" | the labels `ready for review`, `changes requested`, `blocked` |
+| The review                  | a comment on the pull request                                 |
 
-Nothing in `.handoff/` is a record. What has to last goes where it belongs: a note on a task is a
-comment on its issue, a review is a comment on its pull request, a decision is an ADR.
-
-**Start.** Read `.handoff/batch.md`, then your issue with its comments
-(`gh issue view <n> --comments`). Take only an issue the batch lists. One worktree per issue:
-
-```bash
-git fetch origin
-git worktree add ../resume-wt/<branch> -b <branch> origin/rebuild
-cd ../resume-wt/<branch> && nvm use && pnpm install
-```
-
-Never work in the main checkout and never switch its branch: the lead session is in it.
+**Start.** Read the batch (`gh issue view 96`), then your issue with its comments
+(`gh issue view <n> --comments`). Take only an issue the batch lists. One branch per issue, cut from
+`origin/rebuild`. On a shared machine use a worktree of your own
+(`git worktree add ../resume-wt/<branch> -b <branch> origin/rebuild`) and never work in the main
+checkout or switch its branch: the lead session is in it.
 
 **Finish.**
 
 1. `git fetch origin && git rebase origin/rebuild`, then the four commands. Rebase before you
    measure: CI tests your branch merged with `rebuild`, and a number taken on an old base is wrong.
-2. Push, and open the pull request into `rebuild` from `.github/pull_request_template.md`.
+2. Push, and open the pull request into `rebuild`. Fill in every section of the template; "Not
+   verified" must be honest.
 3. Wait for the checks (`gh pr checks <n> --watch`). A failing check is yours to fix.
-4. Only then write `.handoff/reviews/pr-<n>.md` in the main checkout:
+4. Only then: `gh pr edit <n> --add-label "ready for review"`. That label is the hand-over.
 
-   ```markdown
-   # PR <n>: <title>
+**After review.** The lead session comments on the pull request and either merges it or replaces the
+label with `changes requested`. Then: do what the review asks on the same branch, push, wait for the
+checks, comment `Round 2` with what you changed, and swap the label back
+(`gh pr edit <n> --remove-label "changes requested" --add-label "ready for review"`).
 
-   Status: ready for review
+**Stuck.** Do not guess and do not widen the scope. Comment on the issue with what you need and add
+the label `blocked` to it (or to the pull request, if one exists).
 
-   - Issue: #<issue>
-   - Branch: <branch>
-   - Checks: verify <pass|fail>, preview <pass|fail>, playwright <pass|fail>
-   - Model: <the model that did the work>
+**Evidence** is something the reviewer can open: a preview address with a frozen moment
+(`https://pr-<n>-strm-dev.mirecki-janek.workers.dev/?stage=2&t=0.5`), a test run in CI, numbers in
+the job summary. Not an image on your disk.
 
-   ## What changed
-
-   ## Evidence
-
-   ## Not verified
-
-   ## Decisions I made that the issue did not spell out
-
-   ## Questions for the reviewer
-   ```
-
-**After review.** The lead session answers in the same file under `## Review` and changes the status
-line. The same review is posted on the pull request.
-
-- `Status: changes requested`: do what it asks on the same branch, push, wait for the checks, add
-  `## Round 2` with what you changed, and set the line back to `Status: ready for review`.
-- `Status: merged`: done. Remove your worktree (`git worktree remove ../resume-wt/<branch>`).
-
-**Stuck.** Do not guess and do not widen the scope. Write the file with `Status: blocked` and a
-`## Blocked` section. With no pull request yet, name it `issue-<issue>.md`.
-
-**Never**, in addition to "Not yours to change": push to `rebuild` or `main`, merge, tag, run
-`wrangler deploy`, edit `docs/NOW.md` or `docs/log`, or commit anything from `.handoff/`.
+**Never**, in addition to "Not yours to change": push to `rebuild` or `main` (the branch refuses
+it), merge, tag, run `wrangler deploy`, or edit `docs/NOW.md` or `docs/log`.
 
 ## The spec
 

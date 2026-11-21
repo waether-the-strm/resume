@@ -45,18 +45,19 @@ queue is `who:Jan is:open`, each with a kind (Decide, Brief, Write, Verify) and 
 ## How the work is split
 
 The lead session keeps judgement; the rest is given away (the `session` skill, "Delegated work").
-Cursor runs delegable issues in parallel worktrees. The current batch is `.handoff/batch.md`; each
-pull request is handed over in `.handoff/reviews/pr-<n>.md`. The folder is local and never committed
-(`AGENTS.md`, "Working beside the lead session").
+Cursor takes delegable issues, in local worktrees or in its remote environment. Everything is handed
+over on GitHub: the current batch is issue #96, a finished pull request gets the label
+`ready for review`, the review is a comment on it (`AGENTS.md`, "Handing work over"). `rebuild` is
+protected: it changes only through a pull request with green checks.
 
-**On starting a session:** look in `.handoff/reviews/` for `Status: ready for review` before
-anything else, and start a watcher for new files. Brief Jan before each batch.
+**On starting a session:** `gh pr list --label "ready for review"` before anything else, and start a
+watcher for new ones. Brief Jan before each batch.
 
 ## In progress
 
-- With Cursor, batch 4 (`.handoff/batch.md`): #86 the performance budget, round 2; #32 scenarios A
-  to E as specs; #34 the rail; #35 the blob. Rail and blob fill the stubs in `scripts/parts` and
-  share one numbering function (`2.3`, chapter and place; ADR 0010).
+- With Cursor, batch 4 (issue #96): #86 the performance budget, round 2; #32 scenarios A to E as
+  specs; #34 the rail; #35 the blob. Rail and blob fill the stubs in `scripts/parts` and share one
+  numbering function (`2.3`, chapter and place; ADR 0010).
 - #36 key bindings: the registry is merged; wiring it and the G4 spec are the lead session's.
 
 ## Waiting for Jan
