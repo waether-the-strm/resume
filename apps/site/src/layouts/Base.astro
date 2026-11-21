@@ -2,6 +2,8 @@
 import "@strm/ui/index.css"
 import themeInit from "@strm/ui/theme-init.js?raw"
 import recursiveFont from "@strm/ui/fonts/recursive.woff2?url"
+import { STRM_PRODUCTION } from "astro:env/server"
+import { emitsNoindex } from "../lib/indexing"
 import { defaultLocale, launched, localePath, type Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
 
@@ -13,6 +15,7 @@ interface Props {
   path?: string
 }
 const { title, description, locale = defaultLocale, path } = Astro.props
+const noindex = emitsNoindex(Astro.url.pathname, STRM_PRODUCTION)
 const absolute = (to: string) => new URL(to, Astro.site).href
 const canonical = path !== undefined ? absolute(localePath(locale, path)) : undefined
 const summary = description ?? t(locale, "site.description")
@@ -25,8 +28,7 @@ const siteName = t(locale, "site.title")
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="preload" href={recursiveFont} as="font" type="font/woff2" crossorigin />
-    <!-- The rebuild is not the live site yet. Removed at v2.0.0. -->
-    <meta name="robots" content="noindex" />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="color-scheme" content="light dark" />
     {description && <meta name="description" content={description} />}
     {
