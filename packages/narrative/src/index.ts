@@ -8,3 +8,17 @@ export { parseFrozen } from "./url.ts"
 export type { Frozen } from "./url.ts"
 export { createStore } from "./store.ts"
 export type { Listener, State, Store } from "./store.ts"
+// phases.ts
+export {
+  WARP_PHASE,
+  WARP_SCALE,
+  WARP_SPAN,
+  WARP_START,
+  createPhaseTracker,
+  defaultThresholds,
+  phaseOf,
+  phasesToApply,
+  warpAt,
+} from "./phases.ts"
+// phases.ts
+export type { PhaseDirection, PhaseStep, PhaseTracker, Warp } from "./phases.ts"
