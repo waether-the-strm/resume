@@ -1,7 +1,7 @@
 ---
 import "@strm/ui/index.css"
 import themeInit from "@strm/ui/theme-init.js?raw"
-import recursiveLatin from "@strm/ui/fonts/recursive-latin.woff2?url"
+import recursiveFont from "@strm/ui/fonts/recursive.woff2?url"
 import { defaultLocale, launched, localePath, type Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
 
@@ -24,7 +24,7 @@ const siteName = t(locale, "site.title")
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="preload" href={recursiveLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={recursiveFont} as="font" type="font/woff2" crossorigin />
     <!-- The rebuild is not the live site yet. Removed at v2.0.0. -->
     <meta name="robots" content="noindex" />
     <meta name="color-scheme" content="light dark" />
