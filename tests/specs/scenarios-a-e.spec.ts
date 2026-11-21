@@ -337,8 +337,24 @@ for (const viewport of viewports) {
           await expect(page.locator(".guide")).toBeVisible()
         })
 
-        test.fixme("A12: the band is not built", async () => {
-          // The prototype's band has no element on the page.
+        test("A12: the band is on under the guide", async ({ page }) => {
+          // The band and the haze are the guide's own layers: they exist where the guide does.
+          const layers = () =>
+            page.locator(".guide").evaluate((guide) => {
+              const band = getComputedStyle(guide, "::before")
+              const haze = getComputedStyle(guide, "::after")
+              return {
+                shown: getComputedStyle(guide).display !== "none",
+                band: band.content !== "none" && band.backdropFilter.includes("blur"),
+                haze: haze.content !== "none" && haze.backgroundImage.includes("gradient"),
+                through: band.pointerEvents === "none" && haze.pointerEvents === "none",
+              }
+            })
+          await openMoment(page, locale.path, 0, 0.95)
+          expect(await layers()).toEqual({ shown: true, band: true, haze: true, through: true })
+          // Before `how` reaches the corner there is no guide, and nothing under it to soften.
+          await openMoment(page, locale.path, 0, 0.58)
+          expect((await layers()).shown).toBe(false)
         })
 
         test("A13: scrolling back from the corner replays the equation", async ({ page }) => {
