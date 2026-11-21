@@ -38,9 +38,8 @@ lost when the session ends. Everything here is public: no private notes, no empl
 1. **Park what is unfinished.** Open an issue only for something that will not be finished in this
    session. Each one records: done when, where it stopped, the first step on return. Give it a
    milestone and a label, add it to the board with a horizon.
-2. **Close what is finished**, with a sentence of evidence in the closing comment. `Closes #n` in a
-   pull request does not close the issue here: GitHub does that only for merges into the default
-   branch, and `rebuild` is not it. Close by hand after the merge.
+2. **Close what is finished**, with a sentence of evidence in the closing comment. `rebuild` is the
+   default branch, so `Closes #n` in a pull request closes the issue on merge and links the two.
 3. **`docs/NOW.md`**: rewrite, do not append. The goal of the phase, the state, what is in progress,
    one next step. A few lines; it is read first by every session.
 4. **`docs/log/YYYY-MM-DD.md`**: add to today's file or create it. Sections: Planned, What happened,
@@ -62,8 +61,9 @@ labelled `delegable`. Their contract is `AGENTS.md`.
 - **Out of scope or a touched forbidden file:** ask for the change on the pull request; do not fix
   it silently, the next delegated task would repeat it. A recurring mistake means `AGENTS.md` or the
   issue template is unclear: fix that.
-- **Merging:** squash into `rebuild` when CI and Preview are green and the review holds. Close the
-  issue by hand. Unblock what it blocked: move the next issues to "now".
+- **Merging:** squash into `rebuild` when CI and Preview are green and the review holds. The issue
+  closes itself through `Closes #n`; check that it did. Unblock what it blocked: move the next
+  issues to "now".
 - A pull request from a bot may need its workflows approved before CI runs.
 
 ## The board

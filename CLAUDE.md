@@ -35,8 +35,8 @@ session reviews and merges (see the `session` skill, "Delegated work").
 
 ## Rules
 
-- **Branches.** `main` is v1, the live site. `rebuild` is v2. Production deploys only from a
-  `v*.*.*` tag; the swap is `v2.0.0`. Never tag from `rebuild` before parity.
+- **Branches.** `main` is v1, the live site. `rebuild` is v2 and the default branch. Production
+  deploys only from a `v*.*.*` tag; the swap is `v2.0.0`. Never tag from `rebuild` before parity.
 - **HTML is the product.** The server renders the finished page in every language. No JS and
   `prefers-reduced-motion` get that page. Motion is a layer on top.
 - **Facts only.** No invented claims, no metrics. The only numbers: 15 years designing, 11 building.
@@ -63,6 +63,6 @@ pnpm format   # prettier
 
 ## The spec
 
-The behaviour of the home page is defined by a separate prototype, frozen at its tag `v0.16.0`:
-twelve stops with holds, native scroll, a settle after rest, and the `?stage=S&t=T` / `?stage=jan`
-contract for freezing any state. The port is measured against its test scenarios A to G.
+The behaviour of the home page is defined by a prototype, frozen at its tag `v0.16.0`. A read-only
+copy is in `docs/spec` (ADR 0008): the HTML file, scenarios A to G, the notes and the measuring
+tools. `docs/spec/README.md` indexes it by line and lists where the product differs on purpose.

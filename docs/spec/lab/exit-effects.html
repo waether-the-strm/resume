@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab: ways the look board can leave</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap" rel="stylesheet">
+<!--
+EXIT EFFECTS LAB. One variable x (0..1) = how far the look board has left. Everything is a pure function of
+scroll position, so scrolling back re-forms the board. URL: ?fx=1..7&x=0..1 freezes one effect at one progress.
+
+Cost / fragility per effect
+1 Warp        feTurbulence + feDisplacementMap on a ~1000x600 element, scale changes every frame -> the filter is
+              re-rasterised each frame on the CPU in Safari and Firefox (Chrome has a GPU path). Worst on iOS: tiles
+              the filter region, may drop to ~20 fps or flash blank on big regions. Filter+blur() in one chain is fine
+              in Chrome/Firefox; Safari sometimes ignores url() when combined, hence blur lives inside the SVG filter.
+              Mitigation: numOctaves 1, smaller region, lower scale on touch, or swap to pre-baked noise image.
+2 Scatter     ~55 absolutely transformed inline-block spans: transforms/opacity only, compositor friendly, but 55
+              layers can be heavy on old iPhones if will-change is forced (we do not). Fragile: pure cosmetics, wraps
+              stay intact because spans keep their space nodes. Cheapest of the "rich" ones.
+3 Melt        filter:blur() on 7 units + translate + opacity. Blur radius animation re-rasterises each unit; fine on
+              desktop, acceptable on iOS because units are small. No SVG. Safari renders blur() on inline-block text
+              slightly softer than Chrome.
+4 Ink         The most expensive: turbulence + displacement + gaussian blur + colour-matrix threshold in one SVG filter
+              on the whole board, with baseFrequency animated (forces turbulence regeneration every frame). Likely
+              janky on iOS and Firefox; Safari clips filter regions on scaled/retina layers. Threshold looks different
+              per engine because of premultiplied alpha handling. Treat as a desktop-only candidate.
+5 Wipe        mask-image on a large element: needs the -webkit- prefix for Safari < 15.4 (we write both). Changing the
+              gradient stops each frame repaints the masked layer; OK on desktop, modest on iOS. Mask + overflow +
+              sticky parent has had Safari bugs (stale mask); we keep mask on an inner element, not the sticky one.
+6 Weight      Animating font-variation-settings (wght/MONO/CASL) re-lays-out text every frame (MONO changes glyph
+              widths -> line breaks move). Needs the variable font loaded; if the Google font fails, the effect
+              degrades to a plain fade. Layout-bound, not paint-bound: cheap GPU, costly main thread on long text.
+7 Collapse    (own idea) transform scale only, no filters. Cheapest and most robust everywhere.
+Filters are attached only while 0 < x < 1; at 0 and 1 the board has no filter/mask at all. Scroll is rAF-throttled.
+Reduced motion: default is a plain opacity fade (toggle in the panel previews it).
+-->
+<style>
+  :root{--bg:#f6f4ef;--ink:#161513;--mute:#6b675f;--soft:#a39e94;--line:#d8d3c8;--accent:#e4482c;--font:"Recursive",ui-monospace,system-ui,sans-serif}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font)}
+  body{-webkit-text-size-adjust:100%}
+
+  /* track + stage: the board is pinned while x runs 0..1 */
+  .track{position:relative}
+  .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+  .frame{max-width:1040px;margin:0 auto;height:100%;padding:60px 40px;display:grid;align-items:center}
+  .bw{position:relative}
+
+  /* ---------- the look board (copied from index.html, final values, --c = 1) ---------- */
+  .board{--bw:400;--k:0;--mono:0;--casl:0;--chrome:1;display:grid;grid-template-columns:1.2fr 1fr;gap:12px 64px;align-items:start;font-size:17px;line-height:1.55}
+  .board *{font-variation-settings:"MONO" var(--mono),"CASL" var(--casl),"wght" calc(var(--bw) + (300 - var(--bw))*var(--k))}
+  .board p,.board ul,.board h1{margin:0}
+  .w{display:inline-block;white-space:pre}
+  .b-h1{grid-column:1}
+  .board h1{font-size:clamp(36px,4.4vw,54px);line-height:1;letter-spacing:-.025em;margin:0 0 10px;--bw:800}
+  .board h1 .w:nth-child(n+3){color:var(--accent)}
+  .b-lead{grid-column:1}
+  .lead{max-width:40ch;color:var(--mute)}
+  .b-list{grid-column:2;grid-row:1/3}
+  .board ul{list-style:none;margin:6px 0 0;padding:0;counter-reset:tile}
+  .board li{padding:14px 0 14px 44px;position:relative;font-size:18px;line-height:1.35;--bw:500;counter-increment:tile}
+  .board li+li{border-top:1px solid color-mix(in srgb,var(--line) calc(var(--chrome)*100%),transparent)}
+  .board li::before{content:"0" counter(tile);position:absolute;left:0;top:17px;font-size:12px;letter-spacing:.06em;--bw:500;font-variation-settings:"MONO" 1,"wght" 500;color:var(--accent);opacity:var(--chrome)}
+  .b-who{grid-column:1/-1;margin:44px 0 0}
+  .msgrule{display:block;height:2px;margin:0 0 18px;background:var(--line);opacity:var(--chrome)}
+  .who{font-size:19px;margin:0 0 6px}
+  .who .w{--bw:400}
+  .who .w:nth-child(-n+3){--bw:800}
+  .b-cta{grid-column:1/-1;margin:34px 0 0}
+  .cta{color:var(--mute);font-size:16px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .cta a{--bw:600;text-decoration:none;display:inline-block;padding:11px 18px 11px 16px;border:1px solid color-mix(in srgb,var(--accent) calc(var(--chrome)*100%),transparent);border-radius:999px;background:color-mix(in srgb,var(--accent) calc(var(--chrome)*100%),transparent);color:color-mix(in srgb,#fff calc(var(--chrome)*100%),var(--ink))}
+  .cta a .w:first-child::before{content:"→ "}
+  @media (max-width:760px){
+    .frame{padding:40px 20px}
+    .board{grid-template-columns:minmax(0,1fr);gap:18px}
+    .b-list{grid-column:1;grid-row:auto}
+    .board h1{font-size:36px}.lead{max-width:none}
+  }
+  @media (max-height:760px){
+    .board h1{font-size:clamp(32px,4vw,44px)}
+    .b-who{margin-top:22px}
+    .board li{padding:10px 0 10px 34px;font-size:16px}.board li::before{top:13px}
+  }
+
+  /* wipe edge */
+  .edge{position:absolute;left:-2%;right:-2%;height:36px;margin-top:-18px;pointer-events:none;opacity:0;
+    background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--accent) 22%,transparent) 50%,transparent)}
+  .edge::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;
+    background:linear-gradient(to right,transparent,var(--accent) 20%,var(--accent) 80%,transparent);opacity:.55}
+
+  /* placeholder card */
+  .after{padding:0 20px 18vh}
+  .card{max-width:640px;margin:0 auto;min-height:60svh;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 30px 60px -36px rgba(22,21,19,.35);padding:36px 40px}
+  .card .kick{display:flex;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mute);font-variation-settings:"MONO" 1,"wght" 400}
+  .card p{font-size:17px;color:var(--mute);margin:28px 0 0;font-variation-settings:"MONO" 1,"wght" 400}
+
+  /* control panel */
+  .panel{position:fixed;top:12px;right:12px;z-index:20;width:300px;max-width:calc(100vw - 24px);background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    box-shadow:0 0 0 1px rgba(22,21,19,.06),0 14px 30px -18px rgba(22,21,19,.4);border-radius:8px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink)}
+  .panel header{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;color:var(--mute)}
+  .panel header button{all:unset;cursor:pointer;color:var(--ink);padding:4px 6px;min-height:24px}
+  .panel .body{padding:0 12px 12px}
+  .panel.closed .body{display:none}
+  .fx{display:block;width:100%;text-align:left;all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:block;padding:7px 0;border-top:1px solid var(--line)}
+  .fx:first-of-type{border-top:0}
+  .fx b{font-weight:600}
+  .fx span{display:block;color:var(--mute)}
+  .fx[aria-pressed=true] b{color:var(--accent)}
+  .fx[aria-pressed=true] b::before{content:"> "}
+  .ctl{border-top:1px solid var(--line);padding-top:9px;margin-top:3px;display:grid;gap:7px}
+  .ctl label{display:flex;gap:8px;align-items:center;color:var(--mute)}
+  .ctl input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+  .ctl button{all:unset;cursor:pointer;color:var(--accent);border-bottom:1px solid var(--line)}
+  .panel :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="fxWarp" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap id="warpMap" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur id="warpBlur" in="d" stdDeviation="0"/>
+    </filter>
+    <filter id="fxInk" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+      <feTurbulence id="inkT" type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap id="inkMap" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur id="inkBlur" in="d" stdDeviation="0" result="b"/>
+      <feColorMatrix id="inkCM" in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+    </filter>
+  </defs>
+</svg>
+
+<aside class="panel" id="panel">
+  <header><span>exit effects lab</span><button id="toggle" aria-expanded="true" aria-controls="pbody">hide</button></header>
+  <div class="body" id="pbody">
+    <div id="fxlist"></div>
+    <div class="ctl">
+      <label>x <input id="slider" type="range" min="0" max="1" step="0.005" value="0" aria-label="Exit progress x"><output id="xout">0.00</output></label>
+      <label><span id="mode">following scroll</span> <button id="follow" type="button" hidden>follow scroll</button></label>
+      <label><input id="rm" type="checkbox"> reduced motion preview (plain fade)</label>
+    </div>
+  </div>
+</aside>
+
+<div class="track" id="track">
+  <div class="stage" id="stage">
+    <div class="frame"><div class="bw" id="bw">
+      <div class="board" id="board">
+        <div class="b-h1" data-u><h1>Your product, clear at a glance.</h1></div>
+        <div class="b-lead" data-u><p class="lead">Visitors decide quickly whether a product is for them. I shape the page so they can.</p></div>
+        <div class="b-list"><ul>
+          <li data-u>One idea per sentence.</li>
+          <li data-u>One clear place to look.</li>
+          <li data-u>Colour only where it means something.</li>
+        </ul></div>
+        <div class="b-who" data-u><div class="msgrule"></div><p class="who">I'm Jan Mirecki, a design engineer: fifteen years designing for the web, eleven building it.</p></div>
+        <div class="b-cta" data-u><p class="cta"><span>If you want your product to work like this</span><a href="#">write to me.</a></p></div>
+      </div>
+      <div class="edge" id="edge"></div>
+    </div></div>
+  </div>
+</div>
+<div class="after"><div class="card"><div class="kick"><span>business card</span><span>placeholder</span></div><p>the card arrives here</p></div></div>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)};
+  var board=$('#board'),bw=$('#bw'),edge=$('#edge'),track=$('#track'),stage=$('#stage');
+  var clamp=function(v,a,b){return Math.min(b==null?1:b,Math.max(a==null?0:a,v))};
+  var ease=function(t){return t*t*(3-2*t)};
+  var q=new URLSearchParams(location.search);
+
+  /* split text into word spans; keep real space nodes so wrapping stays natural. Order = reading order. */
+  var words=[];
+  board.querySelectorAll('h1,.lead,li,.who,.cta span,.cta a').forEach(function(el){
+    var txt=el.textContent.trim().split(/\s+/);el.textContent='';
+    txt.forEach(function(t,i){
+      var s=document.createElement('span');s.className='w';s.textContent=t;el.appendChild(s);
+      if(i<txt.length-1)el.appendChild(document.createTextNode(' '));
+      words.push(s);
+    });
+  });
+  words.forEach(function(w,i){ /* seeded hash -> three stable numbers in -1..1 and a delay 0..1 */
+    var h=Math.imul(i+1,2654435761)>>>0;h^=h>>>15;h=Math.imul(h,2246822519)>>>0;h^=h>>>13;
+    var r=function(n){return (((h>>>n)&255)/255)};
+    w._h={dx:r(0)*2-1,dy:r(8)*2-1,rot:r(16)*2-1,d:r(24),pos:i/(words.length-1)};
+  });
+  var units=[].slice.call(board.querySelectorAll('[data-u]')).reverse(); /* reverse reading order: call first */
+
+  function clearStyles(){
+    board.style.cssText='';bw.style.cssText='';edge.style.opacity=0;
+    board.style.filter='';board.style.webkitMaskImage=board.style.maskImage='';
+    words.forEach(function(w){w.style.cssText=''});
+    units.forEach(function(u){u.style.cssText=''});
+  }
+
+  var warpMap=$('#warpMap'),warpBlur=$('#warpBlur'),inkT=$('#inkT'),inkMap=$('#inkMap'),inkBlur=$('#inkBlur'),inkCM=$('#inkCM');
+
+  var FX=[
+    {name:'Warp (reference)',desc:'SVG displacement, scale up to 80, blur, fading.',run:function(x){
+      var p=ease(x);
+      warpMap.setAttribute('scale',(p*80).toFixed(1));
+      warpBlur.setAttribute('stdDeviation',(p*3).toFixed(2));
+      board.style.filter='url(#fxWarp)';
+      board.style.opacity=(1-clamp((x-.1)/.9)).toFixed(3);
+    }},
+    {name:'Words scatter',desc:'Every word drifts off on its own path, staggered.',run:function(x){
+      board.style.setProperty('--chrome',(1-clamp(x/.45)).toFixed(3));
+      words.forEach(function(w){
+        var h=w._h,p=clamp((x-h.d*.35)/.65),e=p*p;
+        w.style.transform='translate3d('+(h.dx*260*e).toFixed(1)+'px,'+(h.dy*180*e-40*p).toFixed(1)+'px,0) rotate('+(h.rot*50*e).toFixed(1)+'deg)';
+        w.style.opacity=(1-clamp(p*1.15)).toFixed(3);
+      });
+    }},
+    {name:'Line-by-line melt',desc:'Blocks leave in reverse order, blur and drift up.',run:function(x){
+      var n=units.length,len=.5,gap=(1-len)/(n-1);
+      units.forEach(function(u,i){
+        var p=clamp((x-i*gap)/len),e=ease(p);
+        u.style.opacity=(1-e).toFixed(3);
+        u.style.transform='translateY('+(-26*e).toFixed(1)+'px)';
+        u.style.filter=p>0?'blur('+(10*e).toFixed(1)+'px)':'';
+      });
+      board.style.setProperty('--chrome',1);
+    }},
+    {name:'Liquid ink',desc:'Turbulence plus threshold: text thins into blots.',run:function(x){
+      var p=ease(x),C=16,thr=.5+.38*p;
+      inkT.setAttribute('baseFrequency',(0.008+0.03*x).toFixed(4)+' '+(0.02+0.05*x).toFixed(4));
+      inkMap.setAttribute('scale',(p*38).toFixed(1));
+      inkBlur.setAttribute('stdDeviation',(.3+p*3.6).toFixed(2));
+      inkCM.setAttribute('values','1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 '+C+' '+(-C*thr).toFixed(2));
+      board.style.filter='url(#fxInk)';
+      board.style.opacity=(1-clamp((x-.8)/.2)).toFixed(3);
+    }},
+    {name:'Scan-line wipe',desc:'Soft mask sweeps top to bottom with a faint accent edge.',run:function(x){
+      var s=22,P=-s+x*(100+2*s);
+      var g='linear-gradient(to bottom,transparent 0,transparent '+(P-s).toFixed(2)+'%,#000 '+P.toFixed(2)+'%,#000 100%)';
+      board.style.webkitMaskImage=g;board.style.maskImage=g;
+      edge.style.top=clamp(P-s*.5,0,100).toFixed(2)+'%';
+      edge.style.opacity=Math.sin(Math.PI*x).toFixed(3);
+    }},
+    {name:'Weight collapse',desc:'Weight thins, glyphs fall back to mono raw words, then fade.',run:function(x){
+      board.style.setProperty('--k',ease(clamp(x/.6)).toFixed(3));
+      board.style.setProperty('--mono',ease(clamp((x-.15)/.5)).toFixed(3));
+      board.style.setProperty('--casl',(Math.sin(Math.PI*clamp(x/.8))*.8).toFixed(3));
+      board.style.opacity=(1-clamp((x-.4)/.6)).toFixed(3);
+    }},
+    {name:'Collapse to a line (extra)',desc:'Board squashes into a hairline, then the line narrows away.',run:function(x){
+      var a=clamp(x/.72),b=clamp((x-.68)/.32),sy=Math.max(.004,1-a*a*a),sx=1-ease(b);
+      board.style.transform='scale('+sx.toFixed(4)+','+sy.toFixed(4)+')';
+      board.style.opacity=(1-b*b).toFixed(3);
+    }}
+  ];
+
+  /* panel */
+  var cur=clamp(parseInt(q.get('fx')||'1',10)||1,1,FX.length)-1;
+  var list=$('#fxlist'),btns=[];
+  FX.forEach(function(f,i){
+    var b=document.createElement('button');b.className='fx';b.type='button';
+    b.innerHTML='<b>'+(i+1)+' '+f.name+'</b><span>'+f.desc+'</span>';
+    b.addEventListener('click',function(){cur=i;render(true)});
+    list.appendChild(b);btns.push(b);
+  });
+  var rm=$('#rm'),slider=$('#slider'),xout=$('#xout'),follow=$('#follow'),mode=$('#mode');
+  var mq=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)');
+  rm.checked=!!(mq&&mq.matches)||q.get('rm')==='1';
+  rm.addEventListener('change',function(){render(true)});
+  var override=null;
+  if(q.has('x')){override=clamp(parseFloat(q.get('x'))||0)}
+  slider.addEventListener('input',function(){override=parseFloat(slider.value);render(true)});
+  follow.addEventListener('click',function(){override=null;render(true)});
+  var pb=$('#panel'),tg=$('#toggle');
+  tg.addEventListener('click',function(){var c=pb.classList.toggle('closed');tg.textContent=c?'show':'hide';tg.setAttribute('aria-expanded',!c)});
+  if(window.innerWidth<760){pb.classList.add('closed');tg.textContent='show';tg.setAttribute('aria-expanded','false')}
+
+  /* scroll -> x */
+  var vh=innerHeight,HOLD=.25,DIST=.6;
+  function size(){vh=stage.clientHeight||innerHeight;track.style.height=(vh*(1+HOLD+DIST))+'px'}
+  function scrollX(){return clamp((scrollY-HOLD*vh)/(DIST*vh))}
+
+  var last=-1,lastFx=-1,lastRm=null;
+  function render(force){
+    var x=override!=null?override:scrollX();
+    var reduced=rm.checked;
+    if(!force&&x===last)return;
+    var modeChanged=force||lastFx!==cur||lastRm!==reduced;
+    if(modeChanged){clearStyles();lastFx=cur;lastRm=reduced;
+      btns.forEach(function(b,i){b.setAttribute('aria-pressed',i===cur)});}
+    else{ /* cheap per-frame reset of the pieces effects set wholesale */
+      board.style.filter='';board.style.opacity='';board.style.transform='';
+    }
+    last=x;
+    slider.value=x;xout.textContent=x.toFixed(2);
+    follow.hidden=override==null;mode.textContent=override==null?'following scroll':'scrubbing by hand';
+    if(x<=0||x>=1){ /* no filter, no mask at the ends */
+      board.style.filter='';board.style.webkitMaskImage=board.style.maskImage='';
+      edge.style.opacity=0;
+      if(x>=1){board.style.opacity=0;board.style.visibility='hidden'}else{board.style.visibility='';}
+      if(x<=0){clearStyles()}
+      return;
+    }
+    board.style.visibility='';
+    if(reduced){board.style.opacity=(1-x).toFixed(3);return}
+    FX[cur].run(x);
+  }
+  var ticking=false;
+  addEventListener('scroll',function(){if(override!=null||ticking)return;ticking=true;requestAnimationFrame(function(){ticking=false;render()})},{passive:true});
+  addEventListener('resize',function(){size();render(true)});
+  size();render(true);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){size();render(true)});
+})();
+</script>
+</body>
+</html>
