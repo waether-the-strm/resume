@@ -55,11 +55,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
 
-  packages/strm-ui:
-    dependencies:
-      '@fontsource-variable/recursive':
-        specifier: ^5.3.0
-        version: 5.3.0
+  packages/strm-ui: {}
 
 packages:
 
@@ -530,9 +526,6 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
-
-  '@fontsource-variable/recursive@5.3.0':
-    resolution: {integrity: sha512-4B4/lWCVeZgdbpJdIIU1sOVO/ECjjM673ohuxvyQ6uCK41TPlGzKRNokKY84noUgGYnpwc//MW4k2KrOMY19jQ==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -3368,8 +3361,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.2':
     optional: true
-
-  '@fontsource-variable/recursive@5.3.0': {}
 
   '@img/colour@1.1.0': {}
 
