@@ -1,7 +1,6 @@
 # NOW
 
-Updated 22 Nov 2026, after the night of the third session (Jan away; the lead session and its
-subagents).
+Updated 22 Nov 2026, end of the third session. subagents).
 
 ## Goal
 
@@ -46,7 +45,7 @@ queue is `who:Jan is:open`, each with a kind (Decide, Brief, Write, Verify) and 
 - CI: format, types, unit tests, build, about 300 Playwright tests (scenarios A to E by id, the
   tour, rail, blob, theme switch, accessibility) and a performance budget for the finished page and
   the tour. Run Playwright locally with a port of your own (`E2E_PORT`).
-- Decisions: ADR 0001 to 0008, 0010 and 0011 accepted, 0009 proposed.
+- Decisions: ADR 0001 to 0008 and 0010 to 0012 accepted, 0009 proposed.
 
 ## How the work is split
 
@@ -61,8 +60,7 @@ watcher for new ones. Brief Jan before each batch.
 
 ## In progress
 
-- From Cursor, batch 5 (issue #96): #108 and #109 are merged; **#119 (scenarios G, #39) is in
-  review**, read by a subagent of the lead session.
+- With Cursor: #119 (scenarios G, #39), round 2 after the review on the pull request.
 - Ready to delegate next: #38 (sparks and the exit warp; the seams are in, the notes are on the
   issue).
 - Nothing is half-done in the lead session.
@@ -74,8 +72,6 @@ watcher for new ones. Brief Jan before each batch.
   questions, the seed's pulse and glint, the badges in dark, the rail after the tour, whether the
   rule should travel from the equation into the look, and which is the contract where the scenario
   table and the prototype's thresholds disagree.
-- **#124 the blob's settings**: language and theme move into the blob (his note of 22 Nov). Three
-  working layouts are on a rendered page he has the link to; he chooses, then ADR 0010 is amended.
 - **#12 Polish copy**: the drafts in `equation`, `guide`, `stops`, the interface strings of the
   rail, the blob and the theme switch. And a measured defect: the Polish look does not fit a phone
   in the tour (numbers on the issue); it needs shorter Polish or per-language sizes.
@@ -89,11 +85,14 @@ watcher for new ones. Brief Jan before each batch.
 
 The lead session, in this order:
 
-1. Finish the review of #119 and merge or send it back.
-2. What Jan decides on #89 and #124; the blob's settings are the next piece of building.
-3. Write batch 6 into #96: #38, and whatever #124 turns into.
+1. **#127 the blob's settings** (ADR 0012): a `settings` cell that unfolds a quiet strip with sound,
+   theme and language; every change of shape animated, the spacing worked out. Jan judges it in
+   motion. First step: the strip's markup and its unfolding in strm-ui, shown at `/ui/primitives` in
+   both themes, before it is wired.
+2. Review #119 when its round 2 arrives; then write batch 6 into #96 (#38 first).
+3. What Jan decides on #89.
 4. `STRM_PRODUCTION` on the production job (#47), #57 the 404 page on the host, #23 the visual
    baseline.
 
-What milestone 1 still needs: #39 (in review), #38, the blob's settings (#124), the Polish fit on
-phones (#12), and Jan's #89.
+What milestone 1 still needs: #39 (in review), #38, #127, the Polish fit on phones (#12), and Jan's
+#89.
