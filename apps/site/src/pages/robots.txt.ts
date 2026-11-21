@@ -1,7 +1,8 @@
 import type { APIRoute } from "astro"
 
-// Crawlers may fetch the pages. The noindex meta in Base.astro is what keeps the
-// rebuild out of the index until v2.0.0. This file only points at the sitemap.
+// Crawlers may fetch the pages. Base.astro emits noindex unless the build was
+// run with STRM_PRODUCTION=true. /ui and the 404 stay noindex even then.
+// This file only points at the sitemap.
 export const GET: APIRoute = ({ site }) => {
   const sitemap = new URL("sitemap-index.xml", site)
   const body = ["User-agent: *", "Allow: /", "", `Sitemap: ${sitemap.href}`, ""].join("\n")
