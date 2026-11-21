@@ -30,3 +30,6 @@ pnpm-debug.log*
 test-results/
 playwright-report/
 blob-report/
+
+# local hand-off between agents working in one clone (AGENTS.md)
+.handoff/

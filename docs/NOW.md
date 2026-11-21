@@ -45,17 +45,16 @@ queue is `who:Jan is:open`, each with a kind (Decide, Brief, Write, Verify) and 
 ## How the work is split
 
 The lead session keeps judgement; the rest is given away (the `session` skill, "Delegated work").
-Cursor runs delegable issues in parallel worktrees and hands each pull request over through a local
-file, `pr-<number>-claude-review.md`, in the repository root. Its instructions are in the local,
-uncommitted `cursor-tasks.md`. The lead session gives the reading of a delegated pull request to a
-subagent and keeps the decision.
+Cursor runs delegable issues in parallel worktrees. The current batch is `.handoff/batch.md`; each
+pull request is handed over in `.handoff/reviews/pr-<n>.md`. The folder is local and never committed
+(`AGENTS.md`, "Working beside the lead session").
 
-**On starting a session:** look for hand-off files with `Status: ready for review` before anything
-else, and start a watcher for new ones. Brief Jan before each batch (`AGENTS.md`, "The briefing").
+**On starting a session:** look in `.handoff/reviews/` for `Status: ready for review` before
+anything else, and start a watcher for new files. Brief Jan before each batch.
 
 ## In progress
 
-- With Cursor, batch 4 (in `cursor-tasks.md`): #86 the performance budget, round 2; #32 scenarios A
+- With Cursor, batch 4 (`.handoff/batch.md`): #86 the performance budget, round 2; #32 scenarios A
   to E as specs; #34 the rail; #35 the blob. Rail and blob fill the stubs in `scripts/parts` and
   share one numbering function (`2.3`, chapter and place; ADR 0010).
 - #36 key bindings: the registry is merged; wiring it and the G4 spec are the lead session's.
