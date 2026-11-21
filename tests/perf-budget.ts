@@ -104,18 +104,33 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * 1915.7, 1904.4, 1904.0. CSS is those two files, 5404 and 3214, 8618 together (the recorded
  * rebuild total was 7751; the third file, 1486, is gone). Document holds the blob and the
  * inlined rules: `/` 6062, `/pl/` 6354. Script, font and layout shift did not move.
+ *
+ * Measured again the same day, when the build's inline limit was set on purpose
+ * (`vite.build.assetsInlineLimit` 16384 in astro.config.mjs, issue #111), and the blob's
+ * hand-inlined `<style is:inline>` went back to ordinary `<style>` and `<style is:global>`.
+ * The limit had been Astro's default, 4096, which the home page's component sheet crossed
+ * with 937 B of new rules. At 16384 every component sheet is inlined and the home page loads
+ * one stylesheet file, the shared base (21642 B raw, over the limit): the number of blocking
+ * requests no longer depends on which component grows. Three cold loads, the same bytes each
+ * time. CSS 5404 (-3214: the home sheet is in the document now). Document `/` 8938 (+2876)
+ * and `/pl/` 9242 (+2888). Script 11405, font 49656 and layout shift did not move. Paint is
+ * back under the ceiling, a little lower than the previous round, so that ceiling stays:
+ * `/` 1886.6, 1918.8, 1886.3; `/pl/` 1934.3, 1916.7, 1916.4. For the record, with everything
+ * inline (`inlineStylesheets: "always"`) the finished layout shift was 0.2854 on `/` and
+ * 0.1380 on `/pl/` and the document 13458 B; with nothing inline (`"never"`) paint was
+ * about 2420 ms.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 6062, css: 8618, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 6354, css: 8618, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 8938, css: 5404, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9242, css: 5404, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 11399 },
-    "/pl/": { cls: 0, script: 11399 },
+    "/": { cls: 0, script: 11405 },
+    "/pl/": { cls: 0, script: 11405 },
   },
 }
 

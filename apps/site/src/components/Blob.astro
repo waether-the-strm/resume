@@ -108,15 +108,7 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
   </a>
 </div>
 
-{
-  /*
-    Not bundled. The page's other component CSS is inlined into the document while it stays
-    under the build's limit. These rules joined that sheet and pushed it over, so the build
-    emitted the whole sheet as its own render-blocking file: one more round trip before the
-    finished page could paint. Inlined here, they travel with the document.
-  */
-}
-<style is:inline>
+<style>
   .blob .ui-blob {
     position: fixed;
     z-index: 4;
@@ -143,6 +135,9 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
   .blob.is-flow .ui-blob__tldr {
     position: static;
   }
+</style>
+
+<style is:global>
   /*
     Until the script has marked a stop, the tour is at the start. The server's current
     stop is the last one, which is what the finished page (no tour) keeps.
