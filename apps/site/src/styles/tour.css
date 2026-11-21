@@ -549,8 +549,10 @@
   }
 }
 @media (max-width: 760px) {
+  /* The right-hand gutter is the rail's: 44 px in all, with the page's own 20. */
   [data-tour] .stage {
     padding-block: 150px 64px;
+    padding-right: 24px;
   }
   [data-tour] .guide:is([data-how], :not([data-step="0"])) {
     font-size: 13px;
