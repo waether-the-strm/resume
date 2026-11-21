@@ -9,6 +9,11 @@ const en = {
   "nav.skip": "Skip to the card",
   "nav.paths": "Ways in",
   "nav.language": "Language",
+  // The footer theme switch (#109). "System" clears the stored choice.
+  "theme.label": "Theme",
+  "theme.system": "System",
+  "theme.light": "Light",
+  "theme.dark": "Dark",
   "work.heading": "Selected work",
   "notFound.title": "Page not found",
   "notFound.lead": "This address is not a page.",
@@ -47,6 +52,11 @@ const pl: Record<UiKey, string> = {
   "nav.skip": "Przejdź do wizytówki",
   "nav.paths": "Wejścia",
   "nav.language": "Język",
+  // DRAFT for Jan: English repeated until the Polish is written.
+  "theme.label": "Theme",
+  "theme.system": "System",
+  "theme.light": "Light",
+  "theme.dark": "Dark",
   "work.heading": "Wybrane prace",
   "notFound.title": "Nie ma takiej strony",
   "notFound.lead": "Pod tym adresem nie ma strony.",
