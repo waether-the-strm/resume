@@ -23,9 +23,16 @@ const alternates = [
 
 async function openFinishedPage(page: Page, path: string) {
   await page.goto(path)
-  await page.evaluate(async () => {
-    await document.fonts.ready
-  })
+  // Measure only after Recursive is the face in use. A fallback is narrower, so a fit
+  // check against it would pass for the wrong reason.
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        await document.fonts.ready
+        return document.fonts.check('36px "Recursive Variable"')
+      })
+    )
+    .toBe(true)
 }
 
 async function expectFinishedPage(page: Page) {
@@ -101,7 +108,8 @@ async function expectMessageFits(page: Page) {
   expect(pill, "pill has a box").not.toBeNull()
   if (!headline || !pill) return
   const pillBottom = pill.y + pill.height
-  const fit = `headline top ${headline.y}px, pill bottom ${pillBottom}px, viewport ${viewport.height}px`
+  const fit = `headline top ${headline.y}px, pill bottom ${pillBottom}px, viewport ${viewport.width}×${viewport.height}`
+  test.info().annotations.push({ type: "measurement", description: fit })
   expect(headline.y, fit).toBeGreaterThanOrEqual(0)
   expect(pillBottom, fit).toBeLessThanOrEqual(viewport.height)
   expect(headline.x).toBeGreaterThanOrEqual(0)
@@ -180,6 +188,7 @@ test.describe("static page, JavaScript disabled", () => {
     test("English message from the headline to the pill is inside the viewport", async ({
       page,
     }) => {
+      expect(page.viewportSize()).toEqual({ width: 390, height: 664 })
       await openFinishedPage(page, "/")
       await expectMessageFits(page)
     })
@@ -196,6 +205,7 @@ test.describe("static page, JavaScript disabled", () => {
       },
       async ({ page }) => {
         test.fail(POLISH_PHONE_FIT)
+        expect(page.viewportSize()).toEqual({ width: 390, height: 664 })
         await openFinishedPage(page, "/pl/")
         await expectMessageFits(page)
       }
