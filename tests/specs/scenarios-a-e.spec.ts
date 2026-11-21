@@ -28,6 +28,7 @@ const guideCopy = {
     kicker: "the same question, answered",
     how: "how?",
     label: "how",
+    who: "someone deciding whether to build with me.",
     titles: ["LetsReg sign-in", "GSR", "One design system, both products"],
   },
   "/pl/": {
@@ -35,8 +36,9 @@ const guideCopy = {
     look: "Teraz wygląd.",
     payoff: "Te same słowa, czytane dwa razy.",
     kicker: "to samo pytanie, z odpowiedzią",
-    how: "jak?",
-    label: "jak",
+    how: "how?",
+    label: "how",
+    who: "ktoś, kto decyduje, czy ze mną budować.",
     titles: ["Logowanie LetsReg", "GSR", "Jeden design system, oba produkty"],
   },
 } as const
@@ -667,6 +669,20 @@ for (const viewport of viewports) {
           await expectFlag(guide, "data-pay", true)
           await expectFlag(guide, "data-after", true)
           await expect(page.locator(".card")).toBeInViewport()
+        })
+
+        test("the four questions and the corner word are English notation in every language", async ({
+          page,
+        }) => {
+          await page.goto(locale.path)
+          const questions = page.locator(".equation .q")
+          await expect(questions).toHaveText(["what?", "why?", "who?", "how?"])
+          for (const question of await questions.all()) {
+            await expect(question).toHaveAttribute("lang", "en")
+          }
+          await expect(page.locator(".guide .how")).toHaveText("how")
+          await expect(page.locator(".guide .how")).toHaveAttribute("lang", "en")
+          await expect(page.locator(".equation .a").nth(2)).toHaveText(copy.who)
         })
 
         test("E1: the kicker, the monogram, one hairline below", async ({ page }) => {

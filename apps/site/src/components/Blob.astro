@@ -5,7 +5,7 @@
 import { narrative } from "../i18n/content"
 import type { Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
-import { stopNumber } from "../lib/stop-number"
+import { stopMark } from "../lib/stop-mark"
 
 interface Props {
   locale: Locale
@@ -72,8 +72,14 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
               data-stop={index}
               data-first={index === 0 ? "true" : undefined}
             >
-              <span class="ui-blob__num">{stopNumber(story.stops, index)}</span>
-              <span class="ui-blob__label">{stop.name}</span>
+              <span
+                class="ui-blob__num ui-badge"
+                data-mark={stopMark(story.stops, index)}
+                aria-hidden="true"
+              />
+              <span class="ui-blob__label" lang={stop.notation ? "en" : undefined}>
+                {stop.name}
+              </span>
             </span>
           ))
         }

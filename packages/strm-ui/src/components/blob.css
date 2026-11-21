@@ -14,7 +14,7 @@
  *     </div>
  *     <button type="button" class="ui-blob__title" aria-expanded="false" aria-controls="blob-menu">
  *       <span class="ui-blob__stops">
- *         <span class="ui-blob__stop is-current"><span class="ui-blob__num">2.3</span><span class="ui-blob__label">tokens</span></span>
+ *         <span class="ui-blob__stop is-current"><span class="ui-blob__num ui-badge" data-mark="2.3" aria-hidden="true"></span><span class="ui-blob__label">tokens</span></span>
  *       </span>
  *       <span class="ui-blob__note" aria-hidden="true"><svg>…</svg></span>
  *     </button>
@@ -149,15 +149,12 @@
 }
 .ui-blob__stop {
   display: none;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-snug);
   min-width: 0;
 }
 .ui-blob__stop.is-current {
   display: flex;
-}
-.ui-blob__num {
-  color: var(--ink-mute);
 }
 .ui-blob__label {
   color: var(--accent-text);

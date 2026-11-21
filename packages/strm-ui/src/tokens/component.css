@@ -93,7 +93,7 @@
   --rail-land-dot-scale: 2;
   --rail-label-gap: 30px;
   --rail-label-shift: 6px;
-  --rail-caption: block;
+  --rail-caption: flex;
 
   /*
    * Blob: the floating place-marker. Lengths are the prototype's. The shadow is the
