@@ -1,6 +1,6 @@
 # 0009. The tour is a layer on the page the server rendered
 
-Status: proposed, 21 Nov 2026. Built this way in #85 so it can be judged in motion; Jan decides.
+Status: proposed, 21 Nov 2026. Built this way in #87 so it can be judged in motion; Jan decides.
 
 ## Context
 
