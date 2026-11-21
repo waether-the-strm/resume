@@ -8,7 +8,7 @@ test.describe("the blob on the finished page", () => {
     await page.goto("/")
     await expect(page.locator("html")).not.toHaveAttribute("data-tour", /.*/)
     const current = page.locator(".ui-blob__stop.is-current")
-    await expect(current.locator(".ui-blob__num")).toHaveText("3.2")
+    await expect(current.locator(".ui-blob__num")).toHaveAttribute("data-mark", "3.2")
     await expect(current.locator(".ui-blob__label")).toHaveText("the look")
     await expect(page.locator(".ui-blob")).toHaveClass(/is-slim/)
     await expect(page.locator(".ui-blob__id")).toHaveAttribute("inert", "")
@@ -57,7 +57,7 @@ test.describe("the blob on the finished page", () => {
   test("Polish keeps the same number and uses the Polish title", async ({ page }) => {
     await page.goto("/pl/")
     const current = page.locator(".ui-blob__stop.is-current")
-    await expect(current.locator(".ui-blob__num")).toHaveText("3.2")
+    await expect(current.locator(".ui-blob__num")).toHaveAttribute("data-mark", "3.2")
     await expect(current.locator(".ui-blob__label")).toHaveText("wygląd")
   })
 })
@@ -69,15 +69,15 @@ test.describe("the blob on the tour", () => {
     page,
   }) => {
     const cases = [
-      ["0", "0", "0.1", "the start"],
-      ["1", "1", "1.1", "the words"],
+      ["0", "0", "0", "w+w+w"],
+      ["1", "1", "1", "the words"],
       ["2", "0.78", "2.3", "tokens"],
       ["3", "0.32", "3.1", "the tiles"],
     ] as const
     for (const [stage, t, number, title] of cases) {
       await page.goto(`/?stage=${stage}&t=${t}`)
       const current = page.locator(".ui-blob__stop.is-current")
-      await expect(current.locator(".ui-blob__num")).toHaveText(number)
+      await expect(current.locator(".ui-blob__num")).toHaveAttribute("data-mark", number)
       await expect(current.locator(".ui-blob__label")).toHaveText(title)
       await expect(page.locator(".ui-blob")).not.toHaveClass(/is-slim/)
       const name = page.locator(".ui-blob__id")
@@ -93,7 +93,7 @@ test.describe("the blob on the tour", () => {
   }) => {
     await page.goto("/?stage=3&t=1")
     const look = page.locator(".ui-blob__stop.is-current")
-    await expect(look.locator(".ui-blob__num")).toHaveText("3.2")
+    await expect(look.locator(".ui-blob__num")).toHaveAttribute("data-mark", "3.2")
     await expect(look.locator(".ui-blob__label")).toHaveText("the look")
     await expect(page.locator(".ui-blob")).toHaveClass(/is-slim/)
     await expect(page.locator(".ui-blob__id")).toHaveAttribute("inert", "")

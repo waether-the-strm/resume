@@ -26,6 +26,9 @@ built until its contents were decided.
 
 ## Open
 
+Closed by [ADR 0011](0011-notation-and-prose.md): the number became a mark, and the question has
+none. What follows is the question as it stood.
+
 Which number the chapters get. The guide already numbers the scenes: `how 1` the words, `how 2` the
 structure, `how 3` the look. Recommended, and built until Jan says otherwise: the blob and the rail
 use the same numbers, so the equation is chapter 0 (`0.1` to `0.6`) and "the tokens" is `2.3`. The

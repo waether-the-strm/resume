@@ -5,7 +5,7 @@
 import { narrative } from "../i18n/content"
 import type { Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
-import { stopNumber } from "../lib/stop-number"
+import { stopMark } from "../lib/stop-mark"
 
 interface Props {
   locale: Locale
@@ -88,8 +88,14 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
               data-stop={index}
               data-first={index === 0 ? "true" : undefined}
             >
-              <span class="ui-blob__num">{stopNumber(story.stops, index)}</span>
-              <span class="ui-blob__label">{stop.name}</span>
+              <span
+                class="ui-blob__num ui-badge"
+                data-mark={stopMark(story.stops, index)}
+                aria-hidden="true"
+              />
+              <span class="ui-blob__label" lang={stop.notation ? "en" : undefined}>
+                {stop.name}
+              </span>
             </span>
           ))
         }
@@ -118,15 +124,7 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
   </a>
 </div>
 
-{
-  /*
-    Not bundled. The page's other component CSS is inlined into the document while it stays
-    under the build's limit. These rules joined that sheet and pushed it over, so the build
-    emitted the whole sheet as its own render-blocking file: one more round trip before the
-    finished page could paint. Inlined here, they travel with the document.
-  */
-}
-<style is:inline>
+<style>
   .blob .ui-blob {
     position: fixed;
     z-index: 4;
@@ -153,6 +151,9 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
   .blob.is-flow .ui-blob__tldr {
     position: static;
   }
+</style>
+
+<style is:global>
   /*
     Until the script has marked a stop, the tour is at the start. The server's current
     stop is the last one, which is what the finished page (no tour) keeps.

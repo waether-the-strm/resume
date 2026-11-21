@@ -7,7 +7,7 @@
  *     <button type="button" class="ui-rail__arrow" data-dir="-1" aria-label="previous stop"></button>
  *     <button type="button" class="ui-rail__stop is-chapter" aria-label="the words">
  *       <span class="ui-rail__label">words</span>
- *       <span class="ui-rail__mark"><span class="ui-rail__num" data-chapter="1" aria-hidden="true"></span><span class="ui-rail__tick" aria-hidden="true"></span></span>
+ *       <span class="ui-rail__mark"><span class="ui-rail__tick" aria-hidden="true"></span></span>
  *     </button>
  *     <button type="button" class="ui-rail__stop is-dot" aria-label="tokens">
  *       <span class="ui-rail__label">tokens</span>
@@ -98,10 +98,13 @@
   border-color: var(--ink);
 }
 
+/* The label is the stop's mark, as a badge, then its title. */
 .ui-rail__label {
   position: absolute;
   right: var(--rail-label-gap);
   display: var(--rail-caption);
+  align-items: center;
+  gap: var(--space-snug);
   color: var(--ink-mute);
   font-size: var(--type-micro-size);
   letter-spacing: var(--type-micro-tracking);
@@ -134,23 +137,6 @@
   flex-direction: column;
   align-items: flex-end;
   gap: var(--space-hair);
-}
-
-.ui-rail__num {
-  display: var(--rail-caption);
-  color: var(--ink-mute);
-  font-size: var(--type-micro-size);
-  letter-spacing: 0;
-  line-height: 1;
-  font-variation-settings:
-    "MONO" var(--voice-mono),
-    "wght" var(--type-micro-weight);
-}
-
-/* The digit is paint, not a text node: the button's accessible name stays the
-   stop's name (the short label is already inside that name). */
-.ui-rail__num::before {
-  content: attr(data-chapter);
 }
 
 .ui-rail__tick {

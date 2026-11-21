@@ -1,4 +1,3 @@
-label: how
 scenes:
   words: First, only words. Read them.
   structure: Same words, now given places. Each gets a name and a rule.

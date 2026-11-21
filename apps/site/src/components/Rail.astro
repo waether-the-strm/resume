@@ -2,11 +2,12 @@
 // The rail: the stops as navigation (#34). Every stop is a button, rendered here on
 // the server from the narrative, in the page's language. scripts/parts/rail.ts marks
 // the chapter and the nearest stop; it does not build markup. Only the tour shows it
-// (`html[data-tour]`, ADR 0009). Chapter marks carry their chapter number (ADR 0010).
+// (`html[data-tour]`, ADR 0009). A stop's mark sits left of its title as a faint badge;
+// the ticks and dots carry nothing (ADR 0011). A title that is notation is marked as English.
 import type { Locale } from "../i18n/locales"
 import { narrative } from "../i18n/content"
 import { t } from "../i18n/ui"
-import { stopNumber } from "../lib/stop-number"
+import { stopMark } from "../lib/stop-mark"
 
 interface Props {
   locale: Locale
@@ -23,21 +24,21 @@ const nextStop = t(locale, "rail.next")
   <button type="button" class="ui-rail__arrow" data-dir="-1" aria-label={previousStop}></button>
   {
     stops.map((stop, index) => {
-      const number = stopNumber(stops, index)
       const chapter = stop.chapter !== undefined
-      const chapterNo = number.slice(0, number.indexOf("."))
       return (
         <button
           type="button"
           class:list={["ui-rail__stop", chapter ? "is-chapter" : "is-dot"]}
           data-index={index}
-          data-number={number}
+          data-id={stop.id}
           aria-label={stop.name}
         >
-          <span class="ui-rail__label">{chapter ? stop.label : stop.name}</span>
+          <span class="ui-rail__label">
+            <span class="ui-badge" data-mark={stopMark(stops, index)} aria-hidden="true" />
+            <span lang={stop.notation ? "en" : undefined}>{chapter ? stop.label : stop.name}</span>
+          </span>
           {chapter ? (
             <span class="ui-rail__mark">
-              <span class="ui-rail__num" data-chapter={chapterNo} aria-hidden="true" />
               <span class="ui-rail__tick" aria-hidden="true" />
             </span>
           ) : (
