@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jan Mirecki, design engineer — a page that builds itself</title>
+<!-- v10 "one gesture": signature from the first pixel; the equation in one screen; scroll is the slider that builds
+     one message (words → structure with annotations → look); the built thing is the real hero; the line travels. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f6f4ef;--ink:#161513;--mute:#6b675f;--soft:#a39e94;--line:#d8d3c8;--accent:#e4482c;--link:#1a4fd6;--sem:#e4482c;--el:#3a6ea5;--tok:#5f7f2a;--font:"Recursive",ui-monospace,system-ui,sans-serif}
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font)}
+  ::view-transition-group(*){animation-duration:.8s;animation-timing-function:cubic-bezier(.45,0,.15,1)}
+  ::view-transition-group(rule){animation-duration:1s}
+  ::view-transition-old(root),::view-transition-new(root){animation-duration:.25s}
+  .mono{font-variation-settings:"MONO" 1,"wght" 400}
+
+  /* the track length is set from the stop table in JS; svh keeps the stage and every stop still while a phone toolbar moves */
+  .track{height:560vh;position:relative}
+  .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+  ::view-transition{pointer-events:none}
+  .frame{position:relative;max-width:1040px;margin:0 auto;height:100vh;height:100svh;padding:120px 40px 60px;display:grid;align-items:center}
+
+  /* ---------- signature: there from the first pixel ---------- */
+  /* ---------- the blob: where you are (a title), who is talking (a link to the card), and on tap a few controls ---------- */
+  .blob{position:fixed;left:0;right:0;bottom:22px;margin:0 auto;width:fit-content;max-width:calc(100vw - 24px);z-index:4;display:grid;padding:0 6px;border-radius:22px;font-size:13px;line-height:1.5;white-space:nowrap;color:var(--mute);font-variation-settings:"MONO" 1,"wght" 400;
+    background:color-mix(in oklab,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 0 0 1px rgba(22,21,19,.06),0 14px 30px -16px rgba(22,21,19,.45);transition:box-shadow .3s,border-radius .5s}
+  .blob.open{border-radius:18px;box-shadow:0 0 0 1px rgba(22,21,19,.08),0 22px 44px -18px rgba(22,21,19,.55);animation:blob-pop .5s cubic-bezier(.3,1.4,.5,1)}
+  @keyframes blob-pop{0%{transform:scale(1)}35%{transform:scale(1.035,.965)}100%{transform:scale(1)}}
+  .blob button,.blob a{font:inherit;font-variation-settings:inherit;color:inherit;text-decoration:none;background:none;border:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .blob :focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:8px}
+  .b-menu{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .5s cubic-bezier(.3,1.35,.5,1),opacity .25s}
+  .blob.open .b-menu{grid-template-rows:1fr;opacity:1}
+  .b-menu>div{overflow:hidden;min-height:0;display:grid;grid-template-columns:1fr 1fr}
+  .b-menu a,.b-menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;height:44px;padding:0 10px;color:var(--ink);text-align:left}
+  .b-menu :nth-child(n+3){border-top:1px solid var(--line)}
+  .b-menu i{font-style:normal;color:var(--accent)}
+  .b-menu a:hover,.b-menu button:hover{color:var(--accent)}
+  .b-title{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;padding:8px 10px 6px;font-size:12px}
+  .blob.open .b-title{box-shadow:0 -1px 0 var(--line)}
+  .b-title .st{color:var(--accent)}
+  .b-title .st.swap{animation:melt-in .45s cubic-bezier(.2,.8,.2,1) both}
+  .b-title .meta{display:flex;gap:9px;color:var(--soft)}
+  .b-title .note{font-style:normal;color:var(--accent)}.b-title .note.off{color:var(--soft);text-decoration:line-through}
+  .b-name{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 10px 9px;border-top:1px solid var(--line);max-height:40px;overflow:hidden;transition:max-height .45s cubic-bezier(.3,1.2,.5,1),padding .45s,opacity .3s,border-color .3s}
+  .b-name b{color:var(--ink);font-weight:500}
+  .b-name .go{font-style:normal;color:var(--accent);opacity:0;transform:translateX(-4px);transition:opacity .25s,transform .25s}
+  .blob.open .b-name .go,.b-name:hover .go,.b-name:focus-visible .go{opacity:1;transform:none}
+  /* the name is on the page (the finished look, the card): only the title stays */
+  .blob.slim .b-name{max-height:0;padding-top:0;padding-bottom:0;opacity:0;border-top-color:transparent;pointer-events:none}
+  @media (prefers-reduced-motion:reduce){.blob.open{animation:none}.b-menu,.b-name{transition:none}.b-title .st.swap{animation:none}}
+  .sig b{color:var(--ink);font-weight:500}
+
+  /* ---------- the equation ---------- */
+  .sum{font-variation-settings:"MONO" 1,"wght" 400;font-size:clamp(18px,2vw,24px);line-height:1.7;max-width:46ch;margin:0 auto;width:100%}
+  .sum b{color:var(--accent);font-weight:500}
+  .sum .op{color:var(--soft)}
+  .sum .row{display:grid;grid-template-columns:2ch 6ch 1fr;gap:0 1ch}
+  .above{position:relative}
+  .above .plus{position:absolute;left:0;bottom:0;color:var(--soft);opacity:0;transform:scale(.4);transition:opacity .3s,transform .4s cubic-bezier(.2,1.4,.4,1)}
+  .above .plus.on{opacity:1;transform:none}
+  .above .row{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .45s cubic-bezier(.3,1.3,.4,1),opacity .3s}
+  .above .row>div{grid-column:1/-1;min-height:0;overflow:hidden;display:grid;grid-template-columns:2ch 6ch 1fr;gap:0 1ch}
+  .above .row.on{grid-template-rows:1fr;opacity:1}
+  .above .row .q{opacity:0;transform:translateY(.35em);transition:opacity .3s,transform .4s cubic-bezier(.2,.9,.3,1.1)}
+  .above .row.q-on .q{opacity:1;transform:none}
+  .a{opacity:0;display:inline-block}
+  .a.in{animation:melt-in .5s cubic-bezier(.2,.8,.2,1) both}
+  .a.out{animation:melt-out .35s ease-in forwards}
+  .rule{height:2px;background:var(--ink);margin:.6em 0;transform:scaleX(0);transform-origin:center;transition:transform .9s cubic-bezier(.2,.8,.2,1);view-transition-name:rule}
+  .rule.on{transform:scaleX(1)}
+  .rule.pulse{animation:pulse .8s ease-out 1}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(228,72,44,0);background:var(--ink)}25%{box-shadow:0 0 24px 6px rgba(228,72,44,.45);background:var(--accent)}100%{box-shadow:0 0 0 0 rgba(228,72,44,0);background:var(--ink)}}
+  .howrow{opacity:0;transform:translateY(-.6em);transition:opacity .4s .2s,transform .5s .2s cubic-bezier(.2,.9,.3,1.2)}
+  .howrow.on{opacity:1;transform:none}
+  .howrow .op{opacity:0;transition:opacity .4s .2s}
+  .howrow.left .op{opacity:1}
+  .howrow .lbl{display:inline-block;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .15s}
+  .howrow .lbl.gone{opacity:0}
+  .howrow .txt{display:inline-block;opacity:0}
+  .howrow .txt.in{animation:melt-in .5s cubic-bezier(.2,.8,.2,1) both}
+  .howrow .txt.out{animation:melt-out .45s ease-in forwards}
+  .sum.alone .above .row{grid-template-rows:0fr;opacity:0}
+  .sum.alone .above .plus{opacity:0}
+  .sum.alone .howrow .op{opacity:0;transition:opacity .4s}
+  .warped{filter:url(#warp2)}
+  .spark{position:fixed;width:30px;height:30px;pointer-events:none;z-index:9;transform:translate(-50%,-50%) scale(0);background:#fff;
+    clip-path:polygon(50% 0,57% 43%,100% 50%,57% 57%,50% 100%,43% 57%,0 50%,43% 43%);filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 3px var(--accent))}
+  .spark.go{animation:spark .5s cubic-bezier(.2,.8,.3,1) forwards}
+  @keyframes spark{0%{transform:translate(-50%,-50%) scale(0) rotate(0)}35%{transform:translate(-50%,-50%) scale(1.25) rotate(20deg)}100%{transform:translate(-50%,-50%) scale(0) rotate(70deg)}}
+
+  /* ---------- the guide in the corner ---------- */
+  .guide{position:fixed;left:40px;top:28px;font-size:14px;color:var(--mute);max-width:56ch;margin:0;z-index:2;font-variation-settings:"MONO" 1,"wght" 400;line-height:1.7;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:1ch;align-items:start}
+  .guide .how{color:var(--accent);display:inline-block;opacity:0;transition:opacity .25s}
+  .guide .how.on{opacity:1}
+  .guide .step{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:1ch;min-width:0}
+  .guide .n{color:var(--ink)}
+  .guide .txt{display:block}
+  .guide .pay{display:block;margin-top:.6em;color:var(--ink);opacity:0;transition:opacity .6s}
+  .guide.pay-on .pay{opacity:1}
+  .txt.out{animation:melt-out .42s ease-in forwards}
+  .txt.in{animation:melt-in .55s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes melt-out{to{opacity:0;transform:translateX(-28px) skewX(-6deg);filter:blur(4px)}}
+  @keyframes melt-in{from{opacity:0;transform:translateX(-28px) skewX(6deg);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+  .band{position:fixed;left:0;right:0;top:0;height:190px;z-index:1;pointer-events:none;
+    -webkit-backdrop-filter:blur(9px);backdrop-filter:url(#warp) blur(5px);
+    -webkit-mask-image:linear-gradient(#000 30%,transparent);mask-image:linear-gradient(#000 30%,transparent);opacity:0;transition:opacity .5s}
+  .band.on{opacity:1}
+  .haze{position:fixed;left:0;right:0;top:0;height:170px;z-index:1;pointer-events:none;background:linear-gradient(rgba(246,244,239,.9) 0%,rgba(246,244,239,.6) 40%,rgba(246,244,239,0) 100%);opacity:0;transition:opacity .5s}
+  .haze.on{opacity:1}
+  body.after .guide,body.after .band,body.after .haze,body.after .dots,body.after .skip{opacity:0;pointer-events:none;transition:opacity .4s}
+
+  /* ---------- the message: one DOM, three skins, scroll drives --t ---------- */
+  .msg{--t:0;--mono:1;--wght:400;--hw:400;--c:0;position:relative}
+  .msg,.msg *{font-variation-settings:"MONO" var(--mono),"CASL" 0,"wght" var(--wght)}
+  .msg h1{font-variation-settings:"MONO" var(--mono),"CASL" 0,"wght" var(--hw)}
+  .w{display:inline-block;white-space:pre}
+  .blk{position:relative}
+  .blk>*:not(.tag):not(.msgrule){margin:0}
+  .tag{display:block;font-size:12.5px;line-height:1.4;font-variation-settings:"MONO" 1,"wght" 400;letter-spacing:0;white-space:nowrap;margin:0 0 .35em;opacity:0;transition:opacity .35s}
+  .tag .name{color:var(--sem)}.tag em{color:var(--el);font-style:normal}.tag s{color:var(--tok);text-decoration:none}.tag i,.tag u{color:var(--soft);font-style:normal;text-decoration:none}
+  .tag .cap{position:relative;display:inline-block}
+  .tag .cap .uc{position:absolute;left:0;top:0;opacity:0;transition:opacity .35s}
+  .tag .cap .lc{transition:opacity .35s}
+  .tag .part{display:inline-block;max-width:0;overflow:hidden;opacity:0;vertical-align:bottom;transition:max-width .6s cubic-bezier(.2,.8,.2,1),opacity .4s}
+  .tag.c1 .cap .uc,.tag.c2 .cap .uc,.tag.c3 .cap .uc{opacity:1}
+  .tag.c1 .cap .lc,.tag.c2 .cap .lc,.tag.c3 .cap .lc{opacity:0}
+  .tag.c2 .part.syn,.tag.c3 .part.syn{max-width:30ch;opacity:1;transition-delay:.25s}
+  .tag.c3 .part.tok{max-width:40ch;opacity:1;transition-delay:.1s}
+  .msg[data-skin="structure"] .tag{opacity:1}
+  .msg[data-skin="words"] .tag,.msg[data-skin="look"] .tag{display:none}
+  .msgrule{height:2px;background:var(--ink);margin:0;view-transition-name:rule}
+  .msg[data-skin="words"] .msgrule,.msg[data-skin="structure"] .msgrule{display:none}
+
+  /* 1 words: one compact block; sentences appear in the order they will later be split */
+  .msg[data-skin="words"]{font-size:18px;line-height:1.8;max-width:62ch}
+  .msg[data-skin="words"] .blk,.msg[data-skin="words"] .blk>*:not(.tag):not(.msgrule),.msg[data-skin="words"] li{display:inline}
+  .msg[data-skin="words"] .blk{opacity:clamp(0,calc((var(--t) - var(--i)*.14)*5),1)}
+  .msg[data-skin="words"] ul{padding:0;margin:0}
+  .msg[data-skin="words"] a{color:inherit;text-decoration:none}
+  .msg[data-skin="words"] h1{font-size:inherit;--hw:400}
+  /* 2 structure: boxes with names; as --t grows the names become components, then tokens; the mono lets go; sizes walk towards the look */
+  .msg[data-skin="structure"]{--mono:calc(1 - max(0, (var(--t) - .55)*2.2));font-size:calc(17px + max(0,(var(--t) - .55))*1px);line-height:calc(1.75 - max(0,(var(--t) - .55))*.4);max-width:62ch;color:color-mix(in oklab,var(--ink) calc(var(--t)*100%),var(--mute))}
+  .msg[data-skin="structure"] .blk{border:1px solid color-mix(in oklab,transparent calc(max(0,(var(--t) - .55))*220%),var(--ink));padding:1.1em 2ch .8em;margin:0 0 1em;transition:border-color .3s}
+  .msg[data-skin="structure"] .tag{position:absolute;top:-.8em;left:1.5ch;background:var(--bg);padding:0 .5ch;margin:0;font-size:14px;max-width:calc(100% - 3ch);overflow:hidden;text-overflow:ellipsis}
+  .msg[data-skin="structure"] h1{font-size:calc(1em + max(0,(var(--t) - .55))*2.2em);line-height:1.15;--hw:calc(400 + max(0,(var(--t) - .55))*600);letter-spacing:calc(max(0,(var(--t) - .55))*-.04em)}
+  .msg[data-skin="structure"] ul{list-style:none;padding:0}
+  .msg[data-skin="structure"] li{padding:.15em 0}
+  .msg[data-skin="structure"] a{color:inherit;text-decoration:none}
+  .msg[data-skin="structure"] .who{--wght:calc(400 + max(0,(var(--t) - .55))*400)}
+  /* 3 look: the real hero; colour arrives with --t */
+  .msg[data-skin="look"]{--mono:0;--c:min(1,calc(var(--t)*4));display:grid;grid-template-columns:1.2fr 1fr;gap:12px 64px;align-items:start;font-size:17px;line-height:1.55}
+  .msg[data-skin="look"] .b-h1{grid-column:1}
+  .msg[data-skin="look"] h1{font-size:clamp(36px,4.4vw,54px);line-height:1;letter-spacing:-.025em;margin:0 0 10px;--hw:800}
+  .msg[data-skin="look"] h1 .w:nth-child(n+3){color:color-mix(in oklab,var(--accent) calc(var(--c)*100%),var(--ink))}
+  .msg[data-skin="look"] .b-lead{grid-column:1}
+  .msg[data-skin="look"] .lead{max-width:40ch;color:color-mix(in oklab,var(--soft) calc(var(--c)*60%),var(--mute))}
+  .msg[data-skin="look"] .b-list{grid-column:2;grid-row:1/3}
+  .msg[data-skin="look"] ul{list-style:none;margin:6px 0 0;padding:0;counter-reset:tile}
+  .msg[data-skin="look"] li{padding:14px 0 14px 44px;position:relative;font-size:18px;line-height:1.35;--wght:500;counter-increment:tile;
+    opacity:clamp(0,calc((var(--t) - .06 - var(--k)*.09)*9),1);transform:translateY(calc((1 - clamp(0,calc((var(--t) - .06 - var(--k)*.09)*9),1))*10px))}
+  .msg[data-skin="look"] li+li{border-top:1px solid color-mix(in oklab,var(--line) calc(var(--c)*100%),var(--ink))}
+  .msg[data-skin="look"] li::before{content:"0" counter(tile);position:absolute;left:0;top:17px;font-size:12px;letter-spacing:.06em;font-variation-settings:"MONO" 1,"wght" 500;color:color-mix(in oklab,var(--accent) calc(var(--c)*100%),var(--ink))}
+  .msg[data-skin="look"] .b-who{grid-column:1/-1;margin:44px 0 0;--w:calc((var(--t) - .38)*52 - 2);opacity:clamp(0,calc((var(--t) - .36)*10),1)}
+  .msg[data-skin="look"] .who .w{--wght:calc(400 + 450*clamp(0, 1 - abs(var(--w) - var(--j))/2.2, 1) + 380*var(--nm,0)*clamp(0, var(--w) - var(--j) - 2, 1));transition:none}
+  .msg[data-skin="look"] .who .w:nth-child(-n+3){--nm:1}
+  .msg[data-skin="look"] .b-who .msgrule{display:block;margin:0 0 18px;background:color-mix(in oklab,var(--line) calc(var(--c)*100%),var(--ink))}
+  .msg[data-skin="look"] .who{font-size:19px;margin:0 0 6px}
+  .msg[data-skin="look"] .b-cta{grid-column:1/-1;margin:34px 0 0;opacity:clamp(0,calc((var(--t) - .68)*8),1);transform:translateY(calc((1 - clamp(0,calc((var(--t) - .68)*8),1))*8px))}
+  .msg[data-skin="look"] .cta{color:var(--mute);font-size:16px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .msg[data-skin="look"] .cta a{color:var(--ink);text-decoration:none;--wght:600;display:inline-block;padding:11px 18px 11px 16px;margin:0;border:1px solid color-mix(in oklab,var(--accent) calc(var(--c)*100%),var(--ink));border-radius:999px;background:color-mix(in oklab,var(--accent) calc(var(--c)*100%),transparent);color:color-mix(in oklab,#fff calc(var(--c)*100%),var(--ink));transition:transform .3s}
+  .msg[data-skin="look"] .cta a:hover{transform:translateX(3px)}
+  .msg[data-skin="look"] .cta a .w:first-child::before{content:"→ ";}
+
+  /* step rail: four stops, real buttons; labels on hover/focus/current (desktop), ticks only on phones */
+  .dots{position:fixed;right:28px;top:50%;transform:translateY(-50%);display:grid;gap:0;z-index:2;transition:opacity .4s}
+  .dots button{position:relative;display:flex;align-items:center;justify-content:flex-end;height:34px;min-width:34px;padding:0;margin:0;border:0;background:none;cursor:pointer;color:var(--ink);font:inherit;font-size:12px;font-variation-settings:"MONO" 1,"wght" 400}
+  .dots .lbl{position:absolute;right:30px;opacity:0;transform:translateX(6px);transition:opacity .2s,transform .2s;color:var(--mute);white-space:nowrap}
+  .dots button:hover .lbl,.dots button:focus-visible .lbl,.dots button[aria-current=true] .lbl{opacity:1;transform:none}
+  .dots button[aria-current=true] .lbl{color:var(--accent)}
+  .dots .tick{width:12px;height:2px;background:var(--soft);transition:width .2s,background .2s}
+  .dots button:hover .tick,.dots button:focus-visible .tick{width:20px;background:var(--ink)}
+  .dots button[aria-current=true] .tick{width:22px;background:var(--accent)}
+  .dots button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+  /* scroll hint: desktop = mouse wheel, phone = warm line; once per session */
+  .hint{position:fixed;z-index:2;pointer-events:none;opacity:0;transition:opacity .5s}
+  .hint.show{opacity:1}.hint.gone{opacity:0!important;transition:opacity .25s}
+  .h-mouse{left:50%;bottom:104px;transform:translateX(-50%);display:grid;justify-items:center;gap:6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-variation-settings:"MONO" 1,"wght" 400}
+  .h-mouse i{width:18px;height:28px;border:1.5px solid var(--ink);border-radius:10px;position:relative}
+  .h-mouse i::after{content:"";position:absolute;left:50%;top:5px;width:2px;height:6px;margin-left:-1px;background:var(--accent);border-radius:2px;animation:wheel 1.8s ease-in-out infinite}
+  @keyframes wheel{0%{transform:translateY(0);opacity:0}25%{opacity:1}80%{transform:translateY(9px);opacity:0}100%{opacity:0}}
+  .h-text{display:none;left:0;right:44px;bottom:22px;text-align:center;font-size:13px;color:var(--mute);font-style:italic;font-variation-settings:"slnt" -10,"CASL" 1}
+  .h-text em{font-style:inherit;color:var(--accent)}
+  @media (pointer:coarse),(max-width:760px){.h-mouse{display:none}.h-text{display:block;bottom:92px}}
+  @media (prefers-reduced-motion:reduce){.h-mouse i::after{animation:none;opacity:1;transform:translateY(4px)}.dots .lbl,.dots .tick{transition:none}}
+  .dots .sub{position:relative;display:flex;align-items:center;justify-content:flex-end;height:18px;min-width:34px;padding:0;margin:0;border:0;background:none;cursor:pointer}
+  .dots .sub::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--soft);margin-right:3px;opacity:.7;transition:background .2s,transform .2s}
+  .dots .sub:hover::after,.dots .sub:focus-visible::after{background:var(--ink);transform:scale(1.3)}
+  .dots .sub.on::after{background:var(--accent);opacity:1}
+  .dots .sub:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:3px}
+  .dots .sub.on .lbl{opacity:1;transform:none}
+  /* landing: the marker of the stop the reader came to rest on clicks into place */
+  @keyframes land-tick{0%{transform:scaleX(1)}35%{transform:scaleX(1.5)}100%{transform:scaleX(1)}}
+  @keyframes land-dot{0%{transform:scale(1)}35%{transform:scale(2)}100%{transform:scale(1)}}
+  .dots .landed .tick{transform-origin:right center;animation:land-tick .45s cubic-bezier(.2,.8,.2,1)}
+  .dots .sub.landed::after{animation:land-dot .45s cubic-bezier(.2,.8,.2,1)}
+  /* previous / next: the same stops, one at a time (arrow keys, Space and Page keys do the same) */
+  .dots .arr{justify-content:flex-end;height:30px;padding-right:5px;transition:opacity .2s}
+  .dots .arr::before{content:"";width:7px;height:7px;border:solid var(--mute);border-width:0 1.5px 1.5px 0;transform:rotate(45deg);transition:border-color .2s}
+  .dots .arr.prev::before{transform:rotate(-135deg)}
+  .dots .arr:hover::before,.dots .arr:focus-visible::before{border-color:var(--ink)}
+  .dots .arr.off{opacity:.25;pointer-events:none}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  @media (prefers-reduced-motion:reduce){.dots .landed .tick,.dots .sub.landed::after{animation:none}}
+  .skip{position:fixed;right:40px;bottom:28px;font-size:13px;color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line);z-index:2;transition:opacity .4s}
+  @media (prefers-reduced-motion:reduce){.a,.txt,.rule,.howrow{animation:none!important;transition:none!important}}
+  @media (max-width:760px){.frame{padding:0 20px}.guide{left:20px;width:calc(100vw - 40px);top:16px;max-width:none}.skip{display:none}
+    .blob{bottom:12px;font-size:12.5px}
+    .sum{font-size:16px}.sum .row,.above .row>div{grid-template-columns:2ch 5ch 1fr}
+    .msg[data-skin="look"]{grid-template-columns:minmax(0,1fr);gap:18px}.msg[data-skin="look"] .b-list{grid-column:1;grid-row:auto}.msg[data-skin="look"] h1{font-size:36px}.msg[data-skin="look"] .lead{max-width:none}
+    .frame{padding:110px 20px 60px}}
+
+  @media (max-height:760px){
+    .frame{padding:104px 40px 56px}
+    .guide{font-size:13px;line-height:1.6}
+    .msg[data-skin="structure"]{font-size:calc(15px + max(0,(var(--t) - .55))*1px)}
+    .msg[data-skin="structure"] .blk{padding:.9em 1.5ch .6em;margin:0 0 .75em}
+    .msg[data-skin="structure"] .tag{font-size:12.5px}
+    .msg[data-skin="look"] h1{font-size:clamp(32px,4vw,44px)}}
+  @media (max-width:760px){
+    /* phone: ticks only, in a reserved right gutter (44px), near the thumb */
+    .dots{right:0;top:auto;bottom:14vh;bottom:14svh;transform:none;width:44px}
+    .dots .arr{justify-content:center;padding:0}
+    .dots button{height:44px;width:44px;justify-content:center}
+    .dots .lbl,.dots .sub{display:none}
+    .dots .tick{width:10px;height:2px}.dots button[aria-current=true] .tick{width:18px}
+    .dots button:hover .tick{width:10px;background:var(--soft)}.dots button[aria-current=true]:hover .tick{width:18px;background:var(--accent)}
+    .frame{padding:150px 44px 64px 20px}
+    .guide{font-size:13px;line-height:1.6}
+    .msg[data-skin="words"]{font-size:16px;line-height:1.7}
+    .msg[data-skin="structure"]{font-size:calc(14.5px + max(0,(var(--t) - .55))*1px);line-height:calc(1.6 - max(0,(var(--t) - .55))*.3)}
+    .msg[data-skin="structure"] .blk{padding:.85em 1.5ch .55em;margin:0 0 .8em}
+    .msg[data-skin="structure"] .tag{font-size:12px}
+    .msg[data-skin="look"] .b-who{margin-top:22px}
+    .msg[data-skin="look"] li{padding:10px 0 10px 34px;font-size:16px}.msg[data-skin="look"] li::before{top:13px}}
+
+  /* ---------- the reveal: a business card, then the work ---------- */
+  .jan{max-width:1040px;margin:0 auto;padding:150px 40px 120px;display:grid;gap:28px}
+  .jan .card{position:relative;display:grid;grid-template-columns:1.1fr 1fr;grid-template-rows:auto 1fr;gap:0 64px;padding:36px 44px 48px;border:1px solid var(--line);border-radius:8px;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.03),0 24px 48px -32px rgba(22,21,19,.35)}
+  .jan .kicker{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-variation-settings:"MONO" 1,"wght" 400;font-size:13px;color:var(--mute);margin:0 0 40px;padding-bottom:18px;gap:16px;line-height:1.5;border-bottom:1px solid var(--line)}
+  .jan .kicker b{color:var(--accent);font-weight:500}
+  .jan .kicker .mark{margin:0}
+  .jan .mark{flex:none;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;font-variation-settings:"MONO" 1,"wght" 700;letter-spacing:.02em}
+  .jan h2{font-size:clamp(30px,3.6vw,44px);letter-spacing:-.025em;line-height:1.02;margin:0 0 20px;font-variation-settings:"wght" 800}
+  .jan h2 em{font-style:normal;color:var(--accent)}
+  .jan .role{font-variation-settings:"MONO" 1,"wght" 400;font-size:13px;line-height:1.6;color:var(--mute);margin:0 0 28px}
+  .jan .sub{font-size:16px;line-height:1.55;color:var(--mute);margin:0;max-width:44ch}
+  .jan .paths{display:grid;align-content:start;margin:-14px 0 0;padding:0;list-style:none}
+  .jan .paths a{display:grid;grid-template-columns:1fr auto auto;align-items:baseline;gap:14px;padding:15px 0;color:var(--ink);text-decoration:none;font-size:19px;font-variation-settings:"wght" 600}
+  .jan .paths a+a{border-top:1px solid var(--line)}
+  .jan .paths a span{font-size:13px;color:var(--mute);font-variation-settings:"MONO" 1,"wght" 400}
+  .jan .paths a::after{content:"→";color:var(--accent);transition:transform .3s;display:inline-block}
+  .jan .paths a:hover::after{transform:translateX(6px)}
+  .jan .paths a.primary{color:var(--accent)}
+  .jan .paths a.soft{color:var(--mute);font-variation-settings:"wght" 500}
+  .jan .work{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0;padding:0;list-style:none}
+  .jan .work li{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;display:grid;grid-template-rows:140px auto;transition:transform .3s,border-color .3s}
+  .jan .work li:hover{transform:translateY(-3px);border-color:var(--ink)}
+  .jan .work .vis{position:relative;overflow:hidden;background:var(--bg)}
+  .jan .work .v1{background:radial-gradient(120% 90% at 20% 20%,#ffb49f 0,transparent 55%),radial-gradient(90% 80% at 80% 70%,#e4482c 0,#8d1f0f 70%)}
+  .jan .work .v1::after{content:"";position:absolute;inset:0;background:repeating-radial-gradient(circle at 70% 60%,rgba(255,255,255,.18) 0 2px,transparent 2px 14px);animation:drift 9s linear infinite}
+  @keyframes drift{to{transform:translate(-14px,-14px)}}
+  .jan .work .v2{background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/100% 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 100%,var(--bg)}
+  .jan .work .v2::before{content:"";position:absolute;left:28px;top:28px;width:112px;height:84px;border:2px solid var(--ink);border-radius:2px}
+  .jan .work .v2::after{content:"";position:absolute;left:84px;top:28px;width:0;height:84px;border-left:2px dashed var(--ink)}
+  .jan .work .v2 i{position:absolute;right:28px;top:56px;width:56px;height:28px;border-radius:999px;background:var(--accent)}
+  .jan .work .v3{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg)}
+  .jan .work .v3 i{display:block}
+  .jan .work .v3 i:nth-child(1){background:var(--ink)}
+  .jan .work .v3 i:nth-child(2){background:var(--accent)}
+  .jan .work .v3 i:nth-child(3){background:#fff}
+  .jan .work .v3 b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:54px;line-height:1;font-variation-settings:"wght" 800;color:#fff}
+  .jan .work .txt{padding:16px 18px 18px;font-size:14px;line-height:1.5;color:var(--mute)}
+  .jan .work b.t{display:block;color:var(--ink);font-size:16px;font-variation-settings:"wght" 600;margin-bottom:4px}
+  @media (prefers-reduced-motion:reduce){.jan .work .v1::after{animation:none}}
+  @media (max-width:900px){.jan .card{grid-template-columns:1fr}.jan .work{grid-template-columns:1fr}.jan .paths{margin:40px 0 0}}
+  @media (max-width:760px){.jan{padding:96px 16px 96px;gap:24px}.jan .card{padding:28px 24px 20px}
+    .jan .kicker{margin-bottom:36px}.jan h2{font-size:32px;margin-bottom:18px}.jan h2 em{display:block}.jan .role{margin-bottom:26px}.jan .sub{line-height:1.6}
+    .jan .paths{margin-top:36px}
+    /* each path: the name and the arrow on one line, what it leads to underneath; nothing wraps into its neighbour */
+    .jan .paths a{grid-template-columns:1fr auto;gap:4px 14px;padding:18px 0}.jan .paths a span{grid-column:1;grid-row:2}.jan .paths a::after{grid-column:2;grid-row:1}
+    .jan .work li{grid-template-rows:150px auto}.jan .work .txt{padding:18px 20px 22px}}
+  .end{font-size:13px;color:var(--mute);padding:20px 40px 80px;max-width:1040px;margin:0 auto}
+  /* short phones (a toolbar on screen leaves ~660px): the built message must fit the stage, call included */
+  @media (max-width:760px) and (max-height:800px){
+    .frame{padding:118px 44px 88px 20px}
+    .band{height:136px}.haze{height:126px}
+    .msg[data-skin="structure"] .blk{padding:.7em 1.5ch .4em;margin:0 0 .55em}
+    .msg[data-skin="look"]{gap:10px;font-size:16px;line-height:1.45}
+    .msg[data-skin="look"] h1{font-size:32px;margin-bottom:4px}
+    .msg[data-skin="look"] .lead{font-size:15px;line-height:1.4}
+    .msg[data-skin="look"] li{padding:6px 0 6px 36px;font-size:16px}
+    .msg[data-skin="look"] li::before{top:9px}
+    .msg[data-skin="look"] .b-who{margin-top:10px}
+    .msg[data-skin="look"] .b-who .msgrule{margin-bottom:12px}
+    .msg[data-skin="look"] .who{font-size:17px;margin:0}
+    .msg[data-skin="look"] .b-cta{margin-top:4px;font-size:15px}
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="warp" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="18" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="warp2" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.009 0.03" numOctaves="2" seed="7" result="n"/><feDisplacementMap id="dis2" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="warp3" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.024" numOctaves="2" seed="11" result="n"/><feDisplacementMap id="dis3" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>
+</svg>
+
+<div class="track" id="track">
+  <div class="stage">
+    <div class="band" id="band"></div>
+    <div class="haze" id="haze"></div>
+    <div class="frame">
+      <div>
+        <div class="sum" id="sum">
+          <div class="above" id="above">
+            <span class="plus" id="plus">+</span>
+            <div class="row" data-r="0"><div><span class="op"></span><b class="q">what?</b><span class="a">a page that builds itself, as you scroll.</span></div></div>
+            <div class="row" data-r="1"><div><span class="op"></span><b class="q">why?</b><span class="a">to prove that layout carries meaning.</span></div></div>
+            <div class="row" data-r="2"><div><span class="op"></span><b class="q">who?</b><span class="a">someone deciding whether to build with me.</span></div></div>
+          </div>
+          <div class="rule" id="rule"></div>
+          <div class="row howrow" id="howrow"><span class="op">=</span><b class="lbl" id="howbig">how?</b><span class="txt" id="howtxt">scroll. It builds as you go.</span></div>
+        </div>
+        <div class="msg" id="msg" data-skin="none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="guide" id="guide" hidden><span class="how" id="howsmall">how</span><span class="step" id="step"></span></div>
+<nav class="dots" id="dots" aria-label="Tour steps"><button type="button" data-i="0" aria-label="the equation"><span class="lbl">equation</span><span class="tick"></span></button><button type="button" data-i="1" aria-label="the words"><span class="lbl">words</span><span class="tick"></span></button><button type="button" data-i="2" aria-label="the structure"><span class="lbl">structure</span><span class="tick"></span></button><button type="button" data-i="3" aria-label="the look"><span class="lbl">look</span><span class="tick"></span></button></nav>
+<div class="hint h-mouse" id="hintm" aria-hidden="true"><i></i>scroll</div>
+<div class="hint h-text" id="hintt" aria-hidden="true">pssst… swipe it up <em>;)</em></div>
+<a class="skip mono" href="#jan">skip the tour ↓</a>
+<p class="sr" id="live" aria-live="polite"></p>
+<nav class="blob" id="blob" aria-label="Where you are, and a few controls">
+  <div class="b-menu" id="bmenu" inert><div>
+    <button type="button" id="bsound" aria-pressed="true"><span>sound</span><i>on</i></button>
+    <button type="button" id="btop"><span>the start</span><i>↑</i></button>
+    <a href="#work" id="bwork"><span>the work</span><i>↓</i></a>
+    <a href="lab/"><span>the lab</span><i>↗</i></a>
+  </div></div>
+  <button class="b-title" id="btitle" type="button" aria-expanded="false" aria-controls="bmenu"><span class="st" id="bstep">the start</span><span class="meta"><span id="bcount"></span><i class="note" id="bnote" aria-hidden="true">♪</i></span></button>
+  <a class="b-name" id="sig" href="#jan" aria-label="Jan Mirecki, design engineer, Oslo: go to the card"><span><b>Jan Mirecki</b> · design engineer · Oslo</span><i class="go" aria-hidden="true">→</i></a>
+</nav>
+
+<section class="jan" id="jan">
+  <div class="card">
+    <p class="kicker"><span><b>=</b> how? · the same question, answered</span><span class="mark">JM</span></p>
+    <div>
+      <h2>I'm Jan, <em>a staff‑level design engineer.</em></h2>
+      <p class="role">15 years designing for the web · 11 building it · Oslo</p>
+      <p class="sub">What you just scrolled through is how I work: I write the words, draw the structure, build the markup, keep the system, and only then pick the colour.</p>
+    </div>
+    <nav class="paths">
+      <a class="primary" href="mailto:jan@strm.dev">write to me <span>a role or a project</span></a>
+      <a href="#work">see the work <span>selected projects</span></a>
+      <a class="soft" href="#">or wander <span>notes and experiments, soon</span></a>
+    </nav>
+  </div>
+  <ul class="work" id="work">
+    <li><div class="vis v1"></div><div class="txt"><b class="t">LetsReg sign-in</b>I owned it from design to code: the flow, an animated background, and per-brand configuration in Storybook.</div></li>
+    <li><div class="vis v2"><i></i></div><div class="txt"><b class="t">GSR</b>I took a reservation platform for public sports centres from product design to frontend, with its own design system.</div></li>
+    <li><div class="vis v3"><i></i><i></i><i></i><b>Aa</b></div><div class="txt"><b class="t">One design system, both products</b>I set the tokens, components and skins that carried the Angular → React migration and a new self-service product.</div></li>
+  </ul>
+</section>
+<p class="end mono">v16 · 19 nov 2026 · the look warps away towards the card; the blob: step title, name as the way to the card, and on tap sound, the start, the work, the lab · ?stage=0…3&t=0…1 · ?stage=jan</p>
+
+<script>
+(() => {
+  // ---------- the message: five semantic blocks, one DOM node each from scene 1 to 3 ----------
+  const B = [
+    {id:'h1',   name:'headline', comp:'Headline', el:'h1', tok:'display-xl space-6', html:w=>`<h1>${w}</h1>`,            words:['Your product, clear at a glance.']},
+    {id:'lead', name:'lead',     comp:'Lead',     el:'p',  tok:'body-17 ink-mute',   html:w=>`<p class="lead">${w}</p>`,  words:['Visitors decide quickly whether a product is for them. I shape the page so they can.']},
+    {id:'list', name:'list',     comp:'List',     el:'ul', tok:'list space-3',       html:w=>`<ul>${w}</ul>`,             words:['One idea per sentence.','One clear place to look.','Colour only where it means something.'], item:w=>`<li>${w}</li>`},
+    {id:'who',  name:'who',      comp:'Who',      el:'p',  tok:'body-18 rule-top',   html:w=>`<div class="msgrule"></div><p class="who">${w}</p>`, words:["I'm Jan Mirecki, a design engineer: fifteen years designing for the web, eleven building it."]},
+    {id:'cta',  name:'call',     comp:'Call',     el:'p',  tok:'body-16 ink-mute',   html:w=>`<p class="cta">${w}</p>`,   words:['If you want your product to work like this'], tail:'write to me.'},
+  ];
+  let n=0; const span=t=>t.split(' ').map((w,j)=>`<span class="w" style="view-transition-name:w${n++};--j:${j}">${w} </span>`).join('');
+  function tagHtml(b){
+    return `<span class="part syn"><i>&lt;</i></span><span class="name"><span class="cap"><span class="lc">${b.name[0]}</span><span class="uc">${b.comp[0]}</span></span>${b.name.slice(1)}</span>`
+         + `<span class="part syn">&nbsp;<u>as</u><i>=</i><em>"${b.el}"</em></span><span class="part tok">&nbsp;<u>tokens</u><i>=</i><s>"${b.tok}"</s></span><span class="part syn">&nbsp;<i>/&gt;</i></span>`;
+  }
+  const $=id=>document.getElementById(id);
+  const msg=$('msg'), guide=$('guide'), step=$('step'), track=$('track'), band=$('band'), haze=$('haze'), sum=$('sum'), above=$('above'),
+        rule=$('rule'), howrow=$('howrow'), howbig=$('howbig'), howsmall=$('howsmall'), howtxt=$('howtxt'), plus=$('plus'), dis2=$('dis2'),
+        dots=[...document.querySelectorAll('.dots button')], rows=[...above.querySelectorAll('.row')], as=rows.map(r=>r.querySelector('.a'));
+  const SKIN=['none','words','structure','look'];
+  const STEP=['',
+    '<span class="n">1</span><span class="txt">First, only words. Read them.</span>',
+    '<span class="n">2</span><span class="txt">Same words, now given places. Each gets a name and a rule.</span>',
+    '<span class="n">3</span><span class="txt">Now the look. Read it again.<span class="pay">Same words, read twice. The second time took no effort. That is layout.</span></span>'];
+
+  function build(){
+    msg.innerHTML=B.map((b,i)=>{
+      const inner=b.item ? b.words.map((t,k)=>b.item(span(t)).replace('<li>',`<li style="--k:${k}">`)).join('') : `<span>${span(b.words[0])}</span>`+(b.tail?`<a href="mailto:jan@strm.dev">${span(b.tail)}</a>`:'');
+      return `<div class="blk b-${b.id}" data-id="${b.id}" style="--i:${i}"><span class="tag">${tagHtml(b)}</span>${b.html(inner)}</div>`;
+    }).join('');
+  }
+  function renderMsg(s){
+    if (s>=1 && !msg.firstChild) build();
+    if (s===0) msg.innerHTML='';
+    msg.dataset.skin=SKIN[s];
+  }
+  // in scene 2 the annotations unfold with --t: name → capital → <as="…"/> → tokens="…"
+  function annotate(t){
+    const k=t<.2?0:t<.4?1:t<.7?2:3;
+    msg.querySelectorAll('.tag').forEach(l=>{ l.classList.toggle('c1',k>=1); l.classList.toggle('c2',k>=2); l.classList.toggle('c3',k>=3); });
+  }
+
+  function spark(x,y){ const e=document.createElement('i'); e.className='spark'; e.style.left=x+'px'; e.style.top=y+'px'; document.body.appendChild(e); requestAnimationFrame(()=>e.classList.add('go')); setTimeout(()=>e.remove(),600); }
+  function centerOf(el){ const r=el.getBoundingClientRect(); return [r.left+r.width/2, r.top+r.height/2]; }
+  let stepTimer=0;
+  function setStep(s){
+    const old=step.querySelector('.txt'); if(old) old.classList.add('out');
+    clearTimeout(stepTimer);
+    stepTimer=setTimeout(()=>{ step.innerHTML=STEP[s]||''; const t=step.querySelector('.txt'); if(t) t.classList.add('in'); }, old?400:0);
+  }
+  const params=new URLSearchParams(location.search), frozen=params.get('stage'), ft=params.get('t');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur=-1, raf=0, timer=0;
+  const vt=f=> (document.startViewTransition && !reduce) ? document.startViewTransition(f) : f();
+
+  // the line travels: equation → hero (rule above "who") → it is the same element
+  function moveRule(toMsg){
+    const home=msg.querySelector('.b-who .msgrule');
+    if (toMsg){ if(home && rule.parentElement!==home.parentElement){ home.replaceWith(rule); rule.className='msgrule'; rule.style.transform=''; } }
+    else if (rule.parentElement!==sum){ const ph=document.createElement('div'); ph.className='msgrule'; rule.replaceWith(ph); rule.className='rule on'; sum.insertBefore(rule, howrow); }
+  }
+  let wantT=0, shown=-1;
+  function applyT(s,t){ msg.style.setProperty('--t',t.toFixed(3)); if(s===2) annotate(t); }
+  function set(s){
+    if(s===cur) return; const prev=cur; cur=s;
+    clearTimeout(timer);
+    band.classList.toggle('on', s>0); haze.classList.toggle('on', s>0);
+    if (s===0){ setStep(0); vt(()=>{ moveRule(false); renderMsg(0); shown=0; }); return; }
+    // while the heading speaks, the scene still on screen stays frozen at the edge it is leaving from
+    if (shown>0) msg.style.setProperty('--t', s>shown?'1':'0');
+    setStep(s);
+    timer=setTimeout(()=>{ vt(()=>{ renderMsg(s); if(s===3) moveRule(true); else if(shown===3) moveRule(false); shown=s; applyT(s,wantT); }); }, 480);
+  }
+
+  // ---------- scene 0: the equation as phases ----------
+  let phase=-1, pulsed=false;
+  const PH=[.03,.07,.11,.17,.23,.29,.35,.41,.48,.55,.63,.80,.86,.92];
+  const phaseOf=t=>PH.reduce((p,x)=>p+(t>=x),0);
+  function show(el,on,dir){ if(dir===0){ el.classList.toggle('in',on); el.classList.remove('out'); return; } if(on){ el.classList.remove('out'); el.classList.add('in'); } else { el.classList.remove('in'); el.classList.add('out'); } }
+  function centerHow(on){ howbig.style.transform=''; if(!on) return; const c=sum.getBoundingClientRect(), r=howbig.getBoundingClientRect(); howbig.style.transform=`translateX(${(c.left+c.width/2)-(r.left+r.width/2)}px)`; }
+  function applyPhase(p, dir){
+    rule.classList.toggle('on', p>=1);
+    plus.classList.toggle('on', p>=2);
+    rows.forEach((r,i)=>{ r.classList.toggle('on', p>=3+2*i); r.classList.toggle('q-on', p>=3+2*i); show(as[i], p>=4+2*i, dir); });
+    if (p>=9 && !pulsed){ rule.classList.add('pulse'); pulsed=true; } if (p<9){ rule.classList.remove('pulse'); pulsed=false; }
+    howrow.classList.toggle('on', p>=9); howrow.classList.toggle('left', p>=10); centerHow(p===9);
+    show(howtxt, p>=10 && p<12, dir);
+    if (p<11){ above.style.opacity=rule.style.opacity=''; above.classList.remove('warped'); rule.classList.remove('warped'); dis2.setAttribute('scale','0'); sum.classList.remove('alone'); }
+    if (p>=12) sum.classList.add('alone');
+    if (dir>0 && p===13){ spark(...centerOf(howbig)); setTimeout(()=>howbig.classList.add('gone'),120); }
+    if (dir<0 && p===12){ spark(...centerOf(howbig)); howbig.classList.remove('gone'); }
+    if (p<13) howbig.classList.remove('gone'); if (p>=13) howbig.classList.add('gone');
+    if (dir>0 && p===14){ guide.hidden=false; setTimeout(()=>{ spark(...centerOf(howsmall)); howsmall.classList.add('on'); },140); }
+    if (dir<0 && p===13){ spark(...centerOf(howsmall)); howsmall.classList.remove('on'); setTimeout(()=>{ if(phase<14) guide.hidden=true; },300); }
+    if (dir===0){ guide.hidden=p<14; howsmall.classList.toggle('on',p>=14); }
+    sum.hidden = p>=14;
+  }
+  function equation(t){
+    const p=phaseOf(t);
+    if (p!==phase){ const dir=phase<0?0:Math.sign(p-phase); const from=phase; phase=p;
+      if (dir!==0 && Math.abs(p-from)>1){ for(let q=from+dir; q!==p; q+=dir) applyPhase(q,dir); }
+      applyPhase(p,dir); }
+    if (p===11){ const d=Math.min(1,Math.max(0,(t-.63)/.14));
+      above.style.opacity=String(1-d); const w=d>0&&d<1; above.classList.toggle('warped',w);
+      dis2.setAttribute('scale', String(Math.round(d*22))); sum.classList.toggle('alone', d>=1); }
+  }
+
+  // ---------- scroll map: stops with holds ----------
+  // A stop is a complete state of the story. g = screens of travel that lead to it, h = screens of hold in which
+  // nothing narrative changes: coming to rest anywhere inside a hold shows a finished thought. Changes happen only
+  // in the travel between two holds, and the seam between two scenes always lies inside a travel, never at a rest.
+  const W=[1.3,.9,.9,.9]; // relative length of the equation and of each scene (shares a travel that crosses a seam)
+  const STOPS=[
+    {s:0,t:0,   g:0,  h:.05,name:'the start'},
+    {s:0,t:.20, g:.20,h:.12,name:'what?'},
+    {s:0,t:.32, g:.13,h:.12,name:'why?'},
+    {s:0,t:.45, g:.13,h:.12,name:'who?'},
+    {s:0,t:.59, g:.16,h:.20,name:'the equation',main:0},
+    {s:0,t:.78, g:.22,h:.12,name:'the answer, alone'},
+    {s:1,t:1,   g:.56,h:.22,name:'the words',main:1},
+    {s:2,t:.12, g:.30,h:.18,name:'the structure',main:2},
+    {s:2,t:.55, g:.22,h:.14,name:'components'},
+    {s:2,t:.78, g:.16,h:.14,name:'tokens'},
+    {s:3,t:.32, g:.40,h:.16,name:'the tiles'},
+    {s:3,t:1,   g:.52,h:.45,name:'the look',main:3},  // the weight wave and the call are travel: no clean rest between them
+  ];
+  let acc=0; STOPS.forEach(o=>{ o.a=acc+o.g; o.b=o.a+o.h; acc=o.b; }); const LEN=acc, LAST=STOPS.length-1;
+  function place(p){ // p in screens → [stage, t]
+    let i=STOPS.findIndex(o=>p<=o.b); if(i<0) i=LAST; const B=STOPS[i];
+    if (p>=B.a || i===0) return [B.s,B.t];
+    const A=STOPS[i-1], f=(p-A.b)/B.g;
+    if (A.s===B.s) return [B.s, A.t+(B.t-A.t)*f];
+    const wa=(1-A.t)*W[A.s], wb=B.t*W[B.s], k=Math.max(.35, wa/(wa+wb));
+    return f<k ? [A.s, A.t+(1-A.t)*f/k] : [B.s, B.t*(f-k)/(1-k)];
+  }
+  const holdAt=p=>STOPS.findIndex(o=>p>=o.a-.004 && p<=o.b+.004);       // the stop whose hold contains p, or -1
+  const reached=p=>STOPS.reduce((k,o,i)=>o.a<=p+.01?i:k,0);              // the last stop already arrived at
+  const stage=document.querySelector('.stage'), rail=$('dots'), live=$('live');
+  // rail: every stop in scroll order; the four chapters are ticks with labels, the rest quiet dots (hidden on phones)
+  const marks=STOPS.map((o,i)=>{ let b=dots[o.main];
+    if(!b){ b=document.createElement('button'); b.type='button'; b.className='sub'; b.setAttribute('aria-label',o.name); b.innerHTML=`<span class="lbl">${o.name}</span>`; }
+    b.dataset.stop=i; rail.appendChild(b); return b; });
+  function markSub(i,s){ marks.forEach((b,k)=>{ if(b.classList.contains('sub')) b.classList.toggle('on',k===i); });
+    dots.forEach((d,k)=>{ if(k===s) d.setAttribute('aria-current','true'); else d.removeAttribute('aria-current'); }); }
+  const nearest=p=>{ const i=reached(p), n=STOPS[i+1]; return n && p>(STOPS[i].b+n.a)/2 ? i+1 : i; };
+  let prevBtn=null, nextBtn=null;
+  // the blob's title: the stop the reader is at (phones have no rail labels), or the card once the tour is behind
+  const blob=$('blob'), bstep=$('bstep'), bcount=$('bcount');
+  function setBlob(i,after,named){ const name=after?'the card':STOPS[i].name;
+    if(bstep.textContent!==name){ bstep.textContent=name; bstep.classList.remove('swap'); void bstep.offsetWidth; bstep.classList.add('swap'); }
+    bcount.textContent=after?'':(i+1)+'/'+STOPS.length; blob.classList.toggle('slim',after||named); }
+  // leaving the look for the card: the board warps away as the stage scrolls off, and re-forms on the way back
+  const dis3=$('dis3'); let exitX=0;
+  function exitWarp(x){ if(x===exitX) return; exitX=x; dis3.setAttribute('scale',String(Math.round(x*90)));
+    msg.style.filter=x>0&&x<1?`url(#warp3) blur(${(x*5).toFixed(1)}px)`:''; msg.style.opacity=x>0?String(Math.max(0,1-x*x*1.15).toFixed(3)):''; }
+  function onScroll(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(()=>{
+      const r=track.getBoundingClientRect();
+      document.body.classList.toggle('after', r.bottom < innerHeight*.55);
+      const raw=-r.top/stage.offsetHeight, p=Math.min(LEN,Math.max(0,raw));
+      const [s,t]=place(p), after=r.bottom < innerHeight*.55;
+      exitWarp(shown===3 ? Math.min(1,Math.max(0,(raw-LEN)/.55)) : 0); setBlob(nearest(p),after,s===3 && t>.9);
+      markSub(nearest(p),s); if(prevBtn) prevBtn.classList.toggle('off', p<.02);
+      wantT=t;
+      if (s===0) equation(t); else if (s===shown) applyT(s,t);
+      guide.classList.toggle('pay-on', s===3 && t>.9); document.body.classList.toggle('named', s===3 && t>.9);
+      set(s);
+    });
+  }
+  if(frozen==='jan'){ setBlob(0,true,true); track.hidden=true; document.querySelector('.skip').hidden=true; rail.hidden=true; }
+  else if(frozen!==null){ const s=+frozen, t=+(ft??'1'); renderMsg(s); cur=s; markSub(STOPS.reduce((k,o,i)=>(o.s<s||(o.s===s&&o.t<=t+.001))?i:k,0),s); msg.style.setProperty('--t',t); band.classList.toggle('on',s>0); haze.classList.toggle('on',s>0);
+    guide.classList.toggle('pay-on', s===3 && t>.9); setBlob(STOPS.reduce((k,o,i)=>(o.s<s||(o.s===s&&o.t<=t+.001))?i:k,0),false,s===3 && t>.9);
+    if(s===0) equation(t); else { equation(1); setStep(s); if(s===2) annotate(t); if(s===3) moveRule(true); } track.style.height='100vh'; }
+  else if(reduce){ dots[3].setAttribute('aria-current','true'); setBlob(LAST,false,true); addEventListener('scroll',()=>{ const a=track.getBoundingClientRect().bottom<innerHeight*.55; document.body.classList.toggle('after',a); setBlob(LAST,a,true); },{passive:true}); equation(1); renderMsg(3); moveRule(true); setStep(3); cur=3; msg.style.setProperty('--t','1'); guide.classList.add('pay-on'); band.classList.add('on'); haze.classList.add('on'); track.style.height='100vh'; }
+  else {
+    track.style.height=((LEN+1)*100).toFixed(1)+(CSS.supports('height','1svh')?'svh':'vh');
+    addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
+
+    // ---------- settle, step, land ----------
+    // Wheel and touch stay native. Only after the scroll has come to rest inside a travel does the page glide the
+    // short remaining distance into the hold ahead (or back, if the reader barely left one). Any input cancels it.
+    const U=()=>stage.offsetHeight, P=()=>(scrollY-track.offsetTop)/U(), Y=p=>Math.round(track.offsetTop+p*U());
+    const centre=i=>(STOPS[i].a+STOPS[i].b)/2;
+    let tween=0, target=-1, wrote=0, dir=1, lastY=scrollY, idle=0, touching=false, landed=-1;
+    function halt(){ if(tween){ cancelAnimationFrame(tween); tween=0; } target=-1; }
+    function glide(y,to){
+      halt(); const y0=scrollY, d=y-y0; if(Math.abs(d)<2){ arrive(); return; }
+      target=to; wrote=y0; const dur=Math.min(900,260+Math.abs(d)/U()*700), t0=performance.now();
+      const f=now=>{ if(Math.abs(scrollY-wrote)>3){ tween=0; target=-1; return; } // the reader took over
+        const k=Math.min(1,Math.max(0,(now-t0)/dur)); wrote=Math.round(y0+d*(1-Math.pow(1-k,3))); scrollTo(0,wrote);
+        if(k<1) tween=requestAnimationFrame(f); else { tween=0; target=-1; arrive(); } };
+      tween=requestAnimationFrame(f);
+    }
+    function arrive(){ // at rest: if this is a hold, confirm the landing once
+      const i=holdAt(P()); if(i<0 || i===landed) return; landed=i; document.documentElement.dataset.stop=i; // also the hook for tests
+      live.textContent=STOPS[i].name;
+    }
+    // detent: entering a hold clicks at once, a beat before the glide settles; passing several holds quickly rattles
+    let inHold=holdAt(P()), lastDetent=0;
+    function detent(i){ const n=performance.now(), fast=n-lastDetent<260; lastDetent=n;
+      const m=marks[i]; m.classList.remove('landed'); void m.offsetWidth; m.classList.add('landed');
+      tick(STOPS[i].main!==undefined, fast); }
+    function rest(){
+      if(tween || touching) return; const p=P(); if(p<=0 || p>=LEN) return;
+      if(holdAt(p)>=0){ arrive(); return; }
+      const i=STOPS.findIndex(o=>p<o.a), A=STOPS[i-1], B=STOPS[i], f=(p-A.b)/B.g;
+      const on=dir>0 ? f>.12 : f>=.88;               // onward to B, or back to A
+      glide(Y(on ? (dir>0?centre(i):B.a+.025) : (dir<0?centre(i-1):A.b-.025)), on?i:i-1);
+    }
+    const arm=(ms=170)=>{ clearTimeout(idle); idle=setTimeout(rest,ms); };
+    addEventListener('scroll',()=>{ const y=scrollY; if(y!==lastY){ if(!tween) dir=y>lastY?1:-1; lastY=y; }
+      const h=holdAt(P()); if(h!==inHold){ inHold=h; if(h>=0) detent(h); }
+      if(landed>=0 && h!==landed){ landed=-1; delete document.documentElement.dataset.stop; }
+      if(!tween) arm(); },{passive:true});
+    if('onscrollend' in window) addEventListener('scrollend',()=>{ if(!tween) arm(40); });
+    addEventListener('wheel',()=>{ halt(); arm(); },{passive:true});
+    addEventListener('touchstart',()=>{ touching=true; halt(); clearTimeout(idle); },{passive:true});
+    ['touchend','touchcancel'].forEach(e=>addEventListener(e,()=>{ touching=false; arm(); },{passive:true}));
+    addEventListener('pointerdown',e=>{ if(!e.target.closest('.dots,.blob')) halt(); });
+
+    const jan=$('jan');
+    function step(d){ // one stop back or forward; false = nothing to do here, let the browser scroll
+      const p=P();
+      if(p>LEN+.02){ if(d<0 && scrollY<=jan.offsetTop+8){ glide(Y(centre(LAST)),LAST); return true; } return false; }
+      let i=target; if(i<0){ i=holdAt(p); if(i<0){ const n=STOPS.findIndex(o=>p<o.a); i=d>0?n-1:n; } }
+      const to=i+d; if(to<0) return false;
+      if(to>LAST){ glide(jan.offsetTop,-1); return true; }
+      glide(Y(centre(to)),to); return true;
+    }
+    addEventListener('keydown',e=>{
+      if(e.metaKey||e.ctrlKey||e.altKey) return; const k=e.key, el=e.target;
+      const d=(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))?1:(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))?-1:0;
+      if(!d){ if(k==='Home'||k==='End') halt(); return; }
+      if(el.closest && (el.closest('a,input,textarea,select') || (k===' ' && el.closest('button')))) return;
+      if(step(d)) e.preventDefault(); else halt();
+    });
+    marks.forEach((b,i)=>b.addEventListener('click',()=>glide(Y(centre(i)),i)));
+    const arrow=(cls,label,d)=>{ const b=document.createElement('button'); b.type='button'; b.className='arr '+cls; b.setAttribute('aria-label',label); b.title=label; b.addEventListener('click',()=>step(d)); return b; };
+    prevBtn=arrow('prev','previous stop',-1); nextBtn=arrow('next','next stop',1); rail.prepend(prevBtn); rail.append(nextBtn); prevBtn.classList.toggle('off',P()<.02);
+
+    // ---------- sound: on unless turned off; browsers let it start only after the first tap, click or key ----------
+    let actx=null, sndOn=true, lastTick=0;
+    try{ sndOn=localStorage.getItem('strm-sound')!=='0'; }catch(e){}
+    const wake=()=>{ if(!sndOn) return; try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state!=='running') actx.resume(); }catch(e){} };
+    ['pointerdown','keydown','touchend'].forEach(e=>addEventListener(e,wake,{passive:true}));
+    function tick(major,fast){ // a soft tick; lower for the four chapters; shorter, drier and quieter while rattling past
+      if(!sndOn || !actx || actx.state!=='running') return; const n=performance.now(); if(n-lastTick<38) return; lastTick=n;
+      const t=actx.currentTime, o=actx.createOscillator(), g=actx.createGain(), f=(fast?1650:major?880:1320)*(1+(Math.random()-.5)*(fast?.12:.06));
+      const peak=fast?.045:major?.1:.05, len=fast?.016:major?.06:.03;
+      o.type=fast?'square':'triangle'; o.frequency.setValueAtTime(f*1.5,t); o.frequency.exponentialRampToValueAtTime(f,t+.01);
+      g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+.002); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t+len+.02);
+    }
+    const bsound=$('bsound'), bnote=$('bnote');
+    const paint=()=>{ bsound.setAttribute('aria-pressed',String(sndOn)); bsound.lastElementChild.textContent=sndOn?'on':'off'; bnote.classList.toggle('off',!sndOn); };
+    bsound.addEventListener('click',()=>{ sndOn=!sndOn; if(sndOn){ wake(); lastTick=0; setTimeout(()=>tick(true),40); } try{ localStorage.setItem('strm-sound',sndOn?'1':'0'); }catch(e){} paint(); });
+    paint();
+
+    // ---------- the blob opens on a tap (or under a mouse), stays for a moment, then folds back ----------
+    const btitle=$('btitle'), bmenu=$('bmenu'), sig=$('sig'), coarse=matchMedia('(pointer:coarse)').matches; let blobT=0, over=false;
+    const fold=(ms=4500)=>{ clearTimeout(blobT); blobT=setTimeout(()=>over?fold():openBlob(false),ms); };
+    function openBlob(on){ blob.classList.toggle('open',on); btitle.setAttribute('aria-expanded',String(on)); bmenu.inert=!on; clearTimeout(blobT); if(on) fold(); }
+    const isOpen=()=>blob.classList.contains('open');
+    btitle.addEventListener('click',()=>openBlob(!isOpen()));
+    blob.addEventListener('pointerenter',e=>{ if(e.pointerType==='mouse'){ over=true; openBlob(true); } });
+    blob.addEventListener('pointerleave',e=>{ if(e.pointerType==='mouse'){ over=false; fold(700); } });
+    blob.addEventListener('pointerdown',()=>{ if(isOpen()) fold(); });
+    sig.addEventListener('click',e=>{ e.preventDefault(); if(coarse && !isOpen()){ openBlob(true); return; } openBlob(false); glide(jan.offsetTop,-1); }); // a finger opens first; the name then leads to the card
+    $('btop').addEventListener('click',()=>{ openBlob(false); glide(Y(0),0); });
+    $('bwork').addEventListener('click',e=>{ e.preventDefault(); openBlob(false); glide($('work').offsetTop-24,-1); });
+    addEventListener('pointerdown',e=>{ if(isOpen() && !blob.contains(e.target)) openBlob(false); });
+    addEventListener('keydown',e=>{ if(e.key==='Escape' && isOpen()){ openBlob(false); btitle.focus(); } });
+    addEventListener('wheel',()=>{ if(isOpen() && !over) openBlob(false); },{passive:true});
+
+    // hint: after ~1.4 s of stillness at the very top; gone on the first scroll; never returns
+    const hint=matchMedia('(pointer:coarse),(max-width:760px)').matches ? $('hintt') : $('hintm');
+    let hintDone=scrollY>8, hintTimer=0;
+    if(!hintDone) hintTimer=setTimeout(()=>hint.classList.add('show'),1400);
+    addEventListener('scroll',()=>{ if(!hintDone && scrollY>8){ hintDone=true; clearTimeout(hintTimer); hint.classList.remove('show'); hint.classList.add('gone'); } },{passive:true});
+  }
+})();
+</script>
+</body>
+</html>

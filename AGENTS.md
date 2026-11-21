@@ -10,8 +10,9 @@ This repository is public. Only public facts go in.
 
 1. **Work from an issue labelled `delegable`.** One issue, one branch, one pull request. If the
    issue says "Blocked by #n" and #n is open, stop and say so on the issue.
-2. **Base branch is `rebuild`.** Branch from it and open the pull request into it. `main` is the
-   live v1 site: never target it, never tag.
+2. **Base branch is `rebuild`.** It is the default branch. Branch from it and open the pull request
+   into it, with `Closes #<issue>` in the body. `main` is the live v1 site: never target it, never
+   tag.
 3. **Stay inside the issue.** Do what "Do" says and respect "Do not". If the task needs something
    outside its scope, write that in the pull request instead of doing it.
 4. **Before you push:** `pnpm format`, `pnpm check`, `pnpm test`, `pnpm build`. Node 24, pnpm.
@@ -19,6 +20,14 @@ This repository is public. Only public facts go in.
    and a plain list of what you did not verify.
 6. **A failing test is a finding.** Never weaken, skip or delete a test to get green, and never tune
    a value to make a measurement pass. Report it.
+
+## The spec
+
+The home page is a port of a prototype. A frozen copy is in `docs/spec`: the HTML file, the test
+scenarios, the notes, the measuring tools. `docs/spec/README.md` says where each thing is in the
+prototype, by line, and where the product differs from it on purpose. Read the part your issue names
+before writing code. Port the behaviour and the numbers; do not copy the prototype's structure (one
+script, global state, DOM reads) into the product.
 
 ## Not yours to change
 
@@ -29,7 +38,7 @@ Stop and ask on the issue instead:
 - **Token values** in `packages/strm-ui/src/tokens`. Add a token when a component needs one;
   changing a colour, a size or a duration is a look decision.
 - **Decisions.** `docs/adr`, the workflows in `.github/workflows` (unless the issue is about CI),
-  `AGENTS.md`, `CLAUDE.md`, `.claude/`.
+  `AGENTS.md`, `CLAUDE.md`, `.claude/`, and everything in `docs/spec` (it is frozen).
 - **Dependencies.** Add one only when the issue names it or cannot be done without it; check its
   current version and say why in the pull request. No UI framework, no state library, no CSS
   framework.

@@ -1,0 +1,8 @@
+<!doctype html><html><body style="margin:0;background:#888">
+<iframe id="f" style="border:0;display:block" src=""></iframe>
+<script>
+const u=new URLSearchParams(location.search), f=document.getElementById('f');
+f.style.width=(u.get('w')||390)+'px'; f.style.height=(u.get('h')||844)+'px';
+u.delete('w'); u.delete('h');
+f.src=new URL('../index.html?'+u.toString(), location.href).href;
+</script></body></html>
