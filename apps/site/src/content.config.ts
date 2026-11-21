@@ -168,6 +168,17 @@ const projects = defineCollection({
   }),
 })
 
+// The article, beside the YAML of the same slug (`en/letsreg-sign-in.md` next to
+// `en/letsreg-sign-in.yaml`). No file means no page. The page supplies the title;
+// this file is the body, starting at the first paragraph. A draft is rendered in
+// dev and left out of the production build.
+const projectBodies = defineCollection({
+  loader: glob({ pattern: "*/*.md", base: "./src/content/projects" }),
+  schema: z.strictObject({
+    draft: z.boolean().default(false),
+  }),
+})
+
 // The CV document: one entry per locale. Section headings travel with the entry so a
 // missing translation falls back together with the prose.
 const cv = defineCollection({
@@ -268,6 +279,7 @@ export const collections = {
   structure,
   card,
   projects,
+  projectBodies,
   cv,
   experience,
   education,

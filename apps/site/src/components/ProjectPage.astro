@@ -1,0 +1,202 @@
+---
+// A project page: a short article. The title and the facts come from the project
+// entry. The body is the Markdown file beside it, typeset for the locale the
+// words came from. Projects with no body never reach this component.
+import { render } from "astro:content"
+import Base from "../layouts/Base.astro"
+import { projectPage } from "../i18n/content"
+import { localeNames, localePath, type Locale } from "../i18n/locales"
+import { t } from "../i18n/ui"
+import { projectPagePath } from "../lib/project-pages.ts"
+import { typesetHtml } from "../lib/typeset-html.ts"
+
+interface Props {
+  locale: Locale
+  slug: string
+}
+const { locale, slug } = Astro.props
+const page = await projectPage(locale, slug)
+if (!page) throw new Error(`No project page for ${locale}/${slug}`)
+const rendered = page.entry.rendered
+if (!rendered?.html) throw new Error(`Project body did not render: ${page.entry.id}`)
+const { Content } = await render({
+  ...page.entry,
+  rendered: { ...rendered, html: typesetHtml(rendered.html, page.bodyLocale) },
+})
+const project = page.data
+const path = projectPagePath(slug)
+const proseLang = page.bodyLocale !== page.dataLocale ? page.bodyLocale : undefined
+---
+
+<Base title={project.title} description={project.summary} locale={locale} path={path}>
+  <main class="project" lang={page.dataLocale !== locale ? page.dataLocale : undefined}>
+    <nav class="type-label project-nav" aria-label={t(locale, "cv.nav")}>
+      <a href={localePath(locale, "/#work")}>{t(locale, "cv.back")}</a>
+    </nav>
+    <header>
+      <h1 class="type-display">{project.title}</h1>
+      <p class="type-lead">{project.summary}</p>
+      {
+        (project.role || project.year) && (
+          <p class="type-label meta">
+            {project.role}
+            {project.role && project.year ? " · " : ""}
+            {project.year}
+          </p>
+        )
+      }
+    </header>
+    <hr class="ui-rule" />
+    <div class="prose" lang={proseLang}>
+      <Content />
+    </div>
+    {project.tech.length > 0 && <p class="type-label tools">{project.tech.join(" · ")}</p>}
+    {
+      project.link && (
+        <p class="live">
+          <a href={project.link}>{t(locale, "cv.live")}</a>
+        </p>
+      )
+    }
+    <nav class="type-label languages" aria-label={t(locale, "nav.language")}>
+      {
+        page.locales.map((other) => (
+          <a
+            href={localePath(other, path)}
+            lang={other}
+            hreflang={other}
+            aria-current={other === locale ? "true" : undefined}
+          >
+            {localeNames[other]}
+          </a>
+        ))
+      }
+    </nav>
+  </main>
+</Base>
+
+<style>
+  h1,
+  p {
+    margin: 0;
+  }
+  .project {
+    max-width: 68ch;
+    margin: 0 auto;
+    padding: var(--space-block) var(--space-block) var(--space-page);
+  }
+  .project-nav {
+    margin-bottom: var(--space-block);
+  }
+  .project-nav a {
+    color: var(--ink-mute);
+    text-decoration: none;
+    padding-block: var(--space-snug);
+  }
+  .project-nav a:hover {
+    color: var(--ink);
+  }
+  header {
+    display: grid;
+    gap: var(--space-snug);
+  }
+  .meta,
+  .tools {
+    color: var(--ink-mute);
+  }
+  .project > .ui-rule {
+    margin-block: var(--space-block);
+  }
+  .tools,
+  .live {
+    margin-top: var(--space-loose);
+  }
+  .languages {
+    display: flex;
+    gap: var(--space-loose);
+    margin-top: var(--space-section);
+  }
+  .languages a {
+    color: var(--ink-mute);
+    text-decoration: none;
+    padding-block: var(--space-snug);
+  }
+  .languages a[aria-current] {
+    color: var(--ink);
+    border-bottom: 1px solid var(--accent);
+  }
+
+  /* The font has no slant axis. Emphasis stays upright. */
+  .prose :global(em) {
+    font-style: normal;
+  }
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol),
+  .prose :global(blockquote) {
+    max-width: 68ch;
+  }
+  .prose :global(p) {
+    margin: 0;
+  }
+  .prose :global(* + p),
+  .prose :global(ul),
+  .prose :global(ol),
+  .prose :global(blockquote),
+  .prose :global(pre) {
+    margin-top: var(--space-loose);
+  }
+  .prose :global(h2),
+  .prose :global(h3) {
+    margin: var(--space-block) 0 0;
+  }
+  .prose :global(h2) {
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-leading);
+    letter-spacing: var(--type-title-tracking);
+    font-variation-settings:
+      "MONO" var(--type-title-voice),
+      "wght" var(--type-title-weight);
+  }
+  .prose :global(h3) {
+    font-size: var(--type-lead-size);
+    line-height: var(--type-lead-leading);
+    font-variation-settings:
+      "MONO" var(--type-lead-voice),
+      "wght" var(--type-title-weight);
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.15em;
+  }
+  .prose :global(li + li) {
+    margin-top: var(--space-snug);
+  }
+  .prose :global(blockquote) {
+    margin-inline: 0;
+  }
+  .prose :global(pre) {
+    overflow: auto;
+  }
+  .prose :global(code) {
+    font-variation-settings:
+      "MONO" var(--voice-mono),
+      "wght" var(--type-body-weight);
+  }
+  .prose :global(strong) {
+    font-weight: inherit;
+    font-variation-settings:
+      "MONO" var(--voice-sans),
+      "wght" var(--type-title-weight);
+  }
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 760px) {
+    .project {
+      padding: var(--space-loose) var(--space-base) var(--space-section);
+    }
+  }
+</style>

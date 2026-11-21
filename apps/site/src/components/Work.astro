@@ -1,6 +1,7 @@
 ---
-// The featured projects, from the same collection that will feed /cv and the project pages.
-import { many } from "../i18n/content"
+// The featured projects, from the same collection that feeds /cv and the project pages.
+// A card links to its page only when that page is generated.
+import { many, projectHrefs } from "../i18n/content"
 import type { Locale } from "../i18n/locales"
 
 interface Props {
@@ -10,23 +11,52 @@ const { locale } = Astro.props
 const projects = (await many("projects", locale))
   .filter((project) => project.data.featured !== undefined)
   .sort((a, b) => (a.data.featured ?? 0) - (b.data.featured ?? 0))
+const hrefs = await projectHrefs(locale)
 ---
 
 <ul class="ui-work">
   {
-    projects.map((project) => (
-      <li>
-        <div class="ui-work__visual" data-project={project.slug} />
-        <div class="ui-work__text">
-          <b>{project.data.title}</b>
-          {project.data.summary}
-        </div>
-      </li>
-    ))
+    projects.map((project) => {
+      const href = hrefs.get(project.slug)
+      const body = (
+        <>
+          <div class="ui-work__visual" data-project={project.slug} />
+          <div class="ui-work__text">
+            <b>{project.data.title}</b>
+            {project.data.summary}
+          </div>
+        </>
+      )
+      return <li>{href ? <a href={href}>{body}</a> : body}</li>
+    })
   }
 </ul>
 
 <style>
+  /* The card is the link. The border and the lift stay on the li. */
+  :global(.ui-work > li:has(> a)) {
+    display: block;
+  }
+  :global(.ui-work > li > a) {
+    display: grid;
+    grid-template-rows: var(--work-visual) auto;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+  :global(.ui-work > li > a .ui-work__text > b) {
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 0.15em;
+  }
+  :global(.ui-work > li > a:hover .ui-work__text > b) {
+    text-decoration-color: var(--ink);
+  }
+  :global(.ui-work > li:focus-within) {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
   /* Placeholder visuals. Real screenshots or live fragments come with the project pages. */
   [data-project="letsreg-sign-in"] {
     background: var(--accent-fill);

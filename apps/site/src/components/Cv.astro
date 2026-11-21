@@ -3,7 +3,7 @@
 // CV: prose is typeset as English, and single/many print the fallback during the build.
 import Base from "../layouts/Base.astro"
 import Words from "./Words.astro"
-import { many, singleWithLocale } from "../i18n/content"
+import { many, projectHrefs, singleWithLocale } from "../i18n/content"
 import { defaultLocale, localePath, type Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
 
@@ -24,6 +24,7 @@ function byOrder<T extends { data: { order: number } }>(entries: T[]): T[] {
 const jobs = byOrder(await many("experience", locale))
 const schools = byOrder(await many("education", locale))
 const skillRows = byOrder(await many("skills", locale))
+const hrefs = await projectHrefs(locale)
 const selected = [...(await many("projects", locale))].sort((a, b) => {
   const af = a.data.featured
   const bf = b.data.featured
@@ -158,13 +159,16 @@ function blocks(descriptions: Description[]) {
         <h2 id="cv-work" class="type-micro">{cv.headings.work}</h2>
         <ul class="stack selected">
           {
-            selected.map((project) => (
-              <li>
-                <h3>{project.data.title}</h3>
-                <p>{project.data.summary}</p>
-                {project.data.link && <a href={project.data.link}>{t(locale, "cv.live")}</a>}
-              </li>
-            ))
+            selected.map((project) => {
+              const href = hrefs.get(project.slug)
+              return (
+                <li>
+                  <h3>{href ? <a href={href}>{project.data.title}</a> : project.data.title}</h3>
+                  <p>{project.data.summary}</p>
+                  {project.data.link && <a href={project.data.link}>{t(locale, "cv.live")}</a>}
+                </li>
+              )
+            })
           }
         </ul>
       </section>
