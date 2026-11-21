@@ -3,5 +3,13 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["playwright.config.ts", "perf-budget.ts", "perf-budget.test.ts", "specs/**/*.ts"]
+  "include": [
+    "playwright.config.ts",
+    "global-teardown.ts",
+    "perf-budget.ts",
+    "perf-budget.test.ts",
+    "rest.ts",
+    "rest.test.ts",
+    "specs/**/*.ts"
+  ]
 }

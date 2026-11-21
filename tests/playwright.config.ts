@@ -8,6 +8,7 @@ const port = Number(process.env.E2E_PORT ?? 4333)
 
 export default defineConfig({
   testDir: "./specs",
+  globalTeardown: "./global-teardown.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,
