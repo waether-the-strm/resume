@@ -1,0 +1,24 @@
+# What the structure scene says about each block of the message: the component it is, the
+# element it renders as, and two strm-ui tokens it reads. The schema rejects a token that
+# strm-ui does not define.
+blocks:
+  headline:
+    component: Headline
+    element: h1
+    tokens: [--message-headline-size, --message-headline-space]
+  lead:
+    component: Lead
+    element: p
+    tokens: [--message-lead-size, --ink-mute]
+  list:
+    component: List
+    element: ol
+    tokens: [--tiles-size, --tiles-number]
+  who:
+    component: Who
+    element: p
+    tokens: [--message-who-size, --message-who-rule]
+  call:
+    component: Call
+    element: p
+    tokens: [--message-call-size, --ink-mute]

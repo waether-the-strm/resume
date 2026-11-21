@@ -1,0 +1,14 @@
+# DRAFT. Polish copy is written, not translated word for word, and goes through Jan.
+questions:
+  - id: what
+    question: co?
+    answer: strona, która buduje się sama, kiedy przewijasz.
+  - id: why
+    question: po co?
+    answer: żeby pokazać, że układ niesie znaczenie.
+  - id: who
+    question: dla kogo?
+    answer: dla kogoś, kto decyduje, czy ze mną budować.
+how:
+  question: jak?
+  answer: przewiń. Buduje się po drodze.

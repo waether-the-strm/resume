@@ -1,0 +1,16 @@
+# The twelve stops of the prototype at v0.16.0, in scroll order. Lengths are in screens.
+weights: [1.3, 0.9, 0.9, 0.9]
+stops:
+  - { id: start, stage: 0, t: 0, travel: 0, hold: 0.05 }
+  - { id: what, stage: 0, t: 0.2, travel: 0.2, hold: 0.12 }
+  - { id: why, stage: 0, t: 0.32, travel: 0.13, hold: 0.12 }
+  - { id: who, stage: 0, t: 0.45, travel: 0.13, hold: 0.12 }
+  - { id: equation, stage: 0, t: 0.59, travel: 0.16, hold: 0.2, chapter: 0 }
+  - { id: answer, stage: 0, t: 0.78, travel: 0.22, hold: 0.12 }
+  - { id: words, stage: 1, t: 1, travel: 0.56, hold: 0.22, chapter: 1 }
+  - { id: structure, stage: 2, t: 0.12, travel: 0.3, hold: 0.18, chapter: 2 }
+  - { id: components, stage: 2, t: 0.55, travel: 0.22, hold: 0.14 }
+  - { id: tokens, stage: 2, t: 0.78, travel: 0.16, hold: 0.14 }
+  - { id: tiles, stage: 3, t: 0.32, travel: 0.4, hold: 0.16 }
+  # The weight wave and the call are travel: there is no clean rest between them.
+  - { id: look, stage: 3, t: 1, travel: 0.52, hold: 0.45, chapter: 3 }

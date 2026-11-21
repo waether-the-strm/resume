@@ -1,0 +1,6 @@
+label: how
+scenes:
+  words: First, only words. Read them.
+  structure: Same words, now given places. Each gets a name and a rule.
+  look: Now the look. Read it again.
+payoff: Same words, read twice. The second time took no effort. That is layout.

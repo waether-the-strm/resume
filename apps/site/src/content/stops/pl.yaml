@@ -1,0 +1,20 @@
+# DRAFT. Polish copy is written, not translated word for word, and goes through Jan.
+names:
+  start: początek
+  what: co?
+  why: po co?
+  who: dla kogo?
+  equation: równanie
+  answer: sama odpowiedź
+  words: słowa
+  structure: struktura
+  components: komponenty
+  tokens: tokeny
+  tiles: kafle
+  look: wygląd
+rail:
+  equation: równanie
+  words: słowa
+  structure: struktura
+  look: wygląd
+after: wizytówka

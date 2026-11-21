@@ -3,7 +3,11 @@
 import { defineCollection } from "astro:content"
 import { glob } from "astro/loaders"
 import { z } from "astro/zod"
+import primitivesCss from "@strm/ui/tokens/primitives.css?raw"
+import semanticCss from "@strm/ui/tokens/semantic.css?raw"
+import componentCss from "@strm/ui/tokens/component.css?raw"
 import { unknownRoles } from "./lib/rich"
+import { parseTokens } from "./lib/tokens"
 
 /** Text that may mark runs of words with a role: "[clear at a glance.]{accent}". */
 const rich = z.string().refine((value) => unknownRoles(value).length === 0, {
@@ -21,6 +25,106 @@ const message = defineCollection({
     list: z.array(rich).min(2).max(4),
     who: rich,
     call: z.strictObject({ text: rich, action: link }),
+  }),
+})
+
+// The equation that opens the page: three questions above the line, `how?` below it. Always
+// three; the phases of the scene count on it.
+const asked = z.strictObject({ question: z.string(), answer: z.string() })
+const equation = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/equation" }),
+  schema: z.strictObject({
+    questions: z.tuple([
+      asked.extend({ id: z.literal("what") }),
+      asked.extend({ id: z.literal("why") }),
+      asked.extend({ id: z.literal("who") }),
+    ]),
+    how: asked,
+  }),
+})
+
+// The guide in the corner: the word that travels there from the equation, one sentence per
+// scene, and the payoff under the last one.
+const guide = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/guide" }),
+  schema: z.strictObject({
+    label: z.string(),
+    scenes: z.strictObject({ words: z.string(), structure: z.string(), look: z.string() }),
+    payoff: z.string(),
+  }),
+})
+
+// The words of the stops, per locale: a name for every stop of the track, a short label for
+// the four chapters on the rail, and the name of what comes after the tour. Keys are stop ids;
+// they are checked against the track when the two are joined (`lib/narrative.ts`).
+const stops = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/stops" }),
+  schema: z.strictObject({
+    names: z.record(z.string(), z.string()),
+    rail: z.record(z.string(), z.string()),
+    after: z.string(),
+  }),
+})
+
+// The track: where the stops are and how long each holds. The same in every language, so it
+// is one file and not one per locale. The engine's `layout` takes it as it is.
+const stage = z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)])
+const track = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/track" }),
+  schema: z.strictObject({
+    weights: z.tuple([
+      z.number().positive(),
+      z.number().positive(),
+      z.number().positive(),
+      z.number().positive(),
+    ]),
+    stops: z
+      .array(
+        z.strictObject({
+          id: z.string().regex(/^[a-z][a-z-]*$/),
+          stage,
+          t: z.number().min(0).max(1),
+          travel: z.number().min(0),
+          hold: z.number().positive(),
+          chapter: stage.optional(),
+        })
+      )
+      .min(1)
+      .refine((list) => new Set(list.map((stop) => stop.id)).size === list.length, {
+        error: "Stop ids must be unique.",
+      })
+      .refine((list) => list.every((stop, i) => i === 0 || stop.stage >= list[i - 1]!.stage), {
+        error: "Stops are in scroll order: a stage never comes before an earlier one.",
+      })
+      .refine(
+        (list) =>
+          [0, 1, 2, 3].every(
+            (s) => list.filter((stop) => stop.chapter === s && stop.stage === s).length === 1
+          ) && list.every((stop) => stop.chapter === undefined || stop.chapter === stop.stage),
+        { error: "Each of the four stages has exactly one chapter stop, inside that stage." }
+      ),
+  }),
+})
+
+// What the structure scene shows beside each block of the message. Token names are real:
+// one that strm-ui does not define fails the build.
+const defined = parseTokens(primitivesCss, semanticCss, componentCss)
+const block = z.strictObject({
+  component: z.string().regex(/^[A-Z][A-Za-z]*$/),
+  element: z.enum(["h1", "p", "ol", "ul", "div"]),
+  tokens: z
+    .array(
+      z.string().refine((name) => defined.has(name), {
+        error: "Not a strm-ui token. Use a name defined in packages/strm-ui/src/tokens.",
+      })
+    )
+    .min(1)
+    .max(2),
+})
+const structure = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/structure" }),
+  schema: z.strictObject({
+    blocks: z.strictObject({ headline: block, lead: block, list: block, who: block, call: block }),
   }),
 })
 
@@ -155,4 +259,17 @@ const skills = defineCollection({
   }),
 })
 
-export const collections = { message, card, projects, cv, experience, education, skills }
+export const collections = {
+  message,
+  equation,
+  guide,
+  stops,
+  track,
+  structure,
+  card,
+  projects,
+  cv,
+  experience,
+  education,
+  skills,
+}

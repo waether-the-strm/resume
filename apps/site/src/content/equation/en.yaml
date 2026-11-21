@@ -1,0 +1,13 @@
+questions:
+  - id: what
+    question: what?
+    answer: a page that builds itself, as you scroll.
+  - id: why
+    question: why?
+    answer: to prove that layout carries meaning.
+  - id: who
+    question: who?
+    answer: someone deciding whether to build with me.
+how:
+  question: how?
+  answer: scroll. It builds as you go.
