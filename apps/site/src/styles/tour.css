@@ -221,17 +221,83 @@
   animation: melt-out 0.35s ease-in forwards;
 }
 
-/* The line draws from the centre, and pulses once when the questions are all answered. */
+/*
+ * The line. On the empty first frame it is already there as a seed: four pixels of itself
+ * at the centre, breathing sideways, the way it will grow. It is one element throughout,
+ * shown through a window (clip-path) that opens from the centre: no layout changes, and
+ * scrolling back closes the window again. The window is taller than the line so the glow of
+ * the pulse is not cut off.
+ */
+.equation .rule {
+  position: relative;
+  margin: 0.6em 0;
+}
 .equation .line {
   height: 2px;
-  margin: 0.6em 0;
   background: var(--ink);
-  scale: 0 1;
+  clip-path: inset(-30px calc(50% - 2px));
   opacity: calc(1 - var(--warp, 0));
-  transition: scale 0.9s var(--ease-out);
+  transition: clip-path 0.9s var(--ease-out);
+}
+/* The breath waits for the line to close back to a seed when the reader returns. */
+.equation:not([data-line]) .line {
+  animation: seed-breathe 2.6s ease-in-out 0.9s infinite;
 }
 .equation[data-line] .line {
-  scale: 1 1;
+  clip-path: inset(-30px);
+}
+@keyframes seed-breathe {
+  50% {
+    clip-path: inset(-30px calc(50% - 5px));
+  }
+}
+
+/*
+ * The first time only, before the reader has scrolled: the seed appears out of nothing, with
+ * one glint, like a far star. Once the line has been drawn the script marks the equation as
+ * met, and coming back to the top is quiet.
+ */
+.equation:not([data-met]):not([data-line]) .line {
+  animation:
+    seed-in 0.9s var(--ease-out) 0.7s backwards,
+    seed-breathe 2.6s ease-in-out 1.6s infinite;
+}
+.equation .glint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  translate: -50% -50%;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--ink), var(--ink)) center / 46px 1px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) center / 1px 22px no-repeat;
+  mask-image: radial-gradient(circle, #000 0, transparent 68%);
+  opacity: 0;
+}
+.equation:not([data-met]):not([data-line]) .glint {
+  animation: seed-glint 1.5s ease-out 0.75s both;
+}
+@keyframes seed-in {
+  from {
+    opacity: 0;
+    clip-path: inset(-30px 50%);
+  }
+}
+@keyframes seed-glint {
+  0% {
+    opacity: 0;
+    scale: 0.2;
+  }
+  25% {
+    opacity: 0.9;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.25;
+  }
 }
 .equation[data-pulsed] .line {
   animation: line-pulse 0.8s ease-out 1;

@@ -37,6 +37,50 @@ for (const path of locales) {
   })
 }
 
+test("the first frame holds a seed of the line: it glints once, and coming back is quiet", async ({
+  page,
+}) => {
+  await page.goto("/")
+  await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+  const equation = page.locator(".equation")
+  const read = () =>
+    equation.evaluate((root) => {
+      const line = root.querySelector(".line")
+      const glint = root.querySelector(".glint")
+      if (!line || !glint) return null
+      const box = line.getBoundingClientRect()
+      return {
+        clip: getComputedStyle(line).clipPath,
+        lineAnimations: getComputedStyle(line).animationName,
+        glint: getComputedStyle(glint).animationName,
+        centred: Math.abs(box.left + box.width / 2 - innerWidth / 2) < 1,
+      }
+    })
+
+  // Before any scroll: not drawn, a window of a few pixels at the centre, the glint armed.
+  await expect(equation).not.toHaveAttribute("data-line")
+  await expect(equation).not.toHaveAttribute("data-met")
+  const first = await read()
+  expect(first?.clip).toContain("50%")
+  expect(first?.lineAnimations).toContain("seed-breathe")
+  expect(first?.glint).toBe("seed-glint")
+  expect(first?.centred).toBe(true)
+
+  // A little scroll draws the line from that seed: the window is open.
+  const screen = await page.evaluate(() => innerHeight)
+  await page.evaluate((y) => scrollTo(0, y), Math.round(0.2 * screen))
+  await expect(equation).toHaveAttribute("data-line", "")
+  await expect(equation).toHaveAttribute("data-met", "")
+  await expect.poll(async () => (await read())?.clip).toBe("inset(-30px)")
+
+  // Back at the top it is a seed again, breathing, with no second glint.
+  await page.evaluate(() => scrollTo(0, 0))
+  await expect(equation).not.toHaveAttribute("data-line")
+  const back = await read()
+  expect(back?.glint).toBe("none")
+  expect(back?.lineAnimations).toBe("seed-breathe")
+})
+
 test.describe("keys and sound", () => {
   /** The stop the page has come to rest on, as the guide and the stage show it. */
   const scene = (page: import("@playwright/test").Page) =>

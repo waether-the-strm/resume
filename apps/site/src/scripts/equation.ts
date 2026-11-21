@@ -52,6 +52,9 @@ export function createEquationView(
   const tracker = createPhaseTracker(defaultThresholds, ({ phase, direction }) => {
     const state = equationAt(phase)
     root.toggleAttribute("data-line", state.line)
+    // The seed's first appearance (a glint, then the seed) is for the reader who has not
+    // scrolled yet. Once the line has been drawn, coming back to the top is quiet.
+    if (state.line) root.setAttribute("data-met", "")
     root.toggleAttribute("data-plus", state.plus)
     root.toggleAttribute("data-pulsed", state.pulsed)
     root.toggleAttribute("data-how", state.how)
