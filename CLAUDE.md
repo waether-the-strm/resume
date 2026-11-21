@@ -6,9 +6,11 @@ private notes, no employer code or internal material.
 ## Start and end of every session
 
 1. Read `docs/NOW.md`: the goal, what is in progress, the next step.
-2. Work in small pull requests into `rebuild`, each linked to its issue, each with evidence (a
+2. Before each new batch of work, brief Jan in a few sentences: what, why now, what to expect, how
+   it fits the architecture (`AGENTS.md`, "The briefing").
+3. Work in small pull requests into `rebuild`, each linked to its issue, each with evidence (a
    render, a measurement, a test).
-3. End by updating `docs/NOW.md` and adding to `docs/log/YYYY-MM-DD.md`.
+4. End by updating `docs/NOW.md` and adding to `docs/log/YYYY-MM-DD.md`.
 
 Details: the `session` skill (`.claude/skills/session`).
 

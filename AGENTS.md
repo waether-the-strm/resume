@@ -21,6 +21,23 @@ This repository is public. Only public facts go in.
 6. **A failing test is a finding.** Never weaken, skip or delete a test to get green, and never tune
    a value to make a measurement pass. Report it.
 
+## The briefing
+
+Before the first change of a new batch of work (an issue you pick up, a group of issues, the goal of
+a session), tell Jan what is coming. He reads it as the owner of the product and as its tech lead:
+he wants to know where the project is and whether it is still growing in one direction. In the chat,
+in the language he writes in, three to five sentences:
+
+- **What** the batch is about.
+- **Why now:** what it follows from and what it unblocks.
+- **What to expect once it is merged:** what he will be able to see, use or decide, and what will
+  still be missing.
+- **How it fits:** which part of the architecture it touches, and whether it follows the decisions
+  already made (`docs/adr`) or needs a new one.
+
+Dense, not detailed: no file lists, no function names, no plan of steps. Then start; the briefing is
+not a question and does not wait for an answer.
+
 ## The spec
 
 The home page is a port of a prototype. A frozen copy is in `docs/spec`: the HTML file, the test
