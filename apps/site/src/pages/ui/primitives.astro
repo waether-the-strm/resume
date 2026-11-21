@@ -55,30 +55,10 @@ import Work from "../../components/Work.astro"
   </main>
 </Base>
 
-<script is:inline>
-  ;(function () {
-    var root = document.documentElement
-    var group = document.querySelector('[data-switch="theme"]')
-    function paint() {
-      var current = root.getAttribute("data-theme") || ""
-      group.querySelectorAll("button").forEach(function (button) {
-        button.setAttribute("aria-pressed", String(button.dataset.value === current))
-      })
-    }
-    group.addEventListener("click", function (event) {
-      var button = event.target.closest("button")
-      if (!button) return
-      var next = button.dataset.value
-      try {
-        if (next) localStorage.setItem("strm-theme", next)
-        else localStorage.removeItem("strm-theme")
-      } catch (e) {}
-      if (next) root.setAttribute("data-theme", next)
-      else root.removeAttribute("data-theme")
-      paint()
-    })
-    paint()
-  })()
+<script>
+  import { bindSwitches, createPrefs } from "../../lib/prefs"
+
+  bindSwitches(createPrefs())
 </script>
 
 <style>

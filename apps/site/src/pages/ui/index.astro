@@ -245,40 +245,15 @@ const failures = colourRows.flatMap((row) =>
   </main>
 </Base>
 
-<script is:inline>
-  // The two switches. Each writes an attribute on <html> and remembers the choice.
-  ;(function () {
-    var root = document.documentElement
-    document.querySelectorAll("[data-switch]").forEach(function (group) {
-      var axis = group.getAttribute("data-switch")
-      var key = "strm-" + axis
-      var attr = "data-" + axis
-      function paint() {
-        var current = root.getAttribute(attr) || ""
-        group.querySelectorAll("button").forEach(function (button) {
-          button.setAttribute("aria-pressed", String(button.dataset.value === current))
-        })
-      }
-      group.addEventListener("click", function (event) {
-        var button = event.target.closest("button")
-        if (!button) return
-        var next = button.dataset.value
-        try {
-          if (next) localStorage.setItem(key, next)
-          else localStorage.removeItem(key)
-        } catch (e) {}
-        if (next) root.setAttribute(attr, next)
-        else root.removeAttribute(attr)
-        paint()
-      })
-      paint()
+<script>
+  import { bindSwitches, createPrefs } from "../../lib/prefs"
+
+  bindSwitches(createPrefs())
+  for (const button of document.querySelectorAll(".play")) {
+    button.addEventListener("click", () => {
+      button.classList.toggle("on")
     })
-    document.querySelectorAll(".play").forEach(function (button) {
-      button.addEventListener("click", function () {
-        button.classList.toggle("on")
-      })
-    })
-  })()
+  }
 </script>
 
 <style>
