@@ -66,11 +66,31 @@ labelled `delegable`. Their contract is `AGENTS.md`.
   issues to "now".
 - A pull request from a bot may need its workflows approved before CI runs.
 
+## Jan's queue
+
+Jan's own work is short and specific: a decision, a brief for the agents, a piece of copy, a check
+of what was built. The board has to show him, at a glance, what is his, in what order, and for how
+long.
+
+- Everything that needs him is an issue with **Who = Jan**, assigned to him, with:
+  - **Jan**: the kind of work. `Decide` (unblocks others), `Brief` (he describes what he wants so
+    tasks can be written), `Write` (copy only he can write), `Verify` (he checks what was built: in
+    motion, on a device, by ear).
+  - **Timebox**: minutes. An honest upper bound, so he can stop. Above 90, split the issue.
+  - **Target**: the day it is due. Order follows from it: what blocks the most comes first.
+- **When built work needs his eyes, open a `Verify` issue**; do not bury the request in a pull
+  request or a chat message. Say exactly what to open (the preview URL), what to look at, and what
+  the possible answers are. One screen, one question.
+- **A decision issue states the options and a recommendation**, so deciding is choosing, not
+  researching.
+- When he answers, the lead session does the rest: writes the ADR, splits tasks, closes the issue.
+- Keep his queue for any one day under about two hours. If it is more, say so and move something.
+
 ## The board
 
 Project 3 of `waether-the-strm`, private for now. It holds the whole plan: every issue has a
-milestone (the phase), a Horizon (now / next / later) and a Who (Delegate / Lead / Jan). Needs the
-`project` scope on the `gh` token.
+milestone, a Status, a Horizon (now / next / later), a Who (Delegate / Lead / Jan), and Start and
+Target dates. Needs the `project` scope on the `gh` token.
 
 ```
 gh project item-add 3 --owner waether-the-strm --url <issue url> --format json -q .id
