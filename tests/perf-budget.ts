@@ -119,18 +119,26 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * inline (`inlineStylesheets: "always"`) the finished layout shift was 0.2854 on `/` and
  * 0.1380 on `/pl/` and the document 13458 B; with nothing inline (`"never"`) paint was
  * about 2420 ms.
+ *
+ * Measured again the same night, with the theme switch in the footer (#109), the blob's
+ * raised surface (#108) and the notation (#110) on the page. Three cold loads, the same
+ * bytes each time. Document `/` 9240 (+302) and `/pl/` 9531 (+289): the switch's markup and
+ * its inlined rules. Script 11838 (+433): the switch binds through the preferences module.
+ * CSS 5491 (+87). Font and layout shift did not move. Paint stayed with rebuild, so the
+ * ceiling stays: `/` 1885.4, 1919.1; `/pl/` 1882.3, 1956.2 (the third run's table was lost
+ * to two unrelated test failures, #118).
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 8938, css: 5404, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9242, css: 5404, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9240, css: 5491, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9531, css: 5491, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 11405 },
-    "/pl/": { cls: 0, script: 11405 },
+    "/": { cls: 0, script: 11838 },
+    "/pl/": { cls: 0, script: 11838 },
   },
 }
 

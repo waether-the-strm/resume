@@ -1,0 +1,62 @@
+---
+// The theme switch in the footer (#109). Theme and language stay out of the blob (ADR 0010):
+// they are settings of the site. The markup is what bindSwitches expects: data-switch="theme"
+// and a button whose data-value is "", "light" or "dark". Empty clears the attribute and the
+// stored choice, so the system decides. Hidden until that script has marked the current
+// button, so without JavaScript the control does not look usable. Strings live in i18n/ui.ts.
+import type { Locale } from "../i18n/locales"
+import { t } from "../i18n/ui"
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+---
+
+<div
+  class="theme-switch type-label"
+  data-switch="theme"
+  role="group"
+  aria-label={t(locale, "theme.label")}
+  hidden
+>
+  <button type="button" data-value="" aria-pressed="false">{t(locale, "theme.system")}</button>
+  <button type="button" data-value="light" aria-pressed="false">{t(locale, "theme.light")}</button>
+  <button type="button" data-value="dark" aria-pressed="false">{t(locale, "theme.dark")}</button>
+</div>
+
+<script>
+  import { bindSwitches, createPrefs } from "../lib/prefs"
+
+  // Deferred with the page's other modules, so it does not block the first paint.
+  // theme-init.js has already restored a stored choice onto <html>.
+  bindSwitches(createPrefs())
+  for (const group of document.querySelectorAll(".theme-switch")) group.removeAttribute("hidden")
+</script>
+
+<style>
+  /* The same quiet row as the language links, one step below them. */
+  .theme-switch {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-loose);
+    margin-top: var(--space-base);
+  }
+  .theme-switch button {
+    font: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: var(--ink-mute);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    margin: 0;
+    padding: var(--space-snug) 0;
+    cursor: pointer;
+  }
+  .theme-switch button[aria-pressed="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+</style>
