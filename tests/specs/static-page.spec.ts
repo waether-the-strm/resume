@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test"
 
-// Polish at 390×664 does not fit until the short-phone layout lands.
+// The short-phone layout is #13. The fit assertion is the same in both languages.
 // https://github.com/waether-the-strm/resume/issues/13
 const POLISH_PHONE_FIT = "https://github.com/waether-the-strm/resume/issues/13"
 
@@ -197,8 +197,11 @@ test.describe("static page, JavaScript disabled", () => {
       await expectMessageFits(page)
     })
 
-    // Expected to fail until the short-phone layout in #13. The assertion is unchanged;
-    // Playwright records the failure and links the issue. Do not weaken the measurement.
+    // #13 asked for an expected failure here. On macOS Chromium the pill bottom is
+    // 866.5px in a 664px viewport, so the assertion fails. On the Linux Chromium in
+    // CI, with a Recursive face loaded, the same assertion passes. test.fail() would
+    // then fail the job as an unexpected pass. The measurement is not loosened.
+    // The issue stays linked on the test.
     test(
       "Polish message from the headline to the pill is inside the viewport",
       {
@@ -208,7 +211,6 @@ test.describe("static page, JavaScript disabled", () => {
         },
       },
       async ({ page }) => {
-        test.fail(POLISH_PHONE_FIT)
         expect(page.viewportSize()).toEqual({ width: 390, height: 664 })
         await openFinishedPage(page, "/pl/")
         await expectMessageFits(page)
