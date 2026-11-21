@@ -12,7 +12,7 @@
   position: relative;
   padding: var(--tiles-pad) 0 var(--tiles-pad) var(--tiles-indent);
   counter-increment: tile;
-  font-size: 18px;
+  font-size: var(--tiles-size);
   line-height: 1.35;
   font-variation-settings:
     "MONO" var(--voice-sans),
@@ -32,10 +32,4 @@
   font-variation-settings:
     "MONO" var(--voice-mono),
     "wght" var(--type-micro-weight);
-}
-
-@media (max-width: 760px) {
-  .ui-tiles > li {
-    font-size: 16px;
-  }
 }
