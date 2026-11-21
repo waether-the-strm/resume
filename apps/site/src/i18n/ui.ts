@@ -10,6 +10,9 @@ const en = {
   "nav.paths": "Ways in",
   "nav.language": "Language",
   "work.heading": "Selected work",
+  "notFound.title": "Page not found",
+  "notFound.lead": "This address is not a page.",
+  "notFound.home": "Back to the start",
 }
 
 export type UiKey = keyof typeof en
@@ -22,6 +25,9 @@ const pl: Record<UiKey, string> = {
   "nav.paths": "Wejścia",
   "nav.language": "Język",
   "work.heading": "Wybrane prace",
+  "notFound.title": "Nie ma takiej strony",
+  "notFound.lead": "Pod tym adresem nie ma strony.",
+  "notFound.home": "Wróć na początek",
 }
 
 // Not launched: Norwegian reuses English until its copy is written. Listed here on purpose,

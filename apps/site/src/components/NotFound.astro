@@ -1,0 +1,85 @@
+---
+// The 404 page, in the locale the route was built for. The host serves the root
+// 404.html for any unknown URL; /pl/404 is the Polish page itself.
+import Base from "../layouts/Base.astro"
+import { launched, localeNames, localePath, type Locale } from "../i18n/locales"
+import { t } from "../i18n/ui"
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+---
+
+<Base
+  title={t(locale, "notFound.title")}
+  description={t(locale, "notFound.lead")}
+  locale={locale}
+  path="/404"
+>
+  <main class="not-found">
+    <p class="type-micro kicker">404</p>
+    <h1 class="type-title">{t(locale, "notFound.title")}</h1>
+    <p class="type-lead">{t(locale, "notFound.lead")}</p>
+    <a class="ui-pill" href={localePath(locale)}>{t(locale, "notFound.home")}</a>
+    <nav class="type-label languages" aria-label={t(locale, "nav.language")}>
+      {
+        launched.map((other) => (
+          <a
+            href={localePath(other, "/404")}
+            lang={other}
+            hreflang={other}
+            aria-current={other === locale ? "true" : undefined}
+          >
+            {localeNames[other]}
+          </a>
+        ))
+      }
+    </nav>
+  </main>
+</Base>
+
+<style>
+  /* Same column as the home page. */
+  .not-found {
+    min-height: 100svh;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: var(--space-stage) 40px var(--space-page);
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-base);
+  }
+  .kicker,
+  h1,
+  p {
+    margin: 0;
+  }
+  .kicker {
+    color: var(--ink-mute);
+  }
+  .type-lead {
+    max-width: 36em;
+  }
+  .languages {
+    display: flex;
+    gap: var(--space-loose);
+    margin-top: var(--space-block);
+  }
+  .languages a {
+    color: var(--ink-mute);
+    text-decoration: none;
+    padding-block: var(--space-snug);
+  }
+  .languages a[aria-current] {
+    color: var(--ink);
+    border-bottom: 1px solid var(--accent);
+  }
+
+  @media (max-width: 760px) {
+    .not-found {
+      padding-inline: 20px;
+    }
+  }
+</style>
