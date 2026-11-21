@@ -6,9 +6,7 @@ Playwright against the built site (`astro preview`), in English and Polish at 12
 `specs/static-page.spec.ts` checks the server-rendered home page: the finished message, card and
 projects with JavaScript disabled, no horizontal overflow, `lang` and `hreflang`, visible keyboard
 focus (F5), the 390×664 message fit (G9), and the same finished page under reduced motion (F1).
-Chromium only. The 390×664 fit links [#13](https://github.com/waether-the-strm/resume/issues/13). On
-the Linux Chromium in CI both languages fit; on macOS Chromium the pill sits below the fold in both
-(English about 719px, Polish about 867px, viewport 664px). Later scenarios are not here yet.
+Chromium only. Both languages are asserted to fit at 390×664 (G9). Later scenarios are not here yet.
 
 The script is `e2e`, not `test`, so `pnpm test` stays the unit tests. Build first, then:
 
