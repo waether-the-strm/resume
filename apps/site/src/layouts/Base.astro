@@ -68,5 +68,9 @@ const siteName = t(locale, "site.title")
   </head>
   <body>
     <slot />
+    <script>
+      import { prefetchItalicOnIntent } from "../scripts/prefetch-italic"
+      prefetchItalicOnIntent()
+    </script>
   </body>
 </html>

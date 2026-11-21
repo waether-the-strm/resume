@@ -1,4 +1,4 @@
-// Characters for the one Recursive file, read from the source, plus the letters
+// Characters for the Recursive files, read from the source, plus the letters
 // English, Polish and Norwegian need and a margin of ordinary punctuation.
 //
 //   node packages/strm-ui/src/fonts/subset.mjs
@@ -6,11 +6,13 @@
 //   node packages/strm-ui/src/fonts/subset.mjs --fetch
 //
 // --fetch downloads Recursive 1.085 from the pinned Google Fonts commit (the same
-// outlines as @fontsource-variable/recursive 5.3.0) and builds
-// src/fonts/recursive.woff2. Building needs Python and fonttools 4.68.0 with WOFF
-// support: pip install 'fonttools[woff]==4.68.0'. Set PYTHON if python3 has no
-// fonttools. The committed file is what the site serves; this script is how to
-// rebuild it when the source gains a character.
+// outlines as @fontsource-variable/recursive 5.3.0) and builds two files:
+// src/fonts/recursive.woff2 (upright, MONO 0 to 1) and
+// src/fonts/recursive-italic.woff2 (slnt at its italic end, MONO pinned to 1).
+// Building needs Python and fonttools 4.68.0 with WOFF support:
+// pip install 'fonttools[woff]==4.68.0'. Set PYTHON if python3 has no
+// fonttools. The committed files are what the site serves; this script is how
+// to rebuild them when the source gains a character.
 import { spawnSync } from "node:child_process"
 import {
   mkdirSync,
@@ -123,6 +125,10 @@ export function outputPath() {
   return join(here, "recursive.woff2")
 }
 
+export function italicOutputPath() {
+  return join(here, "recursive-italic.woff2")
+}
+
 function add(set, cp) {
   if (!Number.isInteger(cp) || cp < 0x20 || cp === 0x7f || cp > 0x10ffff) return
   set.add(cp)
@@ -214,7 +220,9 @@ from fontTools.ttLib import TTFont
 from fontTools.varLib import instancer
 from fontTools.subset import Options, Subsetter
 
-source, dest, codes_path, expect = sys.argv[1:5]
+source, dest, codes_path, expect, mode = sys.argv[1:6]
+if mode not in ("upright", "italic"):
+    sys.exit(f"unknown face {mode}")
 codes = [int(line, 16) for line in Path(codes_path).read_text().split() if line]
 requested = [cp for cp in codes if cp != 0x2011]
 
@@ -227,7 +235,17 @@ for rec in font["name"].names:
 if expect not in version:
     sys.exit(f"expected Recursive {expect}, name ID 5 is {version!r}")
 
-font = instancer.instantiateVariableFont(font, {"CASL": 0, "slnt": 0, "CRSV": 0.5})
+# Upright pins slnt to 0. Italic pins it to the slanted end of the axis.
+slnt = 0
+if mode == "italic":
+    axis = next((item for item in font["fvar"].axes if item.axisTag == "slnt"), None)
+    if axis is None:
+        sys.exit("font has no slnt axis")
+    slnt = axis.minValue if abs(axis.minValue) >= abs(axis.maxValue) else axis.maxValue
+    if slnt == 0:
+        sys.exit(f"slnt has no italic end ({axis.minValue}, {axis.maxValue})")
+
+font = instancer.instantiateVariableFont(font, {"CASL": 0, "slnt": slnt, "CRSV": 0.5})
 axes = [(a.axisTag, a.minValue, a.maxValue) for a in font["fvar"].axes]
 if axes != [("MONO", 0.0, 1.0), ("wght", 300.0, 1000.0)]:
     sys.exit(f"unexpected axes after pinning: {axes}")
@@ -258,6 +276,28 @@ if tags != ["rvrn"]:
 pos = sorted({rec.FeatureTag for rec in font["GPOS"].table.FeatureList.FeatureRecord})
 if pos != ["kern"]:
     sys.exit(f"unexpected GPOS features: {pos}")
+
+# Italic on the site is the label voice only (MONO 1). Pinning that voice drops
+# the axis. Doing it after the subset avoids a gvar KeyError in fonttools 4.68.0:
+# glyphs that no longer vary are missing from gvar, and the subsetter requires them.
+if mode == "italic":
+    font = instancer.instantiateVariableFont(font, {"MONO": 1})
+    axes = [(a.axisTag, a.minValue, a.maxValue) for a in font["fvar"].axes]
+    if axes != [("wght", 300.0, 1000.0)]:
+        sys.exit(f"unexpected axes after pinning MONO: {axes}")
+    cmap = font.getBestCmap()
+    missing = [cp for cp in codes if cp not in cmap]
+    if missing:
+        sys.exit("missing after pinning MONO: " + " ".join(f"U+{cp:04X}" for cp in missing))
+    tags = sorted({rec.FeatureTag for rec in font["GSUB"].table.FeatureList.FeatureRecord})
+    if tags != ["rvrn"]:
+        sys.exit(f"unexpected GSUB features after pinning MONO: {tags}")
+    pos = sorted({rec.FeatureTag for rec in font["GPOS"].table.FeatureList.FeatureRecord})
+    if pos != ["kern"]:
+        sys.exit(f"unexpected GPOS features after pinning MONO: {pos}")
+    widths = [font["hmtx"][cmap[ord(ch)]][0] for ch in "imW"]
+    if len(set(widths)) != 1:
+        sys.exit(f"italic face is not the mono voice: {widths}")
 
 font.flavor = "woff2"
 font.save(dest)
@@ -306,17 +346,24 @@ export async function fetchSource(dest) {
   return dest
 }
 
-export function build(sourceFont, root = repoRoot()) {
+export function build(sourceFont, root = repoRoot(), face = "upright") {
+  if (face !== "upright" && face !== "italic") throw new Error(`unknown face ${face}`)
   assertFonttools()
   const codes = [...requiredCharacters(root)].sort((a, b) => a - b)
   const list = codes.map((cp) => cp.toString(16)).join("\n")
-  const dest = outputPath()
+  const dest = face === "italic" ? italicOutputPath() : outputPath()
   const dir = join(tmpdir(), "strm-recursive-subset")
   mkdirSync(dir, { recursive: true })
   const codesPath = join(dir, "unicodes.txt")
   writeFileSync(codesPath, list)
-  const out = runPython(["-c", BUILD, sourceFont, dest, codesPath, SOURCE_VERSION])
+  const out = runPython(["-c", BUILD, sourceFont, dest, codesPath, SOURCE_VERSION, face])
   return { characters: codes.length, bytes: Number(out.trim().split(/\s+/)[1]), path: dest }
+}
+
+// Italic text is only the mono voice. Keeping MONO measured 62660 bytes;
+// pinning it to 1 measured 47340. The pin happens in the builder above.
+export function buildItalic(sourceFont, root = repoRoot()) {
+  return build(sourceFont, root, "italic")
 }
 
 function runningAsCli() {
@@ -343,8 +390,12 @@ async function main() {
   else if (flag !== "--build" || !arg) {
     throw new Error("usage: subset.mjs [--build <ttf> | --fetch]")
   }
-  const built = build(source, root)
-  process.stdout.write(`${built.path} ${built.bytes} bytes, ${built.characters} characters\n`)
+  const upright = build(source, root)
+  const italic = buildItalic(source, root)
+  process.stdout.write(
+    `${upright.path} ${upright.bytes} bytes, ${upright.characters} characters\n` +
+      `${italic.path} ${italic.bytes} bytes, ${italic.characters} characters\n`
+  )
 }
 
 if (runningAsCli()) {

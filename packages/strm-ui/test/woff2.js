@@ -209,6 +209,74 @@ export function fvarAxes(bytes) {
   return axes
 }
 
+export function glyphId(bytes, codepoint) {
+  const view = viewOf(bytes)
+  const numTables = view.getUint16(2)
+  for (let i = 0; i < numTables; i++) {
+    const rec = 4 + i * 8
+    const platform = view.getUint16(rec)
+    const encoding = view.getUint16(rec + 2)
+    const offset = view.getUint32(rec + 4)
+    const unicode = platform === 0 || (platform === 3 && (encoding === 1 || encoding === 10))
+    if (!unicode) continue
+    const format = view.getUint16(offset)
+    const gid =
+      format === 4
+        ? glyphFormat4(view, offset, codepoint)
+        : format === 12
+          ? glyphFormat12(view, offset, codepoint)
+          : null
+    if (gid === null) throw new Error(`unsupported cmap format ${format}`)
+    if (gid !== 0) return gid
+  }
+  return 0
+}
+
+function glyphFormat4(view, offset, codepoint) {
+  const segCount = view.getUint16(offset + 6) / 2
+  const endStart = offset + 14
+  const startStart = offset + 16 + segCount * 2
+  const deltaStart = offset + 16 + segCount * 4
+  const rangeStart = offset + 16 + segCount * 6
+  const glyphStart = offset + 16 + segCount * 8
+  for (let i = 0; i < segCount - 1; i++) {
+    const end = view.getUint16(endStart + i * 2)
+    if (codepoint > end) continue
+    const start = view.getUint16(startStart + i * 2)
+    if (codepoint < start) return 0
+    const delta = view.getUint16(deltaStart + i * 2)
+    const rangeOffset = view.getUint16(rangeStart + i * 2)
+    if (rangeOffset === 0) return (codepoint + delta) & 0xffff
+    const index = codepoint + rangeOffset / 2 - start + i - segCount
+    const glyph = view.getUint16(glyphStart + index * 2)
+    if (glyph === 0) return 0
+    return (glyph + delta) & 0xffff
+  }
+  return 0
+}
+
+function glyphFormat12(view, offset, codepoint) {
+  const groups = view.getUint32(offset + 12)
+  let pos = offset + 16
+  for (let i = 0; i < groups; i++) {
+    const start = view.getUint32(pos)
+    const end = view.getUint32(pos + 4)
+    const glyph = view.getUint32(pos + 8)
+    pos += 12
+    if (codepoint < start || codepoint > end) continue
+    const gid = glyph + (codepoint - start)
+    return gid === 0 ? 0 : gid
+  }
+  return 0
+}
+
+export function advanceWidth(hmtx, hhea, id) {
+  const metrics = viewOf(hhea).getUint16(34)
+  const view = viewOf(hmtx)
+  const index = id < metrics ? id : metrics - 1
+  return view.getUint16(index * 4)
+}
+
 export function layoutFeatureTags(bytes) {
   const view = viewOf(bytes)
   // GSUB/GPOS header: version, scriptList, featureList, lookupList.
