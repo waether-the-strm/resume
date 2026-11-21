@@ -30,7 +30,9 @@ function melt(element: Element | null, on: boolean, direction: PhaseDirection): 
 
 export function createEquationView(
   root: HTMLElement,
-  onCorner: (on: boolean) => void
+  onCorner: (on: boolean) => void,
+  /** `how` crossed between the equation and the corner, forward (1) or back (-1). */
+  onMove: (direction: 1 | -1) => void = () => {}
 ): EquationView {
   const rows = [...root.querySelectorAll<HTMLElement>(".above .row")]
   const how = root.querySelector<HTMLElement>(".how")
@@ -77,6 +79,8 @@ export function createEquationView(
     if (state.corner !== corner) {
       corner = state.corner
       onCorner(corner)
+      // A crossing has a direction; landing on a state (direction 0) is not one.
+      if (direction !== 0) onMove(direction)
     }
   })
 
