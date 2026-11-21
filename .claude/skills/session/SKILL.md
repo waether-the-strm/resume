@@ -50,6 +50,19 @@ lost when the session ends. Everything here is public: no private notes, no empl
 
 ## Delegated work
 
+Jan's standing preference (21 Nov 2026): the lead session keeps what needs judgement and gives the
+rest away. It worked on the first two batches, so it is the default.
+
+| Kind of work                                                                                                        | Goes to                                     |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Architecture, choreography, anything Jan judges in motion, the adapter between modules                              | the lead session                            |
+| A well-specified, independent task with a test or a measurement as evidence                                         | Cursor (or Copilot), as a `delegable` issue |
+| A simple, mechanical step inside the lead session's own task: a search, a sweep, a rename, a first draft of a table | a cheaper subagent of the lead session      |
+| A decision, copy, a check by eye, ear or hand                                                                       | Jan, as an issue in his queue               |
+
+Before starting a task, ask which row it is. If the lead session is about to do something from the
+second or third row itself, that is the mistake to catch.
+
 The lead session coordinates; cheaper agents (Copilot, Cursor, a smaller model) take the issues
 labelled `delegable`. Their contract is `AGENTS.md`.
 
