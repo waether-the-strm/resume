@@ -22,6 +22,20 @@ const en = {
   "rail.label": "Tour steps",
   "rail.previous": "previous stop",
   "rail.next": "next stop",
+  // The blob (#35). `tldr` is the word Jan chose. The accessible name contains it and
+  // says where the link goes.
+  "blob.landmark": "Where you are, and a few controls",
+  "blob.sound": "sound",
+  "blob.on": "on",
+  "blob.off": "off",
+  "blob.start": "the start",
+  "blob.work": "the work",
+  "blob.tldr": "tldr",
+  "blob.tldr.long": "tldr, go to the card",
+  // The name row. The name is a fact; the role and the city are the words the card
+  // already keeps in English.
+  "blob.name": "Jan Mirecki",
+  "blob.signature": " · design engineer · Oslo",
 }
 
 export type UiKey = keyof typeof en
@@ -46,6 +60,21 @@ const pl: Record<UiKey, string> = {
   "rail.label": "Tour steps",
   "rail.previous": "previous stop",
   "rail.next": "next stop",
+  // The blob. Visible words stay the prototype's English until Jan writes them.
+  "blob.landmark": "Where you are, and a few controls",
+  "blob.sound": "sound",
+  "blob.on": "on",
+  "blob.off": "off",
+  "blob.start": "the start",
+  "blob.work": "the work",
+  "blob.tldr": "tldr",
+  // DRAFT for Jan: the accessible name. The visible text stays "tldr". The rest reuses
+  // `nav.skip` ("Przejdź do wizytówki"), so the name says where the link goes.
+  "blob.tldr.long": "tldr, przejdź do wizytówki",
+  // The same words as English. The card keeps "design engineer" and "Oslo"; Jan rewrites
+  // them if he wants them in Polish.
+  "blob.name": "Jan Mirecki",
+  "blob.signature": " · design engineer · Oslo",
 }
 
 // Not launched: Norwegian reuses English until its copy is written. Listed here on purpose,

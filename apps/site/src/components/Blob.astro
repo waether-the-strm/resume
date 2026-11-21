@@ -1,10 +1,156 @@
 ---
-// The blob: where the reader is, and a few controls (#35, ADR 0010). Not built yet. Its
-// markup is rendered here, on the server, in the page's language; scripts/parts/blob.ts
-// brings it to life.
+// The blob: where the reader is, and a few controls (#35, ADR 0010). Every word is
+// rendered here, on the server. scripts/parts/blob.ts only marks which stop is current,
+// whether the menu is open, and whether sound is on.
+import { narrative } from "../i18n/content"
 import type { Locale } from "../i18n/locales"
+import { t } from "../i18n/ui"
+import { stopNumber } from "../lib/stop-number"
 
 interface Props {
   locale: Locale
+  /** Primitives page: sit in the flow instead of floating. */
+  flow?: boolean
+  /** Primitives page: rendered unfolded, so the three rows can be seen. */
+  open?: boolean
+  /**
+   * The name row is folded. The home page leaves this set: without the tour the name
+   * is already on the page. The script unfolds it when the tour says otherwise.
+   */
+  slim?: boolean
 }
+const { locale, flow = false, open = false, slim = true } = Astro.props
+const story = await narrative(locale)
+const last = story.stops.length - 1
+
+// The name row's words live in ui.ts. The accessible name adds where the link goes,
+// from the stops' `after`, so it is not a new sentence.
+const signatureName = t(locale, "blob.name")
+const signatureRest = t(locale, "blob.signature")
+const signature = `${signatureName}${signatureRest}`
+const nameLabel = `${signature}, ${story.after}`
+
+const rootClass = ["blob", flow ? "is-flow" : ""].filter(Boolean).join(" ")
+const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
+  .filter(Boolean)
+  .join(" ")
 ---
+
+<div class={rootClass}>
+  <nav class={blobClass} aria-label={t(locale, "blob.landmark")} data-sound="on">
+    <div class="ui-blob__menu" id="blob-menu" inert={!open}>
+      <div class="ui-blob__menu-clip">
+        <button type="button" data-blob="sound" aria-pressed="true">
+          <span>{t(locale, "blob.sound")}</span>
+          <span class="ui-blob__value">
+            <span class="ui-blob__on">{t(locale, "blob.on")}</span>
+            <span class="ui-blob__off">{t(locale, "blob.off")}</span>
+          </span>
+        </button>
+        <button type="button" data-blob="start">
+          <span>{t(locale, "blob.start")}</span>
+          <span class="ui-blob__mark" aria-hidden="true">↑</span>
+        </button>
+        <a href="#work" data-blob="work">
+          <span>{t(locale, "blob.work")}</span>
+          <span class="ui-blob__mark" aria-hidden="true">↓</span>
+        </a>
+      </div>
+    </div>
+    <button
+      class="ui-blob__title"
+      type="button"
+      aria-expanded={open ? "true" : "false"}
+      aria-controls="blob-menu"
+      tabindex="-1"
+    >
+      <span class="ui-blob__stops">
+        {
+          story.stops.map((stop, index) => (
+            <span
+              class:list={["ui-blob__stop", index === last && "is-current"]}
+              data-stop={index}
+              data-first={index === 0 ? "true" : undefined}
+            >
+              <span class="ui-blob__num">{stopNumber(story.stops, index)}</span>
+              <span class="ui-blob__label">{stop.name}</span>
+            </span>
+          ))
+        }
+        <span class="ui-blob__stop" data-stop="after">
+          <span class="ui-blob__label">{story.after}</span>
+        </span>
+      </span>
+      <span class="ui-blob__note" aria-hidden="true">
+        <svg viewBox="0 0 10 14">
+          <ellipse cx="3.2" cy="11.3" rx="2.5" ry="1.8"></ellipse>
+          <path
+            d="M5.2 11.2V1.3h1.15V9.6c.9-.6 1.8-.7 2.5-.3.15.1.2.3.05.45-.2.15-.5.1-.8-.05-.8-.3-1.4.05-1.9.6v1z"
+          ></path>
+        </svg>
+      </span>
+    </button>
+    <a class="ui-blob__id" href="#jan" aria-label={nameLabel} inert={slim}>
+      <span class="ui-blob__id-clip">
+        <span><b>{signatureName}</b>{signatureRest}</span>
+        <span class="ui-blob__go" aria-hidden="true">→</span>
+      </span>
+    </a>
+  </nav>
+  <a class="ui-blob__tldr" href="#jan" aria-label={t(locale, "blob.tldr.long")}>
+    {t(locale, "blob.tldr")}
+  </a>
+</div>
+
+{
+  /*
+    Not bundled. The page's other component CSS is inlined into the document while it stays
+    under the build's limit. These rules joined that sheet and pushed it over, so the build
+    emitted the whole sheet as its own render-blocking file: one more round trip before the
+    finished page could paint. Inlined here, they travel with the document.
+  */
+}
+<style is:inline>
+  .blob .ui-blob {
+    position: fixed;
+    z-index: 4;
+    left: 0;
+    right: 0;
+    bottom: var(--blob-bottom);
+    width: fit-content;
+    max-width: calc(100vw - var(--blob-gutter));
+    margin-inline: auto;
+  }
+  .blob .ui-blob__tldr {
+    position: fixed;
+    z-index: 4;
+    right: var(--blob-tldr-right);
+    bottom: var(--blob-tldr-bottom);
+  }
+  .blob.is-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-loose);
+  }
+  .blob.is-flow .ui-blob,
+  .blob.is-flow .ui-blob__tldr {
+    position: static;
+  }
+  /*
+    Until the script has marked a stop, the tour is at the start. The server's current
+    stop is the last one, which is what the finished page (no tour) keeps.
+  */
+  html[data-tour] .ui-blob:not([data-current]) .ui-blob__stop {
+    display: none;
+  }
+  html[data-tour] .ui-blob:not([data-current]) .ui-blob__stop[data-first] {
+    display: flex;
+  }
+  html[data-tour] .ui-blob.is-slim:not([data-current]) .ui-blob__id {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+</style>

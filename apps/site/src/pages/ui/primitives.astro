@@ -2,6 +2,7 @@
 // strm-ui primitives, assembled by the same components the home page uses, with its real
 // content. The layout around the primitives belongs to those components.
 import Base from "../../layouts/Base.astro"
+import Blob from "../../components/Blob.astro"
 import Card from "../../components/Card.astro"
 import Message from "../../components/Message.astro"
 import Rail from "../../components/Rail.astro"
@@ -56,6 +57,11 @@ import Work from "../../components/Work.astro"
       <div class="specimen" data-tour="on">
         <Rail locale="en" />
       </div>
+    </section>
+
+    <section aria-labelledby="h-blob">
+      <h2 id="h-blob" class="type-micro part">The blob · ui-blob</h2>
+      <Blob locale="en" flow open slim={false} />
     </section>
 
     <section aria-labelledby="h-rule">

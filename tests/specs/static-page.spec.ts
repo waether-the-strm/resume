@@ -165,9 +165,21 @@ test.describe("static page, JavaScript disabled", () => {
           const skip = page.locator("a.skip")
           const pill = page.locator(".message a.ui-pill")
           const paths = page.locator(".card nav.ui-paths > a")
+          const tldr = page.locator("a.ui-blob__tldr")
 
           await page.keyboard.press("Tab")
           await expectVisibleFocus(page, skip)
+
+          // The title stays out of the tab order until the tour starts it. `tldr` is a
+          // real link on a desktop, and it sits before the message. At 390 it is hidden,
+          // the same cutoff as the prototype's skip link (760px).
+          if (viewport.width === 390) {
+            await expect(tldr).toBeHidden()
+          } else {
+            await expect(tldr).toBeVisible()
+            await page.keyboard.press("Tab")
+            await expectVisibleFocus(page, tldr)
+          }
 
           await page.keyboard.press("Tab")
           await expectVisibleFocus(page, pill)
