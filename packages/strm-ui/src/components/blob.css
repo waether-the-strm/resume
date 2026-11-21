@@ -99,6 +99,9 @@
   min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  /* The rule between the two rows belongs to the grid, not to a cell, so it spans the
+     surface whatever the last row holds. */
+  background: linear-gradient(var(--line), var(--line)) 0 var(--blob-row) / 100% 1px no-repeat;
 }
 .ui-blob__menu button,
 .ui-blob__menu a {
@@ -111,11 +114,7 @@
   color: var(--ink);
   text-align: left;
 }
-/* The second row, as in the prototype. The empty fourth cell has no box, so the line
-   stops after the odd control. */
-.ui-blob__menu-clip > :nth-child(n + 3) {
-  border-top: 1px solid var(--line);
-}
+
 .ui-blob__menu button:hover,
 .ui-blob__menu a:hover {
   color: var(--accent-text);
@@ -134,7 +133,9 @@
   display: inline;
 }
 
-.ui-blob__title {
+/* Two classes, so the row keeps its padding over the reset of the blob's buttons and
+   links above: every row of the surface starts on the same inner edge. */
+.ui-blob .ui-blob__title {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -216,6 +217,9 @@
   gap: var(--space-snug);
   padding: var(--blob-name-pad);
   border-top: 1px solid var(--line);
+  transition:
+    padding var(--motion-move) var(--ease-spring),
+    border-color var(--motion-enter) var(--ease-out);
 }
 .ui-blob__id b {
   color: var(--ink);
@@ -244,6 +248,11 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+}
+/* Folded, the row leaves nothing behind: no padding and no rule under the title. */
+.ui-blob.is-slim .ui-blob__id-clip {
+  padding-block: 0;
+  border-top-color: transparent;
 }
 
 .ui-blob__tldr {
