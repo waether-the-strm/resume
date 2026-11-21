@@ -1,6 +1,6 @@
 # NOW
 
-Updated 21 Nov 2026.
+Updated 21 Nov 2026, end of the second session.
 
 ## Goal
 
@@ -14,42 +14,59 @@ have a template.
 | --- | ------------------------ | ----------------------------------------------------------------- | ----------------- |
 | 1   | Prototype recreated      | the narrative works; a template for project pages                 | 22 Nov            |
 | 2   | Domain                   | strm.dev serves the new design from Cloudflare, still in progress | 24 Nov            |
-| 3   | Content and case studies | Polish copy, how projects are written about, the first case study | 6 Dec (proposed)  |
+| 3   | Content and case studies | Polish copy, the case studies                                     | 6 Dec (proposed)  |
 | 4   | Warmth                   | interactions and decorations                                      | 20 Dec (proposed) |
 | 5   | AI and tokens            | the browser's built-in AI restyles the page through design tokens | 17 Jan (proposed) |
 | 6   | Later                    | Norwegian, analytics, experiments, the insight loop               | 31 Jan (proposed) |
 
 The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3). Every issue has a
-milestone, a Status, a Horizon (now / next / later), a Who (Delegate / Lead / Jan) and, for the
-first two milestones, Start and Target dates. Issues labelled `delegable` go to other agents under
-`AGENTS.md`; the lead session reviews and merges.
+milestone, a Status, a Horizon, a Who (Delegate / Lead / Jan) and Start and Target dates. Jan's own
+queue is `who:Jan is:open`, each with a kind (Decide, Brief, Write, Verify) and a timebox.
 
 ## State
 
 - `rebuild` is v2 and the default branch. `main` and the live site are untouched (v1, `v1.2.0`).
-- Done: the workspace, CI with previews on Cloudflare, strm-ui (tokens, themes, primitives), the
-  content model, the static home page in English and Polish, `/cv`, the 404 pages, social meta and
-  sitemap, the self-hosted font, the engine's stop table, map, URL contract and store.
-- The behavioural spec is in `docs/spec` (ADR 0008).
-- Decisions: ADR 0001 to 0008. ADR 0007 (words with roles) is still proposed.
+- The page: static home in English and Polish, `/cv`, 404 pages, social meta, sitemap. One font file
+  of 49 KB, no synthesized italics.
+- strm-ui: tokens, themes, primitives, tested tier rules.
+- The engine, in `packages/narrative`, all unit-tested and none of it wired to the page yet:
+  `stops`, `map`, `url`, `store`, `phases`, `settle`, `sound`. `transitions` is in review (#66).
+- Preferences (theme, motion, sound) in `apps/site/src/lib/prefs.ts`.
+- CI: format, types, unit tests, build, 52 Playwright tests including accessibility scans.
+- The spec is in `docs/spec`. Decisions: ADR 0001 to 0008, all accepted.
+
+## How the work is split
+
+The lead session keeps judgement; the rest is given away (the `session` skill, "Delegated work").
+Cursor runs delegable issues in parallel worktrees and hands each pull request over through a local
+file, `pr-<number>-claude-review.md`, in the repository root. Its instructions are in the local,
+uncommitted `cursor-tasks.md`.
+
+**On starting a session:** look for hand-off files with `Status: ready for review` before anything
+else, and start a watcher for new ones.
 
 ## In progress
 
-- With other agents (batch 2): #20 Playwright (pull request #62, second round), #61 font subset, #29
-  preferences, #26 phases, #27 settle, #28 transitions, #37 sound; #21 accessibility after #62.
-- With the lead session: #22 narrative content, then #30 scenes and #31 the equation.
+- With Cursor: #66 transitions (third round), then batch 3: #75 load ahead of need and real italics,
+  #36 key bindings, #44 performance budget, #45 release preparation, #78 words rendering, #41
+  project page template.
+- Nothing is half-done in the lead session.
 
 ## Waiting for Jan
 
-His queue is the board filtered by `who:Jan is:open`, ordered by Target, each with a kind (Decide,
-Brief, Write, Verify) and a timebox in minutes.
-
-- #16 confirm words with roles, before the scenes.
-- #40 how deep a case study goes and which is first; it blocks the project page template (#41).
-- #33 what the blob holds; it blocks the blob (#35).
-- #12 Polish copy, including the selected-work wording on `/cv`.
+- #33 what the blob holds (22 Nov, 20 min). It blocks the blob.
+- #46 device check before the domain (23 to 24 Nov).
+- #12 Polish copy; #42 the case studies, in a session of their own.
+- The dates of milestones 3 to 6 are proposals until he confirms them.
 
 ## Next step
 
-The lead session ports the narrative content (#22) and starts the scenes (#30) while the engine
-modules come back from review. The first thing Jan sees in motion is the words scene on the preview.
+The lead session's own work, in this order:
+
+1. #22 narrative content as data: the equation, the guide, the stops with names per locale, the
+   per-block data of the structure scene. Polish drafts are marked for Jan.
+2. The adapter that wires store, settle, phases, sound and transitions to the page, and #30 the
+   scenes, starting with the words scene. Then open a `Verify` issue for Jan with the preview URL.
+3. #31 the equation, from the table of what each phase triggers (pull request #67).
+
+Also the lead session's: #57 the 404 page and caching on the host, #23 the visual baseline.
