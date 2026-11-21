@@ -35,3 +35,5 @@ export type {
   SoundParam,
   SoundWave,
 } from "./sound.ts"
+export { createSettle } from "./settle.ts" // settle.ts
+export type { Clock, Scroller, Settle, SettleDeps } from "./settle.ts" // settle.ts
