@@ -37,3 +37,11 @@ export type {
 } from "./sound.ts"
 export { createSettle } from "./settle.ts" // settle.ts
 export type { Clock, Scroller, Settle, SettleDeps } from "./settle.ts" // settle.ts
+// transitions.ts
+export { createTransitions } from "./transitions.ts"
+export type {
+  StartViewTransition,
+  Transition,
+  TransitionDeps,
+  ViewTransitionHandle,
+} from "./transitions.ts"
