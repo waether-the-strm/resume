@@ -48,6 +48,9 @@ importers:
 
   packages/narrative:
     devDependencies:
+      '@types/node':
+        specifier: ^24
+        version: 24.19.2
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
