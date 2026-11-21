@@ -1,0 +1,58 @@
+name: Jan Mirecki
+role: Design Engineer
+subtitle: product designer and frontend architect
+tagline: 15 years designing for the web, 11 years building it.
+contacts:
+  - kind: place
+    label: Oslo, Norway
+  - kind: mail
+    label: jan@strm.dev
+    href: mailto:jan@strm.dev
+  - kind: phone
+    label: "+47 462 73 098"
+    href: tel:+4746273098
+  - kind: web
+    label: strm.dev
+    href: https://strm.dev
+  - kind: linkedin
+    label: linkedin.com/in/janmirecki
+    href: https://www.linkedin.com/in/janmirecki/
+headings:
+  profile: Profile
+  process: My process
+  experience: Experience
+  work: Selected work
+  skills: Skills
+  education: Education
+profile:
+  quote: >-
+    "Very, very few people or organizations know why they do what they do."
+  author: Simon Sinek
+  work: How Great Leaders Inspire Action
+  source: TEDx 2009
+  paragraphs:
+    - >-
+      I try to be one of them. My first question is always why: why does this need to exist, who is it
+      for, and what should change once it is there.
+    - >-
+      I graduated in Product Design and never really stopped being a designer. I just added code to my
+      tools. Since then the two have worked as one craft: I design in the material the product is actually
+      made of, and I build with the user in mind. Today that matters more than ever. AI writes code fast,
+      but it does not make a product coherent on its own. That is the part I care about.
+    - >-
+      Since May 2024 I live in Oslo. I love Norway for its mountains, and I caught my first fish here. Off
+      screen: cycling, climbing, skiing, a homemade micro RV, painting Warhammer miniatures again, coffee,
+      kombucha and my own bread.
+process:
+  - title: Ask why first
+    text: >-
+      Before I build anything, I want to know why it is needed. I talk to product and business people until
+      a vague goal becomes a clear problem, a scope and a way to tell if it worked.
+  - title: Design the system
+    text: >-
+      Flows first, then the tokens, components and rules that hold them together. With AI writing more of
+      the code, the system keeps the UI from drifting.
+  - title: Build it in the product
+    text: >-
+      I prototype in code and with AI, turn what works into production frontend, and follow it through
+      release to check it behaves as designed.

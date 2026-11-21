@@ -59,6 +59,8 @@
   --p-curve-in-out: cubic-bezier(0.45, 0, 0.15, 1);
   --p-curve-spring: cubic-bezier(0.3, 1.35, 0.5, 1);
 
-  /* type: one variable family, Recursive, with two voices on its MONO axis */
-  --p-font-recursive: "Recursive Variable", ui-monospace, system-ui, sans-serif;
+  /* type: one variable family, Recursive, with two voices on its MONO axis.
+     Recursive Fallback is the size-adjusted local face used until the file swaps in. */
+  --p-font-recursive:
+    "Recursive Variable", "Recursive Fallback", ui-monospace, system-ui, sans-serif;
 }

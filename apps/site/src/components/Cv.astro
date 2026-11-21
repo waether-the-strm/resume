@@ -1,0 +1,399 @@
+---
+// The CV, from the content collections. A locale without its own entry shows the English
+// CV: prose is typeset as English, and single/many print the fallback during the build.
+import Base from "../layouts/Base.astro"
+import Words from "./Words.astro"
+import { many, singleWithLocale } from "../i18n/content"
+import { defaultLocale, localePath, type Locale } from "../i18n/locales"
+import { t } from "../i18n/ui"
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+
+const cvEntry = await singleWithLocale("cv", locale)
+const cv = cvEntry.data
+const contentLocale = cvEntry.locale
+const pdf = "/Jan-Mirecki-CV-Design-Engineer.pdf"
+
+function byOrder<T extends { data: { order: number } }>(entries: T[]): T[] {
+  return [...entries].sort((a, b) => a.data.order - b.data.order)
+}
+
+const jobs = byOrder(await many("experience", locale))
+const schools = byOrder(await many("education", locale))
+const skillRows = byOrder(await many("skills", locale))
+const selected = [...(await many("projects", locale))].sort((a, b) => {
+  const af = a.data.featured
+  const bf = b.data.featured
+  if (af !== undefined && bf !== undefined) return af - bf
+  if (af !== undefined) return -1
+  if (bf !== undefined) return 1
+  return a.data.title.localeCompare(b.data.title, defaultLocale)
+})
+
+type Description = { text: string; label?: string | undefined; item?: boolean }
+function blocks(descriptions: Description[]) {
+  const out: (
+    | { type: "prose"; text: string }
+    | { type: "list"; items: { text: string; label?: string | undefined }[] }
+  )[] = []
+  for (const description of descriptions) {
+    if (description.item === false) {
+      out.push({ type: "prose", text: description.text })
+      continue
+    }
+    const last = out.at(-1)
+    if (last?.type === "list") last.items.push(description)
+    else out.push({ type: "list", items: [description] })
+  }
+  return out
+}
+---
+
+<Base title={`${cv.name} – ${cv.role}`} description={cv.tagline} locale={locale} path="/cv">
+  <main class="cv" lang={contentLocale !== locale ? contentLocale : undefined}>
+    <nav class="type-label cv-nav" aria-label={t(locale, "cv.nav")}>
+      <a href={localePath(locale)}>{t(locale, "cv.back")}</a>
+      <a href={pdf} download>{t(locale, "cv.download")}</a>
+    </nav>
+    <header class="cv-head">
+      <div class="id">
+        <h1 class="type-display">{cv.name}</h1>
+        <p class="type-lead">{cv.role}</p>
+      </div>
+      <div class="dek">
+        <p><strong>{cv.subtitle}</strong></p>
+        <p class="tagline">{cv.tagline}</p>
+      </div>
+      <address>
+        <ul class="contacts type-label">
+          {
+            cv.contacts.map((contact) => (
+              <li>{contact.href ? <a href={contact.href}>{contact.label}</a> : contact.label}</li>
+            ))
+          }
+        </ul>
+      </address>
+    </header>
+    <hr class="ui-rule" />
+    <div class="sections">
+      <section aria-labelledby="cv-profile">
+        <h2 id="cv-profile" class="type-micro">{cv.headings.profile}</h2>
+        <blockquote class="quote">
+          <p class="type-lead"><Words text={cv.profile.quote} locale={contentLocale} /></p>
+          <p class="type-label by">
+            {cv.profile.author}, <em>{cv.profile.work}</em>, {cv.profile.source}
+          </p>
+        </blockquote>
+        <div class="prose">
+          {
+            cv.profile.paragraphs.map((paragraph) => (
+              <p>
+                <Words text={paragraph} locale={contentLocale} />
+              </p>
+            ))
+          }
+        </div>
+      </section>
+      <section aria-labelledby="cv-process">
+        <h2 id="cv-process" class="type-micro">{cv.headings.process}</h2>
+        <ol class="process">
+          {
+            cv.process.map((step) => (
+              <li>
+                <p>
+                  <strong>{step.title}</strong>
+                </p>
+                <p>
+                  <Words text={step.text} locale={contentLocale} />
+                </p>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+      <section aria-labelledby="cv-experience">
+        <h2 id="cv-experience" class="type-micro">{cv.headings.experience}</h2>
+        <div class="stack">
+          {
+            jobs.map((job) => (
+              <article class="job">
+                <h3 class="type-lead">{job.data.company}</h3>
+                <div class="roles">
+                  {job.data.roles.map((role) => (
+                    <p>
+                      <strong>{role.title}</strong>
+                      <span class="type-label when">{role.period}</span>
+                    </p>
+                  ))}
+                </div>
+                {blocks(job.data.descriptions).map((block) =>
+                  block.type === "prose" ? (
+                    <p class="prose-line">
+                      <Words text={block.text} locale={contentLocale} />
+                    </p>
+                  ) : (
+                    <ul class="items">
+                      {block.items.map((item) => (
+                        <li>
+                          {item.label && <strong>{item.label}</strong>}
+                          {item.label && " "}
+                          <Words text={item.text} locale={contentLocale} />
+                        </li>
+                      ))}
+                    </ul>
+                  )
+                )}
+                {job.data.tools.length > 0 && (
+                  <p class="type-label tools">{job.data.tools.join(" · ")}</p>
+                )}
+              </article>
+            ))
+          }
+        </div>
+      </section>
+      <section aria-labelledby="cv-work">
+        <h2 id="cv-work" class="type-micro">{cv.headings.work}</h2>
+        <ul class="stack selected">
+          {
+            selected.map((project) => (
+              <li>
+                <h3>{project.data.title}</h3>
+                <p>{project.data.summary}</p>
+                {project.data.link && <a href={project.data.link}>{t(locale, "cv.live")}</a>}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <section aria-labelledby="cv-skills">
+        <h2 id="cv-skills" class="type-micro">{cv.headings.skills}</h2>
+        <dl class="stack skills">
+          {
+            skillRows.map((row) => (
+              <div class="skill">
+                <dt class="type-label">{row.data.area}</dt>
+                <dd>{row.data.items.join(" · ")}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </section>
+      <section aria-labelledby="cv-education">
+        <h2 id="cv-education" class="type-micro">{cv.headings.education}</h2>
+        <ul class="stack schools">
+          {
+            schools.map((school) => (
+              <li>
+                <strong>{school.data.school}</strong>: {school.data.detail}
+                <span class="type-label when">{school.data.period}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+  </main>
+</Base>
+
+<style>
+  h1,
+  h2,
+  h3,
+  p {
+    margin: 0;
+  }
+  .cv {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 40px 96px;
+  }
+  .cv-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-base);
+    margin-bottom: var(--space-block);
+  }
+  .cv-nav a {
+    color: var(--ink-mute);
+    text-decoration: none;
+    padding-block: var(--space-snug);
+  }
+  .cv-nav a:hover {
+    color: var(--ink);
+  }
+  .cv-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(12rem, 1fr);
+    grid-template-areas:
+      "id contacts"
+      "dek dek";
+    gap: var(--space-snug) var(--space-block);
+    align-items: start;
+  }
+  .id {
+    grid-area: id;
+  }
+  .dek {
+    grid-area: dek;
+  }
+  address {
+    grid-area: contacts;
+  }
+  .id,
+  .dek,
+  .quote,
+  .prose,
+  .process,
+  .process li,
+  .job,
+  .roles,
+  .selected li {
+    display: grid;
+  }
+  .id {
+    gap: var(--space-snug);
+  }
+  .dek,
+  .roles,
+  .quote {
+    gap: var(--space-hair);
+  }
+  .tagline,
+  .by,
+  .tools {
+    color: var(--ink-mute);
+  }
+  address {
+    font-style: normal;
+  }
+  .contacts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-tight);
+  }
+  .cv > .ui-rule {
+    margin-top: var(--space-section);
+  }
+  .sections {
+    display: grid;
+    gap: var(--space-section);
+    margin-top: var(--space-section);
+  }
+  section {
+    display: grid;
+    gap: var(--space-base);
+  }
+  h2 {
+    color: var(--ink-mute);
+    text-transform: uppercase;
+  }
+  blockquote {
+    margin: 0;
+    font-style: normal;
+  }
+  .quote,
+  .prose p,
+  .process li,
+  .prose-line,
+  .items,
+  .tools,
+  .selected p {
+    max-width: 68ch;
+  }
+  .prose,
+  .process {
+    gap: var(--space-loose);
+  }
+  .process,
+  .items,
+  .selected,
+  .schools {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .process li,
+  .job,
+  .selected li {
+    gap: var(--space-tight);
+  }
+  .items {
+    list-style: disc;
+    padding-left: 1.15em;
+    gap: var(--space-snug);
+  }
+  strong {
+    font-weight: inherit;
+    font-variation-settings:
+      "MONO" var(--voice-sans),
+      "wght" var(--type-title-weight);
+  }
+  .job h3 {
+    font-variation-settings:
+      "MONO" var(--type-lead-voice),
+      "wght" var(--type-title-weight);
+  }
+  .when {
+    color: var(--ink-mute);
+    white-space: nowrap;
+  }
+  .when::before {
+    content: "·";
+    color: var(--ink-soft);
+    margin-inline: 0.4em;
+  }
+  .stack > * {
+    padding-block: var(--space-base);
+    border-top: 1px solid var(--line);
+  }
+  .job {
+    padding-block: var(--space-loose);
+  }
+  .tools {
+    font-style: italic;
+  }
+  .selected h3 {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-leading);
+    font-variation-settings:
+      "MONO" var(--voice-sans),
+      "wght" var(--type-title-weight);
+  }
+  .skills {
+    margin: 0;
+  }
+  .skill {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: var(--space-snug) var(--space-base);
+    align-items: baseline;
+  }
+  .skill dd {
+    margin: 0;
+  }
+  em {
+    font-style: italic;
+  }
+
+  @media (max-width: 760px) {
+    .cv {
+      padding: 24px 20px 64px;
+    }
+    .cv-head {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "id"
+        "dek"
+        "contacts";
+    }
+    .skill {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

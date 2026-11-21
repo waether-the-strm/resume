@@ -1,0 +1,23 @@
+company: SZTORM (own design and development studio), Warsaw and Oslo
+order: 2
+roles:
+  - title: Product Designer · Frontend Architect · Tech Lead
+    period: Aug 2021 – Oct 2025
+descriptions:
+  - label: "GSR, sports facility reservations:"
+    text: >-
+      product design, frontend, design system with tokens and project management, end to end. Co-built the
+      npm package the frontend used to consume the system's API.
+  - label: Biletomat.pl redesign
+    text: >-
+      (web and mobile): led designers, developers and marketing, reporting directly to management.
+  - label: "WebScouts:"
+    text: >-
+      organised IT volunteers for refugees and NGOs, and helped speed up pomagamukrainie.gov.pl.
+  - text: Taught UX design at SWPS University. React developer on an SAP UI for Corevist (US).
+tools:
+  - Product design
+  - Design systems
+  - Tech leading
+  - Frontend
+  - University lecturer

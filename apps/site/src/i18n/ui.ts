@@ -13,6 +13,11 @@ const en = {
   "notFound.title": "Page not found",
   "notFound.lead": "This address is not a page.",
   "notFound.home": "Back to the start",
+  // CV chrome. The page is not translated: /pl/cv reuses these English strings.
+  "cv.nav": "Page",
+  "cv.back": "← Back",
+  "cv.download": "Download PDF",
+  "cv.live": "live",
 }
 
 export type UiKey = keyof typeof en
@@ -28,6 +33,11 @@ const pl: Record<UiKey, string> = {
   "notFound.title": "Nie ma takiej strony",
   "notFound.lead": "Pod tym adresem nie ma strony.",
   "notFound.home": "Wróć na początek",
+  // Untranslated: the CV page falls back to English.
+  "cv.nav": "Page",
+  "cv.back": "← Back",
+  "cv.download": "Download PDF",
+  "cv.live": "live",
 }
 
 // Not launched: Norwegian reuses English until its copy is written. Listed here on purpose,

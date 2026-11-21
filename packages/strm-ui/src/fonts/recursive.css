@@ -1,0 +1,52 @@
+/*
+ * Recursive, the one variable family (OFL-1.1, see OFL.txt).
+ *
+ * Subset of @fontsource-variable/recursive 5.3.0 (Google Fonts Recursive v44).
+ * Axes kept: MONO 0 to 1, CASL 0 to 1, wght 300 to 1000, slnt -15 to 0.
+ * The cursive axis is unused in this site, so it is pinned to its default
+ * (0.5) and dropped. Scripts kept: latin and latin-ext. Cyrillic and
+ * Vietnamese are not served.
+ *
+ * Rebuild with fonttools 4.68.0, from the package's full files:
+ *   fonttools varLib.instancer recursive-latin-full-normal.woff2 CRSV=0.5 -o recursive-latin.woff2
+ *   fonttools varLib.instancer recursive-latin-ext-full-normal.woff2 CRSV=0.5 -o recursive-latin-ext.woff2
+ *
+ * "Recursive Fallback" is a local proportional face (Arial, and the
+ * metric-compatible Liberation Sans and Arimo) with size-adjust and metric
+ * overrides measured at the body voice: MONO 0, wght 400. That is the face
+ * the page shows while the file swaps in.
+ */
+
+/* latin-ext. Polish diacritics other than ó live here. */
+@font-face {
+  font-family: "Recursive Variable";
+  font-style: oblique 0deg 15deg;
+  font-weight: 300 1000;
+  font-display: swap;
+  src: url("./recursive-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+/* latin. Preloaded from the site layout. ó is in this range. */
+@font-face {
+  font-family: "Recursive Variable";
+  font-style: oblique 0deg 15deg;
+  font-weight: 300 1000;
+  font-display: swap;
+  src: url("./recursive-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Recursive Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 124.6%;
+  ascent-override: 76.24%;
+  descent-override: 20.06%;
+  line-gap-override: 0%;
+}
