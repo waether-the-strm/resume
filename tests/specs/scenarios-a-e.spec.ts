@@ -363,24 +363,36 @@ for (const viewport of viewports) {
             })
             const origin = track.getBoundingClientRect().top + window.scrollY
             const screen = stage.offsetHeight
-            const go = (position: number) => window.scrollTo(0, origin + position * screen)
-            // The tour applies a scroll on the next frame. Reading in the same turn sees the old state.
             const flush = () =>
               new Promise<void>((resolve) => {
                 requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
               })
+            // The tour applies a scroll on the next frame. Reading in the same turn sees the old
+            // state. Once the scroll has been idle for 40 ms after `scrollend` the tour glides
+            // into the nearest hold by itself, and a stalled frame under load is enough for
+            // that. The glide moves the scroll position, so a sample taken then belongs to a
+            // position this walk never asked for. Move on only when the page is where it was
+            // sent: a write that differs from the position was the glide's, and the next `go`
+            // takes the scroll back (the glide gives way to a reader who moves it).
+            const visit = async (position: number) => {
+              const wanted = origin + position * screen
+              for (let attempt = 0; attempt < 20; attempt++) {
+                window.scrollTo(0, wanted)
+                await flush()
+                if (Math.abs(window.scrollY - wanted) <= 2) return
+              }
+              throw new Error(`the scroll would not stay at ${position} screens`)
+            }
             const forward: ReturnType<typeof read>[] = []
             for (let position = 0; position <= 2.6; position += 0.02) {
-              go(position)
-              await flush()
+              await visit(position)
               forward.push(read())
               if (forward.at(-1)?.hidden) break
             }
             const back: ReturnType<typeof read>[] = []
             const start = (forward.length - 1) * 0.02
             for (let position = start; position >= 0; position -= 0.02) {
-              go(position)
-              await flush()
+              await visit(position)
               back.push(read())
             }
             return { forward, back }
