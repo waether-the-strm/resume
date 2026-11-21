@@ -84,8 +84,18 @@ function viewApi(log?: string[]) {
     skip() {
       active?.rejectFinished(new Error("skipped"))
     },
+    /** Settles `updateCallbackDone` without running the update callback. */
+    settleUpdate() {
+      active?.resolveUpdate()
+    },
+    failUpdate(reason: unknown) {
+      active?.rejectUpdate(reason)
+    },
     get finished(): Promise<void> {
       return active?.handle.finished ?? Promise.resolve()
+    },
+    get updateCallbackDone(): Promise<void> {
+      return active?.handle.updateCallbackDone ?? Promise.resolve()
     },
   }
 }
@@ -259,9 +269,9 @@ test("a queued change that throws does not stop the later ones, and the guard li
   ])
 })
 
-test("a start that throws applies nothing twice", () => {
+test("a start that throws applies the change once and the next change starts again", () => {
   let starts = 0
-  let applied = 0
+  const log: string[] = []
   let held: () => void = () => {}
   const startViewTransition: StartViewTransition = (update) => {
     starts += 1
@@ -270,19 +280,53 @@ test("a start that throws applies nothing twice", () => {
     return viewApi().start(() => {})
   }
   const run = runner(startViewTransition, () => true)
-  assert.throws(() => {
-    run(() => {
-      applied += 1
-    })
-  }, /failed to start/)
-  assert.equal(applied, 0)
-  run(() => {
-    applied += 1
-  })
-  assert.equal(applied, 0)
-  held()
-  assert.equal(applied, 1)
+  run(() => log.push("a"))
+  assert.deepEqual(log, ["a"])
+  run(() => log.push("b"))
   assert.equal(starts, 2)
+  assert.deepEqual(log, ["a"])
+  held()
+  assert.deepEqual(log, ["a", "b"])
+})
+
+test("a skipped transition before the update applies the queued changes once", async () => {
+  const log: string[] = []
+  const view = viewApi(log)
+  const run = runner(view.start, () => true)
+  run(() => log.push("a"))
+  run(() => log.push("b"))
+  assert.deepEqual(log, ["start"])
+
+  const ignored = view.finished.then(
+    () => {},
+    () => {}
+  )
+  view.skip()
+  await ignored
+  assert.deepEqual(log, ["start", "a", "b"])
+
+  view.flush()
+  assert.deepEqual(log, ["start", "a", "b", "enter", "leave"])
+})
+
+test("updateCallbackDone settling before the update applies the queued changes once", async () => {
+  const log: string[] = []
+  const view = viewApi(log)
+  const run = runner(view.start, () => true)
+  run(() => log.push("a"))
+  run(() => log.push("b"))
+  assert.deepEqual(log, ["start"])
+
+  const ignored = view.updateCallbackDone.then(
+    () => {},
+    () => {}
+  )
+  view.failUpdate(new Error("update never ran"))
+  await ignored
+  assert.deepEqual(log, ["start", "a", "b"])
+
+  view.flush()
+  assert.deepEqual(log, ["start", "a", "b", "enter", "leave"])
 })
 
 test("two runners do not share a guard", () => {

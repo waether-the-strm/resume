@@ -11,6 +11,10 @@
 // is applied in the same turn. The runner keeps that guard itself, so the page uses one
 // runner for the document.
 //
+// A change handed to the runner is always applied, exactly once. The transition is
+// decoration. If `startViewTransition` throws, or the update never runs, the runner applies
+// the change and anything queued directly and returns to idle.
+//
 // Callers leave the document root out of the transition and name only the elements that
 // move. The page stylesheet sets `::view-transition { pointer-events: none }` (prototype
 // line 24) so the overlay lets clicks through for the length of the animation.
@@ -66,28 +70,51 @@ export function createTransitions(deps: TransitionDeps): Transition {
     const epochAtStart = ++epoch
     phase = "pending"
     let settled = false
+    let applied = false
     const stillOurs = () => epoch === epochAtStart
+
+    // One shot for this transition. The wrapper and a skipped update share it, so a late
+    // callback cannot apply the same change again.
+    const applyAll = () => {
+      if (applied) return
+      applied = true
+      const errors: unknown[] = []
+      const step = (fn: () => void) => {
+        try {
+          fn()
+        } catch (error) {
+          errors.push(error)
+        }
+      }
+      step(change)
+      while (queued.length > 0) {
+        const next = queued.shift()
+        if (next !== undefined) step(next)
+      }
+      const failure = errors[0]
+      if (failure !== undefined) throw failure
+    }
+
+    // The update never ran. Apply directly and leave the transition. A throwing change
+    // has already been applied; this path has no API callback to report it to.
+    const applyIfPending = () => {
+      if (!stillOurs() || phase !== "pending") return
+      settled = true
+      try {
+        applyAll()
+      } catch {
+        // Applied above. Swallowing keeps the promise chain free of a second rejection.
+      } finally {
+        if (stillOurs() && phase === "pending") phase = "idle"
+      }
+    }
 
     let handle: ViewTransitionHandle
     try {
       // The browser calls this wrapper later, after it has captured the old state.
       handle = start(() => {
-        const errors: unknown[] = []
-        const step = (fn: () => void) => {
-          try {
-            fn()
-          } catch (error) {
-            errors.push(error)
-          }
-        }
         try {
-          step(change)
-          while (queued.length > 0) {
-            const next = queued.shift()
-            if (next !== undefined) step(next)
-          }
-          const failure = errors[0]
-          if (failure !== undefined) throw failure
+          applyAll()
         } finally {
           // Flip before returning. `updateCallbackDone` settles on a later microtask,
           // which is too late: a change in this same turn would queue behind a callback
@@ -95,28 +122,30 @@ export function createTransitions(deps: TransitionDeps): Transition {
           if (stillOurs()) phase = settled ? "idle" : "animating"
         }
       })
-    } catch (error) {
-      if (stillOurs()) {
-        phase = "idle"
-        queued.length = 0
+    } catch {
+      // A page without the animation is still correct. A page without the change is not.
+      try {
+        applyAll()
+      } finally {
+        if (stillOurs() && phase === "pending") {
+          phase = "idle"
+          queued.length = 0
+        }
       }
-      throw error
+      return
     }
 
     const release = () => {
       if (!stillOurs()) return
       settled = true
-      if (phase !== "pending") phase = "idle"
+      if (phase === "pending") {
+        applyIfPending()
+        return
+      }
+      phase = "idle"
     }
     // Both branches fulfil, so neither chain adds an unhandled rejection.
     void handle.finished.then(release, release)
-    void handle.updateCallbackDone.then(
-      () => {
-        if (stillOurs() && phase === "pending") phase = settled ? "idle" : "animating"
-      },
-      () => {
-        if (stillOurs() && phase === "pending") phase = settled ? "idle" : "animating"
-      }
-    )
+    void handle.updateCallbackDone.then(applyIfPending, applyIfPending)
   }
 }
