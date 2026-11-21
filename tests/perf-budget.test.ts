@@ -2,7 +2,8 @@ import assert from "node:assert/strict"
 import { test } from "node:test"
 import {
   assemble,
-  budgetFor,
+  budgetForFinished,
+  budgetForTour,
   budgets,
   byteMargin,
   clsMargin,
@@ -11,13 +12,15 @@ import {
   kindOf,
   overages,
   pages,
-  paintMarginRatio,
+  paintFactor,
   phoneProfile,
   throttlingGaps,
-  type MetricSample,
+  type FinishedSample,
   type PagePath,
+  type PageState,
   type RawMeasurement,
   type Sample,
+  type TourSample,
 } from "./perf-budget.ts"
 
 test("the phone profile is Lighthouse 12.8.2 devtools throttling of a Moto G Power", () => {
@@ -33,18 +36,23 @@ test("the phone profile is Lighthouse 12.8.2 devtools throttling of a Moto G Pow
 })
 
 test("each budget is the first measurement plus the stated margin", () => {
+  assert.equal(paintFactor, 1.3)
   for (const path of pages) {
-    const measured = firstMeasurement[path]
-    assert.deepEqual(budgets[path], budgetFor(measured))
+    const finished = firstMeasurement.finished[path]
+    assert.deepEqual(budgets.finished[path], budgetForFinished(finished))
     assert.equal(
-      budgets[path].finishedPaintMs,
-      Math.ceil(measured.finishedPaintMs * (1 + paintMarginRatio))
+      budgets.finished[path].finishedPaintMs,
+      Math.ceil(finished.finishedPaintMs * paintFactor)
     )
-    assert.equal(budgets[path].cls, measured.cls + clsMargin)
-    assert.equal(budgets[path].document, measured.document + byteMargin)
-    assert.equal(budgets[path].css, measured.css + byteMargin)
-    assert.equal(budgets[path].font, measured.font + byteMargin)
-    assert.equal(budgets[path].script, measured.script + byteMargin)
+    assert.equal(budgets.finished[path].cls, finished.cls + clsMargin)
+    assert.equal(budgets.finished[path].document, finished.document + byteMargin)
+    assert.equal(budgets.finished[path].css, finished.css + byteMargin)
+    assert.equal(budgets.finished[path].font, finished.font + byteMargin)
+
+    const tour = firstMeasurement.tour[path]
+    assert.deepEqual(budgets.tour[path], budgetForTour(tour))
+    assert.equal(budgets.tour[path].cls, tour.cls + clsMargin)
+    assert.equal(budgets.tour[path].script, tour.script + byteMargin)
   }
 })
 
@@ -86,13 +94,17 @@ function raw(overrides: Partial<RawMeasurement> = {}): RawMeasurement {
 
 test("transferred bytes are summed by type, once per resource", () => {
   const origin = "http://127.0.0.1:4333"
-  const sample = assemble("/", {
-    ...raw(),
-    responses: [
-      ...raw().responses,
-      { url: `${origin}/_astro/recursive.woff2`, resourceType: "font", status: 200 },
-    ],
-  })
+  const sample = assemble(
+    "/",
+    {
+      ...raw(),
+      responses: [
+        ...raw().responses,
+        { url: `${origin}/_astro/recursive.woff2`, resourceType: "font", status: 200 },
+      ],
+    },
+    "finished"
+  )
   assert.deepEqual(sample.bytes, {
     document: 14000,
     css: 12000,
@@ -117,7 +129,8 @@ test("a response without timing, a timing without a response, and a failed statu
         { url: `${origin}/favicon.svg`, resourceType: "image", status: 404 },
         { url: `${origin}/old`, resourceType: "document", status: 302 },
       ],
-    })
+    }),
+    "finished"
   )
   assert.ok(sample.gaps.some((gap) => gap.includes("document transferSize is 0")))
   assert.ok(sample.gaps.some((gap) => gap.includes("no resource timing")))
@@ -128,10 +141,22 @@ test("a response without timing, a timing without a response, and a failed statu
     sample.gaps.some((gap) => gap.includes("status 302")),
     false
   )
+  assert.equal(
+    sample.gaps.some((gap) => gap.includes("transferred no script")),
+    false
+  )
+})
+
+test("the tour is incomplete without a script, and the finished page is not", () => {
+  assert.equal(
+    assemble("/", raw(), "finished").gaps.some((gap) => gap.includes("transferred no script")),
+    false
+  )
+  assert.ok(assemble("/", raw(), "tour").gaps.some((gap) => gap.includes("transferred no script")))
 })
 
 test("a transfer faster than the throttle is a gap, and a cache hit is not", () => {
-  const sample = assemble("/", raw())
+  const sample = assemble("/", raw(), "finished")
   const fast = { ...sample.transfers[0]!, headerDelayMs: 10, transferSize: 100 }
   const cached = { ...fast, transferSize: 0 }
   assert.equal(throttlingGaps({ ...sample, transfers: [fast] }, 562.5).length, 1)
@@ -139,8 +164,11 @@ test("a transfer faster than the throttle is a gap, and a cache hit is not", () 
   assert.deepEqual(throttlingGaps(sample, 562.5), [])
 })
 
-function sampleAt(path: PagePath, metrics: MetricSample, gaps: string[] = []): Sample {
+type Flat = FinishedSample & TourSample
+
+function sampleAt(state: PageState, path: PagePath, metrics: Flat, gaps: string[] = []): Sample {
   return {
+    state,
     path,
     finishedPaintMs: metrics.finishedPaintMs,
     cls: metrics.cls,
@@ -159,25 +187,60 @@ function sampleAt(path: PagePath, metrics: MetricSample, gaps: string[] = []): S
   }
 }
 
-test("a page on its budget passes and one byte over it fails", () => {
+function finishedFlat(budget: FinishedSample, script = 0): Flat {
+  return { ...budget, script }
+}
+
+function tourFlat(budget: TourSample, paint = 1): Flat {
+  return {
+    finishedPaintMs: paint,
+    cls: budget.cls,
+    document: 1,
+    css: 1,
+    font: 1,
+    script: budget.script,
+  }
+}
+
+test("a page on its budget passes, and one byte or one moment over the budgeted metric fails", () => {
   const path: PagePath = "/"
-  const budget = budgets[path]
-  assert.deepEqual(overages(sampleAt(path, budget)), [])
-  const over = sampleAt(path, { ...budget, font: budget.font + 1 })
-  const problems = overages(over)
-  assert.equal(problems.length, 1)
-  assert.equal(problems[0]?.metric, "font")
-  assert.equal(problems[0]?.measured, budget.font + 1)
+  const finished = budgets.finished[path]
+  assert.deepEqual(overages(sampleAt("finished", path, finishedFlat(finished, 9_999_999))), [])
+  const overFont = overages(
+    sampleAt("finished", path, finishedFlat({ ...finished, font: finished.font + 1 }))
+  )
+  assert.equal(overFont.length, 1)
+  assert.equal(overFont[0]?.metric, "font")
+  assert.equal(overFont[0]?.state, "finished")
+
+  const tour = budgets.tour[path]
+  assert.deepEqual(overages(sampleAt("tour", path, tourFlat(tour, 99_999))), [])
+  const overScript = overages(
+    sampleAt("tour", path, tourFlat({ ...tour, script: tour.script + 1 }))
+  )
+  assert.equal(overScript.length, 1)
+  assert.equal(overScript[0]?.metric, "script")
+  assert.equal(overScript[0]?.state, "tour")
 })
 
-test("the summary names both pages, the margin, and an incomplete measurement", () => {
-  const within = pages.map((path) => sampleAt(path, budgets[path]))
+test("the summary names both states and both pages, and an incomplete measurement", () => {
+  const within = [
+    ...pages.map((path) => sampleAt("finished", path, finishedFlat(budgets.finished[path]))),
+    ...pages.map((path) => sampleAt("tour", path, tourFlat(budgets.tour[path]))),
+  ]
   const ok = formatSummary(within)
   assert.match(ok, /within budget/)
+  assert.match(ok, /### Finished page/)
+  assert.match(ok, /### Tour/)
   assert.match(ok, new RegExp(String(byteMargin)))
+  assert.match(ok, /×1\.3/)
   assert.match(ok, /\/pl\//)
-  const broken = formatSummary([sampleAt("/", budgets["/"], ["missing font"])])
+  assert.equal(ok.includes("engine attaches"), false)
+  const broken = formatSummary([
+    sampleAt("finished", "/", finishedFlat(budgets.finished["/"]), ["missing font"]),
+  ])
   assert.match(broken, /measurement incomplete/)
   assert.match(broken, /missing font/)
+  assert.match(broken, /### Tour/)
   assert.match(formatSummary([]), /no measurement/)
 })

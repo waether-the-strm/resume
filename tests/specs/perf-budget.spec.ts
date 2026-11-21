@@ -1,7 +1,14 @@
 import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import { expect, test, type CDPSession, type Page, type Response } from "@playwright/test"
+import {
+  expect,
+  test,
+  type BrowserContext,
+  type CDPSession,
+  type Page,
+  type Response,
+} from "@playwright/test"
 import {
   assemble,
   formatSummary,
@@ -10,6 +17,7 @@ import {
   phoneProfile,
   throttlingGaps,
   type PagePath,
+  type PageState,
   type RawMeasurement,
   type Sample,
   type SeenResponse,
@@ -18,7 +26,7 @@ import {
 // Written for the CI step that appends it to the job summary.
 const summaryFile = fileURLToPath(new URL("../test-results/perf-budget.md", import.meta.url))
 
-const browserUse = {
+const phone = {
   viewport: phoneProfile.viewport,
   screen: phoneProfile.viewport,
   deviceScaleFactor: phoneProfile.deviceScaleFactor,
@@ -28,28 +36,31 @@ const browserUse = {
 } as const
 
 test.describe("performance budget", () => {
-  test.use(browserUse)
+  test.use(phone)
 
-  test("finished home pages stay within the budget", async ({ page }) => {
-    test.setTimeout(90_000)
+  test("home pages stay within the budget", async ({ page, browser }) => {
+    test.setTimeout(180_000)
     const samples: Sample[] = []
-    const client = await page.context().newCDPSession(page)
+    const clients: CDPSession[] = []
+    let tourContext: BrowserContext | undefined
     try {
-      await expectPhone(page)
-      await armObservers(page)
-      for (const path of pages) {
-        await applyThrottle(client)
-        const sample = await measure(page, path)
-        await expectLayoutViewport(page, path)
-        sample.gaps.push(...throttlingGaps(sample, phoneProfile.latencyMs))
-        samples.push(sample)
-        note(sample)
-        // The same finished page the static suite checks. The paint time was taken
-        // before these asserts, so the asserts are not part of the measurement.
-        await expectFinished(page)
-      }
-      await client.detach()
+      const client = await page.context().newCDPSession(page)
+      clients.push(client)
+      await measurePages(page, "finished", client, samples)
+
+      const origin = new URL(page.url()).origin
+      tourContext = await browser.newContext({
+        baseURL: origin,
+        ...phone,
+        reducedMotion: "no-preference",
+      })
+      const tourPage = await tourContext.newPage()
+      const tourClient = await tourContext.newCDPSession(tourPage)
+      clients.push(tourClient)
+      await measurePages(tourPage, "tour", tourClient, samples)
     } finally {
+      for (const client of clients) await client.detach().catch(() => {})
+      await tourContext?.close()
       const markdown = formatSummary(samples)
       console.log(`\n${markdown}`)
       mkdirSync(dirname(summaryFile), { recursive: true })
@@ -67,12 +78,29 @@ test.describe("performance budget", () => {
       problems,
       problems
         .map(
-          (problem) => `${problem.path} ${problem.metric} ${problem.measured} > ${problem.budget}`
+          (problem) =>
+            `${problem.state} ${problem.path} ${problem.metric} ${problem.measured} > ${problem.budget}`
         )
         .join("\n")
     ).toEqual([])
   })
 })
+
+async function measurePages(page: Page, state: PageState, client: CDPSession, samples: Sample[]) {
+  await expectPhone(page)
+  await armObservers(page)
+  for (const path of pages) {
+    await applyThrottle(client)
+    const sample = await measure(page, state, path)
+    await expectLayoutViewport(page, path)
+    sample.gaps.push(...throttlingGaps(sample, phoneProfile.latencyMs))
+    samples.push(sample)
+    note(sample)
+    // The reading was taken before these asserts, so the asserts are not part of it.
+    if (state === "finished") await expectFinished(page)
+    else await expectTour(page)
+  }
+}
 
 async function expectPhone(page: Page) {
   // about:blank has no viewport meta, so the layout width there is not the phone.
@@ -148,7 +176,7 @@ async function applyThrottle(client: CDPSession) {
   await client.send("Emulation.setCPUThrottlingRate", { rate: phoneProfile.cpuSlowdown })
 }
 
-async function measure(page: Page, path: PagePath): Promise<Sample> {
+async function measure(page: Page, state: PageState, path: PagePath): Promise<Sample> {
   const responses: SeenResponse[] = []
   const onResponse = (response: Response) => {
     responses.push({
@@ -160,35 +188,55 @@ async function measure(page: Page, path: PagePath): Promise<Sample> {
   page.on("response", onResponse)
   try {
     const response = await page.goto(path, { waitUntil: "load", timeout: 45_000 })
-    expect(response, `${path} responded`).not.toBeNull()
-    expect(response?.status(), `${path} status`).toBeLessThan(400)
-    const reading = await readFinished(page)
-    if (!reading.loaded) {
+    expect(response, `${state} ${path} responded`).not.toBeNull()
+    expect(response?.status(), `${state} ${path} status`).toBeLessThan(400)
+    if (state === "tour") await expectFirstScene(page)
+    const reading = await readPage(page, state)
+    if (state === "finished" && !reading.loaded) {
       throw new Error(
-        `${path} Recursive Variable did not load (${reading.faceStatus || "no faces"})`
+        `${path} upright Recursive Variable did not load (${reading.faceStatus || "no faces"})`
       )
     }
-    if (!reading.navigation) throw new Error(`${path} has no navigation timing`)
-    const sample = assemble(path, {
-      finishedPaintMs: reading.finishedPaintMs,
-      cls: reading.cls,
-      fcpMs: reading.fcpMs,
-      lcpMs: reading.lcpMs,
-      navigation: reading.navigation,
-      resources: reading.resources,
-      responses,
-    })
-    if (!reading.observed) sample.gaps.push(`${path} layout-shift observer did not run`)
-    sample.notes.push(`${path} layout-shift entries observed: ${reading.shiftCount}`)
+    if (state === "tour" && !reading.tourOn) {
+      throw new Error(`${path} tour did not show the first scene (${reading.tourStatus})`)
+    }
+    if (!reading.navigation) throw new Error(`${state} ${path} has no navigation timing`)
+    const sample = assemble(
+      path,
+      {
+        finishedPaintMs: reading.finishedPaintMs,
+        cls: reading.cls,
+        fcpMs: reading.fcpMs,
+        lcpMs: reading.lcpMs,
+        navigation: reading.navigation,
+        resources: reading.resources,
+        responses,
+      },
+      state
+    )
+    if (!reading.observed) sample.gaps.push(`${state} ${path} layout-shift observer did not run`)
+    sample.notes.push(`${state} ${path} layout-shift entries observed: ${reading.shiftCount}`)
+    if (reading.faceStatus.includes("Recursive Variable/italic=loaded")) {
+      sample.notes.push(`${state} ${path} italic Recursive loaded`)
+    }
+    if (state === "tour") sample.notes.push(`${state} ${path} ${reading.tourStatus}`)
     return sample
   } finally {
     page.off("response", onResponse)
   }
 }
 
+async function expectFirstScene(page: Page) {
+  await expect(page.locator("html")).toHaveAttribute("data-tour", "on", { timeout: 20_000 })
+  await expect(page.locator(".stage")).toHaveAttribute("data-scene", "0")
+  await expect(page.locator(".equation")).toBeVisible()
+}
+
 type BrowserReading = {
   loaded: boolean
   faceStatus: string
+  tourOn: boolean
+  tourStatus: string
   finishedPaintMs: number
   cls: number
   observed: boolean
@@ -199,12 +247,16 @@ type BrowserReading = {
   resources: RawMeasurement["resources"]
 }
 
-async function readFinished(page: Page): Promise<BrowserReading> {
-  return page.evaluate(async () => {
-    await document.fonts.ready
+async function readPage(page: Page, state: PageState): Promise<BrowserReading> {
+  return page.evaluate(async (mode) => {
     const faces = [...document.fonts]
-    const recursive = faces.filter((face) => face.family === "Recursive Variable")
-    const loaded = recursive.length > 0 && recursive.every((face) => face.status === "loaded")
+    const upright = faces.filter(
+      (face) => face.family === "Recursive Variable" && face.style === "normal"
+    )
+    // The home page uses the upright face. The italic face is declared for the CV and
+    // stays unloaded here, so waiting for every Recursive face never finishes.
+    if (mode === "finished") await document.fonts.ready
+    const loaded = upright.length > 0 && upright.every((face) => face.status === "loaded")
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => resolve())
@@ -230,10 +282,21 @@ async function readFinished(page: Page): Promise<BrowserReading> {
         headerDelayMs: timing.responseStart - timing.requestStart,
       }
     })
+    const root = document.documentElement
+    const stage = document.querySelector(".stage")
+    const equation = document.querySelector(".equation")
+    const equationShown =
+      equation instanceof HTMLElement && getComputedStyle(equation).display !== "none"
+    const tourOn =
+      root.getAttribute("data-tour") === "on" &&
+      stage?.getAttribute("data-scene") === "0" &&
+      equationShown
 
     return {
       loaded,
-      faceStatus: faces.map((face) => `${face.family}=${face.status}`).join(" "),
+      faceStatus: faces.map((face) => `${face.family}/${face.style}=${face.status}`).join(" "),
+      tourOn,
+      tourStatus: `data-tour=${root.getAttribute("data-tour") ?? "none"} data-scene=${stage?.getAttribute("data-scene") ?? "none"} equation=${equationShown ? "shown" : "hidden"}`,
       finishedPaintMs: performance.now(),
       cls: record.__strmCls ?? 0,
       observed: "__strmCls" in window,
@@ -250,12 +313,12 @@ async function readFinished(page: Page): Promise<BrowserReading> {
         : null,
       resources,
     }
-  })
+  }, state)
 }
 
 function note(sample: Sample) {
   const metrics = [
-    `finished paint ${sample.finishedPaintMs.toFixed(1)} ms`,
+    `paint ${sample.finishedPaintMs.toFixed(1)} ms`,
     `layout shift ${sample.cls.toFixed(4)}`,
     `document ${sample.bytes.document} B`,
     `css ${sample.bytes.css} B`,
@@ -264,7 +327,7 @@ function note(sample: Sample) {
   ]
   test.info().annotations.push({
     type: "measurement",
-    description: `${sample.path} ${metrics.join(", ")}`,
+    description: `${sample.state} ${sample.path} ${metrics.join(", ")}`,
   })
 }
 
@@ -285,4 +348,10 @@ async function expectFinished(page: Page) {
   const projects = page.locator("ul.ui-work > li")
   await expect(projects).toHaveCount(3)
   for (const project of await projects.all()) await expect(project).toBeVisible()
+}
+
+async function expectTour(page: Page) {
+  await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+  await expect(page.locator(".stage")).toHaveAttribute("data-scene", "0")
+  await expect(page.locator(".equation")).toBeVisible()
 }
