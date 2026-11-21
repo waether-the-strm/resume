@@ -106,6 +106,48 @@
   opacity: 0;
   pointer-events: none;
 }
+
+/* ---------- under the guide: the band and the haze ---------- */
+
+/*
+ * What passes under the guide is softened so the guide stays readable: a band that blurs it
+ * and a haze, in the page's own colour, that fades it. Two layers, because a gradient under a
+ * blur bands. Both belong to the guide and take their height from it: one line in English on a
+ * desktop, three in Polish on a phone, and never more of the scene than the guide covers plus
+ * a soft edge below it. They span the screen and come and go with the guide.
+ */
+[data-tour] .guide::before,
+[data-tour] .guide::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -40px;
+  left: -100vw;
+  right: -100vw;
+  pointer-events: none;
+  animation: veil-in var(--motion-move) var(--ease-out) both;
+}
+[data-tour] .guide::before {
+  bottom: -56px;
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(5px);
+  -webkit-mask-image: linear-gradient(#000 45%, transparent);
+  mask-image: linear-gradient(#000 45%, transparent);
+}
+[data-tour] .guide::after {
+  bottom: -40px;
+  background: linear-gradient(
+    color-mix(in oklab, var(--paper) 90%, transparent) 0%,
+    color-mix(in oklab, var(--paper) 60%, transparent) 55%,
+    transparent 100%
+  );
+}
+@keyframes veil-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (max-width: 760px) {
   [data-tour] .guide:is([data-how], :not([data-step="0"])) {
     left: 20px;
