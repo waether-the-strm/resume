@@ -1,12 +1,21 @@
 // Text with roles. Content marks a run of words with a role: "Your product, [clear at a
-// glance.]{accent}". Words are the unit of continuity in the narrative, so text is rendered
-// one word at a time and each word carries the role of its run. No role depends on a word's
-// position in the sentence, which would break in another language.
+// glance.]{accent}". A role belongs to the run, never to a word's position, which would
+// break in another language.
+//
+// Two ways to render it. `words` splits every word, for the message, where the narrative
+// moves single words and each word keeps the role of its run. `runs` keeps each marked run
+// whole and leaves the rest as plain text.
 
 export const roles = ["accent", "name"] as const
 export type Role = (typeof roles)[number]
 
 export interface Word {
+  text: string
+  role?: Role
+}
+
+/** A plain stretch, or one marked run kept whole. */
+export interface Run {
   text: string
   role?: Role
 }
@@ -40,5 +49,21 @@ export function words(source: string): Word[] {
     last = match.index + match[0].length
   }
   push(source.slice(last))
+  return out
+}
+
+/** Splits marked-up text into plain stretches and marked runs. A run is not split into words. */
+export function runs(source: string): Run[] {
+  const out: Run[] = []
+  let last = 0
+  for (const match of source.matchAll(run)) {
+    const before = source.slice(last, match.index)
+    if (before) out.push({ text: before })
+    const text = match[1] ?? ""
+    if (text) out.push({ text, role: match[2] as Role })
+    last = match.index + match[0].length
+  }
+  const after = source.slice(last)
+  if (after) out.push({ text: after })
   return out
 }

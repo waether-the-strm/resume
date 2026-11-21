@@ -1,21 +1,28 @@
 ---
-// Renders marked-up text one word at a time, typeset for the locale.
+// Renders marked-up text, typeset for the locale.
+// `runs` (the default): plain text, with one span around each marked run.
+// `words`: one span per word, for the message, where the narrative moves single words.
 import type { Locale } from "../i18n/locales"
 import { typeset } from "../i18n/typography"
-import { words } from "../lib/rich"
+import { runs, words } from "../lib/rich"
 
 interface Props {
   text: string
   locale: Locale
+  mode?: "words" | "runs"
 }
-const { text, locale } = Astro.props
-const list = words(typeset(text, locale))
+const { text, locale, mode = "runs" } = Astro.props
+const set = typeset(text, locale)
 ---
 
 {
-  list.map((word, index) => (
-    <span class="ui-w" data-role={word.role}>
-      {index < list.length - 1 ? `${word.text} ` : word.text}
-    </span>
-  ))
+  mode === "words"
+    ? words(set).map((word, index, list) => (
+        <span class="ui-w" data-role={word.role}>
+          {index < list.length - 1 ? `${word.text} ` : word.text}
+        </span>
+      ))
+    : runs(set).map((part) =>
+        part.role ? <span data-role={part.role}>{part.text}</span> : part.text
+      )
 }
