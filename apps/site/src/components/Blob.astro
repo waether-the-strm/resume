@@ -11,15 +11,26 @@ interface Props {
   locale: Locale
   /** Primitives page: sit in the flow instead of floating. */
   flow?: boolean
-  /** Primitives page: rendered unfolded, so the three rows can be seen. */
+  /** Primitives page: rendered unfolded, so the two columns can be seen. */
   open?: boolean
   /**
    * The name row is folded. The home page leaves this set: without the tour the name
    * is already on the page. The script unfolds it when the tour says otherwise.
    */
   slim?: boolean
+  /** Menu id, so two specimens on one page do not share it. */
+  menuId?: string
+  /** Replaces the landmark name, so two specimens on one page stay distinct. */
+  labelledBy?: string
 }
-const { locale, flow = false, open = false, slim = true } = Astro.props
+const {
+  locale,
+  flow = false,
+  open = false,
+  slim = true,
+  menuId = "blob-menu",
+  labelledBy,
+} = Astro.props
 const story = await narrative(locale)
 const last = story.stops.length - 1
 
@@ -37,8 +48,13 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
 ---
 
 <div class={rootClass}>
-  <nav class={blobClass} aria-label={t(locale, "blob.landmark")} data-sound="on">
-    <div class="ui-blob__menu" id="blob-menu" inert={!open}>
+  <nav
+    class={blobClass}
+    aria-label={labelledBy ? undefined : t(locale, "blob.landmark")}
+    aria-labelledby={labelledBy}
+    data-sound="on"
+  >
+    <div class="ui-blob__menu" id={menuId} inert={!open}>
       <div class="ui-blob__menu-clip">
         <button type="button" data-blob="sound" aria-pressed="true">
           <span>{t(locale, "blob.sound")}</span>
@@ -61,7 +77,7 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
       class="ui-blob__title"
       type="button"
       aria-expanded={open ? "true" : "false"}
-      aria-controls="blob-menu"
+      aria-controls={menuId}
       tabindex="-1"
     >
       <span class="ui-blob__stops">
