@@ -1,7 +1,12 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import { createTransitions as exported } from "./index.ts"
-import { createTransitions, type StartViewTransition, type Transition } from "./transitions.ts"
+import {
+  createTransitions,
+  type StartViewTransition,
+  type Transition,
+  type ViewTransitionHandle,
+} from "./transitions.ts"
 
 // `document.startViewTransition.bind(document)` has to stay injectable. The callback
 // parameter is optional on the DOM method and required on ours.
@@ -12,15 +17,76 @@ type InjectsDocumentMethod = BoundStartViewTransition extends StartViewTransitio
 const injectsDocumentMethod: InjectsDocumentMethod = true
 void injectsDocumentMethod
 
-const pending = (): Promise<void> => new Promise(() => {})
+interface Shot {
+  update: () => void
+  handle: ViewTransitionHandle
+  resolveFinished: () => void
+  rejectFinished: (reason: unknown) => void
+  resolveUpdate: () => void
+  rejectUpdate: (reason: unknown) => void
+}
 
-/** A fake `document.startViewTransition`: runs the update synchronously, as the API does. */
-function fakeStart(log: string[], finished: Promise<void> = pending()): StartViewTransition {
-  return (change) => {
-    log.push("enter")
-    change()
-    log.push("leave")
-    return { finished }
+/**
+ * A fake `document.startViewTransition`. It returns before calling the update, and the
+ * test decides when that call happens. Each start gets its own `finished` and
+ * `updateCallbackDone`.
+ */
+function viewApi(log?: string[]) {
+  let active: Shot | undefined
+
+  function shot(update: () => void): Shot {
+    let resolveFinished: (value: void) => void = () => {}
+    let rejectFinished: (reason: unknown) => void = () => {}
+    const finished = new Promise<void>((resolve, reject) => {
+      resolveFinished = resolve
+      rejectFinished = reject
+    })
+    let resolveUpdate: (value: void) => void = () => {}
+    let rejectUpdate: (reason: unknown) => void = () => {}
+    const updateCallbackDone = new Promise<void>((resolve, reject) => {
+      resolveUpdate = resolve
+      rejectUpdate = reject
+    })
+    return {
+      update,
+      handle: { finished, updateCallbackDone },
+      resolveFinished: () => resolveFinished(),
+      rejectFinished,
+      resolveUpdate: () => resolveUpdate(),
+      rejectUpdate,
+    }
+  }
+
+  return {
+    start: ((update: () => void) => {
+      log?.push("start")
+      active = shot(update)
+      return active.handle
+    }) as StartViewTransition,
+    /** Runs the update callback the API is holding. */
+    flush() {
+      const current = active
+      log?.push("enter")
+      try {
+        current?.update()
+        log?.push("leave")
+        current?.resolveUpdate()
+      } catch (error) {
+        log?.push("leave")
+        current?.rejectUpdate(error)
+        current?.rejectFinished(error)
+        throw error
+      }
+    },
+    finish() {
+      active?.resolveFinished()
+    },
+    skip() {
+      active?.rejectFinished(new Error("skipped"))
+    },
+    get finished(): Promise<void> {
+      return active?.handle.finished ?? Promise.resolve()
+    },
   }
 }
 
@@ -36,8 +102,6 @@ test("the package entry exports the runner", () => {
 })
 
 test("the change runs in a view transition only when one may", () => {
-  // The prototype's condition, plus the re-entry case covered below: API present, motion
-  // allowed, and no transition running.
   const cases: { api: boolean; motion: boolean; where: "transition" | "direct" }[] = [
     { api: false, motion: true, where: "direct" },
     { api: false, motion: false, where: "direct" },
@@ -47,124 +111,190 @@ test("the change runs in a view transition only when one may", () => {
 
   for (const { api, motion, where } of cases) {
     const log: string[] = []
-    const run = runner(api ? fakeStart(log) : undefined, () => motion)
+    const view = viewApi(log)
+    const run = runner(api ? view.start : undefined, () => motion)
     run(() => log.push("change"))
-    assert.deepEqual(
-      log,
-      where === "transition" ? ["enter", "change", "leave"] : ["change"],
-      `api ${api}, motion ${motion}`
-    )
+    if (where === "direct") {
+      assert.deepEqual(log, ["change"], `api ${api}, motion ${motion}`)
+      continue
+    }
+    assert.deepEqual(log, ["start"], `api ${api}, motion ${motion}: not yet`)
+    view.flush()
+    assert.deepEqual(log, ["start", "enter", "change", "leave"], `api ${api}, motion ${motion}`)
   }
 })
 
-test("the update callback handed to the API is the change itself", () => {
+test("the API receives a wrapper and runs the change only when it calls it", () => {
   let received: () => void = () => {}
-  const change = () => {}
+  let ran = false
   const startViewTransition: StartViewTransition = (update) => {
     received = update
-    return { finished: pending() }
+    return viewApi().start(() => {})
+  }
+  const change = () => {
+    ran = true
   }
   runner(startViewTransition, () => true)(change)
-  assert.equal(received, change)
+  assert.notEqual(received, change)
+  assert.equal(ran, false)
+  received()
+  assert.equal(ran, true)
 })
 
 test("motion is read on each call", () => {
   let allowed = false
   const log: string[] = []
-  const run = runner(fakeStart(log), () => allowed)
+  const view = viewApi(log)
+  const run = runner(view.start, () => allowed)
   run(() => log.push("blocked"))
   allowed = true
   run(() => log.push("allowed"))
-  assert.deepEqual(log, ["blocked", "enter", "allowed", "leave"])
+  assert.deepEqual(log, ["blocked", "start"])
+  view.flush()
+  assert.deepEqual(log, ["blocked", "start", "enter", "allowed", "leave"])
 })
 
-test("a change from inside the update callback does not start a second transition", () => {
+test("two changes in one turn run inside the update, in order", () => {
   const log: string[] = []
-  const run = runner(fakeStart(log), () => true)
+  const view = viewApi(log)
+  const run = runner(view.start, () => true)
+  run(() => log.push("a"))
+  run(() => log.push("b"))
+  assert.deepEqual(log, ["start"])
+  view.flush()
+  assert.deepEqual(log, ["start", "enter", "a", "b", "leave"])
+})
+
+test("a change from inside the update callback runs in that callback, after the first", () => {
+  const log: string[] = []
+  const view = viewApi(log)
+  const run = runner(view.start, () => true)
   run(() => {
-    log.push("outer")
+    log.push("outer-start")
     run(() => log.push("inner"))
+    log.push("outer-end")
   })
-  assert.deepEqual(log, ["enter", "outer", "inner", "leave"])
+  view.flush()
+  assert.deepEqual(log, ["start", "enter", "outer-start", "outer-end", "inner", "leave"])
 })
 
-test("a change while a transition runs is applied at once and is not queued", async () => {
-  let finish: () => void = () => {}
-  const finished = new Promise<void>((resolve) => {
-    finish = resolve
-  })
+test("a change during the animation is applied at once and is not queued", async () => {
   const log: string[] = []
-  const run = runner(fakeStart(log, finished), () => true)
-
+  const view = viewApi(log)
+  const run = runner(view.start, () => true)
   run(() => log.push("first"))
+  view.flush()
   run(() => log.push("during"))
-  assert.deepEqual(log, ["enter", "first", "leave", "during"])
+  assert.deepEqual(log, ["start", "enter", "first", "leave", "during"])
 
-  finish()
+  const finished = view.finished
+  view.finish()
   await finished
   run(() => log.push("after"))
-  assert.deepEqual(log, ["enter", "first", "leave", "during", "enter", "after", "leave"])
+  view.flush()
+  assert.deepEqual(log, [
+    "start",
+    "enter",
+    "first",
+    "leave",
+    "during",
+    "start",
+    "enter",
+    "after",
+    "leave",
+  ])
 })
 
 test("a skipped transition releases the guard", async () => {
-  let rejectFinished: (reason: unknown) => void = () => {}
-  const finished = new Promise<void>((_resolve, reject) => {
-    rejectFinished = reject
-  })
   const log: string[] = []
-  const run = runner(fakeStart(log, finished), () => true)
+  const view = viewApi(log)
+  const run = runner(view.start, () => true)
   run(() => log.push("first"))
+  view.flush()
 
-  const ignored = finished.then(
+  const ignored = view.finished.then(
     () => {},
     () => {}
   )
-  rejectFinished(new Error("skipped"))
+  view.skip()
   await ignored
 
   run(() => log.push("after"))
-  assert.deepEqual(log, ["enter", "first", "leave", "enter", "after", "leave"])
+  view.flush()
+  assert.deepEqual(log, ["start", "enter", "first", "leave", "start", "enter", "after", "leave"])
 })
 
-test("a start that throws does not leave the guard stuck", () => {
+test("a queued change that throws does not stop the later ones, and the guard lifts", async () => {
+  const log: string[] = []
+  const view = viewApi(log)
+  const run = runner(view.start, () => true)
+  run(() => log.push("a"))
+  run(() => {
+    log.push("b")
+    throw new Error("boom")
+  })
+  run(() => log.push("c"))
+
+  const ignored = view.finished.then(
+    () => {},
+    () => {}
+  )
+  assert.throws(() => view.flush(), /boom/)
+  assert.deepEqual(log, ["start", "enter", "a", "b", "c", "leave"])
+  await ignored
+
+  run(() => log.push("next"))
+  view.flush()
+  assert.deepEqual(log, [
+    "start",
+    "enter",
+    "a",
+    "b",
+    "c",
+    "leave",
+    "start",
+    "enter",
+    "next",
+    "leave",
+  ])
+})
+
+test("a start that throws applies nothing twice", () => {
   let starts = 0
-  const startViewTransition: StartViewTransition = (change) => {
+  let applied = 0
+  let held: () => void = () => {}
+  const startViewTransition: StartViewTransition = (update) => {
     starts += 1
     if (starts === 1) throw new Error("failed to start")
-    change()
-    return { finished: pending() }
+    held = update
+    return viewApi().start(() => {})
   }
   const run = runner(startViewTransition, () => true)
-  assert.throws(() => run(() => {}), /failed to start/)
-  run(() => {})
-  assert.equal(starts, 2)
-})
-
-test("a change that throws inside the update releases the guard", () => {
-  let starts = 0
-  const startViewTransition: StartViewTransition = (change) => {
-    starts += 1
-    change()
-    return { finished: pending() }
-  }
-  const run = runner(startViewTransition, () => true)
-  assert.throws(
-    () =>
-      run(() => {
-        throw new Error("boom")
-      }),
-    /boom/
-  )
-  run(() => {})
+  assert.throws(() => {
+    run(() => {
+      applied += 1
+    })
+  }, /failed to start/)
+  assert.equal(applied, 0)
+  run(() => {
+    applied += 1
+  })
+  assert.equal(applied, 0)
+  held()
+  assert.equal(applied, 1)
   assert.equal(starts, 2)
 })
 
 test("two runners do not share a guard", () => {
   const log: string[] = []
-  const start = fakeStart(log)
-  const a = runner(start, () => true)
-  const b = runner(start, () => true)
+  const first = viewApi(log)
+  const second = viewApi(log)
+  const a = runner(first.start, () => true)
+  const b = runner(second.start, () => true)
   a(() => log.push("a"))
   b(() => log.push("b"))
-  assert.deepEqual(log, ["enter", "a", "leave", "enter", "b", "leave"])
+  assert.deepEqual(log, ["start", "start"])
+  first.flush()
+  second.flush()
+  assert.deepEqual(log, ["start", "start", "enter", "a", "leave", "enter", "b", "leave"])
 })

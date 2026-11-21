@@ -5,9 +5,11 @@
 // `change()` in every other case. Both are passed in. This module does not read the
 // document, listen, or import another engine module.
 //
-// A change requested while a transition from this runner is still running is applied in
-// the same turn. The runner keeps that guard itself, so the page uses one runner for the
-// document.
+// `startViewTransition` returns before it runs the update. Until that callback runs, further
+// changes wait and are applied inside the same callback, after the first, in the order they
+// were requested. Once the callback has run, and until `finished` settles, a further change
+// is applied in the same turn. The runner keeps that guard itself, so the page uses one
+// runner for the document.
 //
 // Callers leave the document root out of the transition and name only the elements that
 // move. The page stylesheet sets `::view-transition { pointer-events: none }` (prototype
@@ -15,6 +17,8 @@
 
 /** The part of a `ViewTransition` this module waits on. */
 export interface ViewTransitionHandle {
+  /** Settles when the update callback finishes, and rejects when it throws. */
+  readonly updateCallbackDone: Promise<void>
   /** Settles when the animation finishes, and rejects when the transition is skipped. */
   readonly finished: Promise<void>
 }
@@ -22,6 +26,7 @@ export interface ViewTransitionHandle {
 /**
  * Enough of `document.startViewTransition` to run one DOM update. The adapter passes
  * `document.startViewTransition.bind(document)`, or undefined where the API is missing.
+ * The method returns before it calls the update.
  */
 export type StartViewTransition = (change: () => void) => ViewTransitionHandle
 
@@ -34,35 +39,83 @@ export interface TransitionDeps {
 /** Runs one DOM change. */
 export type Transition = (change: () => void) => void
 
+type Phase = "idle" | "pending" | "animating"
+
 /** Returns the function the adapter calls with each DOM change. */
 export function createTransitions(deps: TransitionDeps): Transition {
-  let running = false
+  let phase: Phase = "idle"
+  let epoch = 0
+  const queued: (() => void)[] = []
 
   return function run(change: () => void): void {
-    const start = deps.startViewTransition
-    if (running || start === undefined || !deps.motionAllowed()) {
+    if (phase === "pending") {
+      queued.push(change)
+      return
+    }
+    if (phase === "animating") {
       change()
       return
     }
 
-    // The update callback runs inside `start`, so the guard is up before that call.
-    running = true
+    const start = deps.startViewTransition
+    if (start === undefined || !deps.motionAllowed()) {
+      change()
+      return
+    }
+
+    const epochAtStart = ++epoch
+    phase = "pending"
+    let settled = false
+    const stillOurs = () => epoch === epochAtStart
+
     let handle: ViewTransitionHandle
     try {
-      handle = start(change)
+      // The browser calls this wrapper later, after it has captured the old state.
+      handle = start(() => {
+        const errors: unknown[] = []
+        const step = (fn: () => void) => {
+          try {
+            fn()
+          } catch (error) {
+            errors.push(error)
+          }
+        }
+        try {
+          step(change)
+          while (queued.length > 0) {
+            const next = queued.shift()
+            if (next !== undefined) step(next)
+          }
+          const failure = errors[0]
+          if (failure !== undefined) throw failure
+        } finally {
+          // Flip before returning. `updateCallbackDone` settles on a later microtask,
+          // which is too late: a change in this same turn would queue behind a callback
+          // that has already run.
+          if (stillOurs()) phase = settled ? "idle" : "animating"
+        }
+      })
     } catch (error) {
-      running = false
+      if (stillOurs()) {
+        phase = "idle"
+        queued.length = 0
+      }
       throw error
     }
 
-    // `finished` rejects when the transition is skipped. Either settlement lifts the guard.
-    // Both branches fulfil, so this chain adds no unhandled rejection.
-    void handle.finished.then(
+    const release = () => {
+      if (!stillOurs()) return
+      settled = true
+      if (phase !== "pending") phase = "idle"
+    }
+    // Both branches fulfil, so neither chain adds an unhandled rejection.
+    void handle.finished.then(release, release)
+    void handle.updateCallbackDone.then(
       () => {
-        running = false
+        if (stillOurs() && phase === "pending") phase = settled ? "idle" : "animating"
       },
       () => {
-        running = false
+        if (stillOurs() && phase === "pending") phase = settled ? "idle" : "animating"
       }
     )
   }
