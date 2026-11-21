@@ -17,8 +17,10 @@ lost when the session ends. Everything here is public: no private notes, no empl
 2. Read `docs/NOW.md`. Read the latest file in `docs/log/` if NOW leaves a question open.
 3. Look at the "now" column of the board and the open issues of the current milestone:
    `gh issue list --milestone "<milestone>"`.
-4. Say the goal of the session in one sentence before starting. If it does not serve the goal in
-   NOW, say so and ask Jan.
+4. Brief Jan before the first change, and again whenever a new batch of work starts within the
+   session: what it is about, why now, what to expect once it is merged, how it fits the
+   architecture. Three to five sentences, as `AGENTS.md` ("The briefing") describes. If the batch
+   does not serve the goal in NOW, say so and ask him.
 
 ## During
 
