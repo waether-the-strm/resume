@@ -27,21 +27,27 @@ Updated 20 Nov 2026.
 
 ## Plan
 
-The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3), with a horizon field
-(now / next / later). Milestones are the phases.
+The board: [strm.dev v2](https://github.com/users/waether-the-strm/projects/3). It holds the whole
+plan to `v2.0.0` and the milestones after it: every issue has a phase (milestone), a Horizon (now /
+next / later) and a Who (Delegate / Lead / Jan). Issues labelled `delegable` can go to another agent
+under `AGENTS.md`; the lead session reviews and merges into `rebuild`.
 
 ## In progress
 
 - Polish copy is a draft waiting for Jan (#12).
 - The finished look does not fit a 390×664 phone in Polish; the short-phone layout is not ported
-  (#13).
-- ADR 0007, words with roles: for Jan to confirm before the scenes are ported in phase 5.
+  (#13, delegable).
+
+## Waiting for Jan
+
+- #15 where the behavioural spec lives. It gates every delegable task of phases 4 to 6: an agent
+  working only in this repository cannot see the prototype.
+- #16 confirm words with roles (ADR 0007), before phase 5.
 
 ## Next step
 
-`/cv` and the experience collection from the v1 content in `docs/v1-content`, in English first. Then
-the first Playwright checks on the static page (complete without JS, both languages, three sizes).
-They need the test scenarios in a public form: a question for Jan.
+Ready to delegate now, with no blocker: #17 `/cv` from content, #20 Playwright on the static page,
+#13 the phone fit, #18 site basics, #19 font subsetting. The lead session reviews and merges.
 
 Parked for phase 6, with the engine: rail, blob, hint. The `verify` skill is written with the first
 Playwright checks.

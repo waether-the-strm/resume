@@ -49,9 +49,28 @@ lost when the session ends. Everything here is public: no private notes, no empl
 5. `pnpm format`, commit, push. Confirm CI is green on `rebuild`.
 6. Name the next step to Jan in one sentence, with a rough size in minutes.
 
+## Delegated work
+
+The lead session coordinates; cheaper agents (Copilot, Cursor, a smaller model) take the issues
+labelled `delegable`. Their contract is `AGENTS.md`.
+
+- **Before delegating an issue:** its blockers are closed, and it says Do, Do not, Done when and
+  Evidence. An issue that needs a judgement call is `lead`, not `delegable`.
+- **Reviewing a delegated pull request:** read the diff against the issue, not against the
+  description. Check each point of "What review checks" in `AGENTS.md`. Open the preview. Read the
+  CI log of anything that measures or deploys. Run the new tests locally when they are the evidence.
+- **Out of scope or a touched forbidden file:** ask for the change on the pull request; do not fix
+  it silently, the next delegated task would repeat it. A recurring mistake means `AGENTS.md` or the
+  issue template is unclear: fix that.
+- **Merging:** squash into `rebuild` when CI and Preview are green and the review holds. Close the
+  issue by hand. Unblock what it blocked: move the next issues to "now".
+- A pull request from a bot may need its workflows approved before CI runs.
+
 ## The board
 
-Project 3 of `waether-the-strm`, private for now. Needs the `project` scope on the `gh` token.
+Project 3 of `waether-the-strm`, private for now. It holds the whole plan: every issue has a
+milestone (the phase), a Horizon (now / next / later) and a Who (Delegate / Lead / Jan). Needs the
+`project` scope on the `gh` token.
 
 ```
 gh project item-add 3 --owner waether-the-strm --url <issue url> --format json -q .id
