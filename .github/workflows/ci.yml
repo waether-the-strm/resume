@@ -46,5 +46,5 @@ jobs:
         run: pnpm build
       - name: Install Chromium
         run: pnpm --filter @strm/tests exec playwright install --with-deps chromium
-      - name: Static page
+      - name: Playwright
         run: pnpm --filter @strm/tests e2e
