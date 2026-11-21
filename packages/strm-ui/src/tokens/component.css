@@ -42,6 +42,16 @@
   /* mark: the monogram */
   --mark-size: 36px;
 
+  /*
+   * badge: the faint mark beside a title. Decoration: low contrast is intended, so the ground
+   * is the soft ink half dissolved into the page and the glyph is the page's own colour.
+   */
+  --badge-ground: color-mix(in oklab, var(--ink-soft) 52%, var(--paper));
+  --badge-ink: var(--paper);
+  --badge-size: 0.74em;
+  --badge-min: 1.5em;
+  --badge-pad: 0 0.34em;
+
   /* paths: ways out of a panel */
   --paths-pad: 15px;
   --paths-nudge: 6px;
@@ -83,11 +93,13 @@
   --rail-land-dot-scale: 2;
   --rail-label-gap: 30px;
   --rail-label-shift: 6px;
-  --rail-caption: block;
+  --rail-caption: flex;
 
   /*
-   * Blob: the floating place-marker. Lengths are the prototype's. The shadow is the
-   * raised surface's: a new shadow colour would be a look decision.
+   * Blob: the floating place-marker. Lengths are the prototype's. The fill is
+   * --paper-raised and the edge is --line, both read in the component. The shadow is
+   * the raised surface's: a new shadow colour would be a look decision.
+   * --blob-blur is the prototype's glass blur. The solid surface does not use it.
    */
   --blob-size: var(--type-label-size);
   --blob-title-size: var(--type-micro-size);

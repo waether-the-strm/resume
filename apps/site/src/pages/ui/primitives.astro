@@ -61,7 +61,39 @@ import Work from "../../components/Work.astro"
 
     <section aria-labelledby="h-blob">
       <h2 id="h-blob" class="type-micro part">The blob · ui-blob</h2>
-      <Blob locale="en" flow open slim={false} />
+      <div class="blob-states">
+        <div>
+          <p id="blob-folded" class="state">Folded</p>
+          <Blob locale="en" flow slim labelledBy="blob-folded" />
+        </div>
+        <div>
+          <p id="blob-unfolded" class="state">Unfolded</p>
+          <Blob
+            locale="en"
+            flow
+            open
+            slim={false}
+            menuId="blob-menu-open"
+            labelledBy="blob-unfolded"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-badge">
+      <h2 id="h-badge" class="type-micro part">The badge · ui-badge</h2>
+      <p class="type-lead intro">
+        The mark to the left of a stop's title, in the rail and the blob. Decoration, deliberately
+        faint: one character is a circle, three a short pill, and it never outweighs the title.
+      </p>
+      <ul class="badges">
+        <li><span class="ui-badge" data-mark="0" aria-hidden="true"></span> w+w+w</li>
+        <li><span class="ui-badge" data-mark="+" aria-hidden="true"></span> what?</li>
+        <li><span class="ui-badge" data-mark="=" aria-hidden="true"></span> the equation</li>
+        <li><span class="ui-badge" data-mark="1" aria-hidden="true"></span> the words</li>
+        <li><span class="ui-badge" data-mark="2.3" aria-hidden="true"></span> tokens</li>
+        <li><span class="ui-badge" data-mark="3.2" aria-hidden="true"></span> the look</li>
+      </ul>
     </section>
 
     <section aria-labelledby="h-rule">
@@ -81,9 +113,9 @@ import Work from "../../components/Work.astro"
 
   // One chapter current, one stop nearest and just landed, so the states are visible here.
   document
-    .querySelector<HTMLElement>('.specimen [data-number="2.1"]')
+    .querySelector<HTMLElement>('.specimen [data-id="structure"]')
     ?.setAttribute("aria-current", "true")
-  document.querySelector(".specimen [data-number='2.3']")?.classList.add("is-nearest", "is-landed")
+  document.querySelector(".specimen [data-id='tokens']")?.classList.add("is-nearest", "is-landed")
 </script>
 
 <style>
@@ -157,10 +189,38 @@ import Work from "../../components/Work.astro"
     text-transform: uppercase;
     margin-bottom: var(--space-section);
   }
+  .badges {
+    list-style: none;
+    margin: var(--space-block) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-snug);
+    justify-items: start;
+    font-size: 13px;
+    font-variation-settings:
+      "MONO" var(--voice-mono),
+      "wght" 400;
+    color: var(--ink);
+  }
+  .badges li {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+  }
   .rules {
     display: grid;
     gap: var(--space-block);
     max-width: 46ch;
+  }
+  .blob-states {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-block);
+  }
+  .state {
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: var(--space-snug);
   }
 
   @media (max-width: 760px) {

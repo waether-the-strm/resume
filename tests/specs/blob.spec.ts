@@ -8,7 +8,7 @@ test.describe("the blob on the finished page", () => {
     await page.goto("/")
     await expect(page.locator("html")).not.toHaveAttribute("data-tour", /.*/)
     const current = page.locator(".ui-blob__stop.is-current")
-    await expect(current.locator(".ui-blob__num")).toHaveText("3.2")
+    await expect(current.locator(".ui-blob__num")).toHaveAttribute("data-mark", "3.2")
     await expect(current.locator(".ui-blob__label")).toHaveText("the look")
     await expect(page.locator(".ui-blob")).toHaveClass(/is-slim/)
     await expect(page.locator(".ui-blob__id")).toHaveAttribute("inert", "")
@@ -17,10 +17,47 @@ test.describe("the blob on the finished page", () => {
     await expect(page.locator(".ui-blob__title")).toHaveAttribute("tabindex", "-1")
   })
 
+  test("a raised surface, and two columns with the third control alone on the next row", async ({
+    page,
+  }) => {
+    await page.goto("/")
+    await page.locator(".ui-blob").evaluate((el) => el.classList.add("is-open"))
+    const surface = await page.locator(".ui-blob").evaluate((el) => {
+      const style = getComputedStyle(el)
+      return {
+        background: style.backgroundColor,
+        borderWidth: style.borderTopWidth,
+        borderStyle: style.borderTopStyle,
+        borderColor: style.borderTopColor,
+        backdrop: style.backdropFilter,
+      }
+    })
+    expect(surface.background).not.toBe("rgba(0, 0, 0, 0)")
+    expect(surface.borderWidth).toBe("1px")
+    expect(surface.borderStyle).toBe("solid")
+    expect(surface.borderColor).not.toBe("rgba(0, 0, 0, 0)")
+    expect(surface.backdrop).toBe("none")
+
+    const clip = page.locator(".ui-blob__menu-clip")
+    const columns = await clip.evaluate((el) => getComputedStyle(el).gridTemplateColumns)
+    expect(columns.trim().split(/\s+/)).toHaveLength(2)
+    const boxes = await clip.locator(":scope > *").evaluateAll((els) =>
+      els.map((el) => {
+        const box = el.getBoundingClientRect()
+        return { left: Math.round(box.left), top: Math.round(box.top) }
+      })
+    )
+    expect(boxes).toHaveLength(3)
+    expect(boxes[0]?.top).toBe(boxes[1]?.top)
+    expect(boxes[0]?.left).toBeLessThan(boxes[1]?.left ?? 0)
+    expect(boxes[2]?.top).toBeGreaterThan(boxes[0]?.top ?? 0)
+    expect(boxes[2]?.left).toBe(boxes[0]?.left)
+  })
+
   test("Polish keeps the same number and uses the Polish title", async ({ page }) => {
     await page.goto("/pl/")
     const current = page.locator(".ui-blob__stop.is-current")
-    await expect(current.locator(".ui-blob__num")).toHaveText("3.2")
+    await expect(current.locator(".ui-blob__num")).toHaveAttribute("data-mark", "3.2")
     await expect(current.locator(".ui-blob__label")).toHaveText("wygląd")
   })
 })
@@ -32,15 +69,15 @@ test.describe("the blob on the tour", () => {
     page,
   }) => {
     const cases = [
-      ["0", "0", "0.1", "the start"],
-      ["1", "1", "1.1", "the words"],
+      ["0", "0", "0", "w+w+w"],
+      ["1", "1", "1", "the words"],
       ["2", "0.78", "2.3", "tokens"],
       ["3", "0.32", "3.1", "the tiles"],
     ] as const
     for (const [stage, t, number, title] of cases) {
       await page.goto(`/?stage=${stage}&t=${t}`)
       const current = page.locator(".ui-blob__stop.is-current")
-      await expect(current.locator(".ui-blob__num")).toHaveText(number)
+      await expect(current.locator(".ui-blob__num")).toHaveAttribute("data-mark", number)
       await expect(current.locator(".ui-blob__label")).toHaveText(title)
       await expect(page.locator(".ui-blob")).not.toHaveClass(/is-slim/)
       const name = page.locator(".ui-blob__id")
@@ -56,7 +93,7 @@ test.describe("the blob on the tour", () => {
   }) => {
     await page.goto("/?stage=3&t=1")
     const look = page.locator(".ui-blob__stop.is-current")
-    await expect(look.locator(".ui-blob__num")).toHaveText("3.2")
+    await expect(look.locator(".ui-blob__num")).toHaveAttribute("data-mark", "3.2")
     await expect(look.locator(".ui-blob__label")).toHaveText("the look")
     await expect(page.locator(".ui-blob")).toHaveClass(/is-slim/)
     await expect(page.locator(".ui-blob__id")).toHaveAttribute("inert", "")

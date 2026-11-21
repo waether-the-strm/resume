@@ -105,22 +105,36 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * rebuild total was 7751; the third file, 1486, is gone). Document holds the blob and the
  * inlined rules: `/` 6062, `/pl/` 6354. Script, font and layout shift did not move.
  *
- * Measured again the same day, with the theme switch in the footer. Three cold loads, the
- * same bytes each time. Document `/` 6193 (+131) and `/pl/` 6484 (+130). CSS 9055 (+437).
- * Script 11838 (+439). Font and layout shift did not move. A rebuild load on this machine
- * the same day, before the switch, was document `/` 6081 and `/pl/` 6371, CSS 8924, script
- * 11405, so the switch itself is document +112 and +113, CSS +131 (the home sheet, 3520 to
- * 3651; still two stylesheets), and script +433 (the switch module; prefs was already
- * requested). Paint stayed with that rebuild load, so the ceiling stays: `/` 1933.2,
- * 1909.1, 1883.8 (rebuild 1936.4); `/pl/` 1913.2, 1885.9, 1911.7 (rebuild 1907.5).
+ * Measured again the same day, when the build's inline limit was set on purpose
+ * (`vite.build.assetsInlineLimit` 16384 in astro.config.mjs, issue #111), and the blob's
+ * hand-inlined `<style is:inline>` went back to ordinary `<style>` and `<style is:global>`.
+ * The limit had been Astro's default, 4096, which the home page's component sheet crossed
+ * with 937 B of new rules. At 16384 every component sheet is inlined and the home page loads
+ * one stylesheet file, the shared base (21642 B raw, over the limit): the number of blocking
+ * requests no longer depends on which component grows. Three cold loads, the same bytes each
+ * time. CSS 5404 (-3214: the home sheet is in the document now). Document `/` 8938 (+2876)
+ * and `/pl/` 9242 (+2888). Script 11405, font 49656 and layout shift did not move. Paint is
+ * back under the ceiling, a little lower than the previous round, so that ceiling stays:
+ * `/` 1886.6, 1918.8, 1886.3; `/pl/` 1934.3, 1916.7, 1916.4. For the record, with everything
+ * inline (`inlineStylesheets: "always"`) the finished layout shift was 0.2854 on `/` and
+ * 0.1380 on `/pl/` and the document 13458 B; with nothing inline (`"never"`) paint was
+ * about 2420 ms.
+ *
+ * Measured again the same night, with the theme switch in the footer (#109), the blob's
+ * raised surface (#108) and the notation (#110) on the page. Three cold loads, the same
+ * bytes each time. Document `/` 9240 (+302) and `/pl/` 9531 (+289): the switch's markup and
+ * its inlined rules. Script 11838 (+433): the switch binds through the preferences module.
+ * CSS 5491 (+87). Font and layout shift did not move. Paint stayed with rebuild, so the
+ * ceiling stays: `/` 1885.4, 1919.1; `/pl/` 1882.3, 1956.2 (the third run's table was lost
+ * to two unrelated test failures, #118).
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 6193, css: 9055, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 6484, css: 9055, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9240, css: 5491, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9531, css: 5491, font: 49656 },
   },
   tour: {
     "/": { cls: 0, script: 11838 },

@@ -1,6 +1,7 @@
 /*
  * Blob: where the reader is, and a few controls. It floats at the bottom of the page;
- * the page places it. Folded, it is the step and the name. Unfolded, three rows.
+ * the page places it. Folded, it is the step and the name. Unfolded, the controls are
+ * two columns. Three controls leave the fourth cell empty.
  *
  *   <nav class="ui-blob" aria-label="Where you are, and a few controls">
  *     <div class="ui-blob__menu" id="blob-menu" inert>
@@ -14,7 +15,7 @@
  *     </div>
  *     <button type="button" class="ui-blob__title" aria-expanded="false" aria-controls="blob-menu">
  *       <span class="ui-blob__stops">
- *         <span class="ui-blob__stop is-current"><span class="ui-blob__num">2.3</span><span class="ui-blob__label">tokens</span></span>
+ *         <span class="ui-blob__stop is-current"><span class="ui-blob__num ui-badge" data-mark="2.3" aria-hidden="true"></span><span class="ui-blob__label">tokens</span></span>
  *       </span>
  *       <span class="ui-blob__note" aria-hidden="true"><svg>…</svg></span>
  *     </button>
@@ -30,10 +31,9 @@
   width: max-content;
   max-width: 100%;
   padding-inline: var(--blob-pad);
+  border: 1px solid var(--line);
   border-radius: var(--blob-radius);
-  background: var(--veil);
-  -webkit-backdrop-filter: blur(var(--blob-blur));
-  backdrop-filter: blur(var(--blob-blur));
+  background: var(--paper-raised);
   box-shadow: var(--blob-shadow);
   color: var(--ink-mute);
   font-size: var(--blob-size);
@@ -98,6 +98,7 @@
   overflow: hidden;
   min-height: 0;
   display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 .ui-blob__menu button,
 .ui-blob__menu a {
@@ -110,7 +111,9 @@
   color: var(--ink);
   text-align: left;
 }
-.ui-blob__menu-clip > * + * {
+/* The second row, as in the prototype. The empty fourth cell has no box, so the line
+   stops after the odd control. */
+.ui-blob__menu-clip > :nth-child(n + 3) {
   border-top: 1px solid var(--line);
 }
 .ui-blob__menu button:hover,
@@ -149,15 +152,12 @@
 }
 .ui-blob__stop {
   display: none;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-snug);
   min-width: 0;
 }
 .ui-blob__stop.is-current {
   display: flex;
-}
-.ui-blob__num {
-  color: var(--ink-mute);
 }
 .ui-blob__label {
   color: var(--accent-text);

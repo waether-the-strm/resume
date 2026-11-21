@@ -24,7 +24,7 @@ const story = await narrative(locale)
 // markup, where they are text.
 const track = {
   weights: story.weights,
-  stops: story.stops.map(({ name: _name, label: _label, ...stop }) => stop),
+  stops: story.stops.map(({ name: _name, label: _label, notation: _notation, ...stop }) => stop),
 }
 const length = story.stops.reduce((sum, stop) => sum + stop.travel + stop.hold, 0)
 const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.guide.scenes.look]
@@ -57,7 +57,7 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
   <a class="skip" href="#jan">{t(locale, "nav.skip")}</a>
   <!-- The guide: one sentence per scene. Only the tour shows it. -->
   <p class="guide type-label" data-step="0">
-    <span class="how">{story.guide.label}</span>
+    <span class="how" lang="en">{story.guide.label}</span>
     {
       scenes.map((text, index) => (
         <span class="step" data-for={index + 1}>

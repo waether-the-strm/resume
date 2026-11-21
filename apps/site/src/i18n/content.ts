@@ -66,27 +66,56 @@ export async function many<C extends "projects" | "experience" | "education" | "
   })
 }
 
+/** The stops whose names are notation, and so the same in every language. */
+const notationStops = ["start", "what", "why", "who"] as const
+
 /**
  * Everything the narrative says and where its stops are, for one locale: the equation, the
  * guide, the track with a name on every stop, and the structure scene's notes on each block.
- * The track and the notes are the same in every language. Throws when the words of the stops
- * and the track disagree, so a renamed stop cannot ship half-done.
+ * The track, the notes and the notation (the four questions, `how`, the first stop's title)
+ * are the same in every language; a stop named by notation says so, and the page marks it as
+ * English. Throws when the words of the stops and the track disagree, or when a locale tries
+ * to name a stop that notation names, so a translation cannot replace notation.
  */
 export async function narrative(locale: Locale) {
-  const [equation, guide, words, track, structure] = await Promise.all([
+  const [answers, guide, words, notation, track, structure] = await Promise.all([
     single("equation", locale),
     single("guide", locale),
     singleWithLocale("stops", locale),
+    getEntry("notation", "main"),
     getEntry("track", "main"),
     getEntry("structure", "main"),
   ])
+  if (!notation) throw new Error("Content missing: notation/main")
   if (!track) throw new Error("Content missing: track/main")
   if (!structure) throw new Error("Content missing: structure/main")
+
+  const sign = notation.data
+  const where = `stops/${words.locale}`
+  const translated = notationStops.filter((id) => id in words.data.names)
+  if (translated.length > 0) {
+    throw new Error(
+      `${where}: ${translated.join(", ")} are notation (notation/main.yaml) and are not named per locale.`
+    )
+  }
+  const names = { ...words.data.names, ...sign.questions, start: sign.start }
+  const isNotation = new Set<string>(notationStops)
+
   return {
-    equation,
-    guide,
+    equation: {
+      questions: (["what", "why", "who"] as const).map((id) => ({
+        id,
+        question: sign.questions[id],
+        answer: answers.answers[id],
+      })),
+      how: { question: sign.how, answer: answers.how },
+    },
+    guide: { ...guide, label: sign.label },
     weights: track.data.weights,
-    stops: nameStops(track.data.stops, words.data, `stops/${words.locale}`),
+    stops: nameStops(track.data.stops, { names, rail: words.data.rail }, where).map((stop) => ({
+      ...stop,
+      notation: isNotation.has(stop.id),
+    })),
     after: words.data.after,
     blocks: structure.data.blocks,
   }
