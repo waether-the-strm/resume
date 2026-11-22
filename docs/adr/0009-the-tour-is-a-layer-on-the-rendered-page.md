@@ -1,6 +1,8 @@
 # 0009. The tour is a layer on the page the server rendered
 
-Status: proposed, 21 Nov 2026. Built this way in #87 so it can be judged in motion; Jan decides.
+Status: accepted, 22 Nov 2026. Built this way in #87 so it could be judged in motion; proposed on 21
+Nov 2026. Decided by Jan after going over the tour on an iPhone and a Mac (#89). The four-second
+fallback stays.
 
 ## Context
 
