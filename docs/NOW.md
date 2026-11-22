@@ -78,8 +78,8 @@ watcher for new ones. Brief Jan before each batch.
 
 ## In progress
 
-- With Cursor: #146 (the phone's swipe finger, from the lab), batch 7 in #96. Review it when it
-  arrives (`gh pr list --label "ready for review"`).
+- With Cursor: nothing. No batch is open (#96); batch 7 is merged in full, the phone's swipe finger
+  last (#161). No watcher is running.
 - Nothing is half-done in the lead session.
 
 ## Waiting for Jan
@@ -96,5 +96,7 @@ watcher for new ones. Brief Jan before each batch.
 1. Prepare the renders for the round with Jan (#157, #151, `/cv`, `/ui`), then hold it.
 2. The release path of milestone 2: take `pl` out of `launched` and decide what `/pl/` answers;
    `STRM_PRODUCTION` on the production job (#47); #57 the 404 page on the host.
-3. Review #146 when it arrives. #158 (G3 at 1280x820) when the engine is next opened. If Safari is
-   not smooth enough during the exit, one octave of noise in the map instead of two.
+3. Jan looks at the phone's swipe finger on his own phone (merged after he saw it under the blob;
+   the place was measured on the preview, not on a device). #158 (G3 at 1280x820) when the engine is
+   next opened. If Safari is not smooth enough during the exit, one octave of noise in the map
+   instead of two.
