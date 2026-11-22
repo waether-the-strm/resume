@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from "@playwright/test"
+import { expect, test, type Locator, type Page } from "@playwright/test"
 import { holdFinger, touchSwipe, WHEEL_TICK_PX } from "../rest.ts"
 
 // Longer than the prototype's 1400ms pause plus the 500ms fade, so a late appearance fails.
@@ -201,13 +201,13 @@ test.describe("the scroll hint on a phone", () => {
         name: dotStyle?.animationName ?? "",
       }
     })
-    expect(placed.bottom).toBe("34px")
     expect(placed.width).toBe("100px")
     expect(placed.height).toBe("90px")
     expect(placed.centerDelta).toBeLessThan(2)
     expect(placed.dot).toEqual({ width: "26px", height: "26px" })
     expect(placed.name).toBe("ui-hint-swipe")
     expect(placed.duration).not.toBe("0s")
+    await sitsAboveBlob(page)
 
     const collision = await page.evaluate(() => {
       const boxes = (selector: string) => {
@@ -256,6 +256,14 @@ test.describe("the scroll hint on a phone", () => {
     expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBe("seen")
   })
 
+  test("sits above the blob on a taller phone", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto("/")
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true)
+    await sitsAboveBlob(page)
+  })
+
   test("the Polish page repeats the English words", async ({ page }) => {
     await page.goto("/pl/")
     await expect(page.locator(".ui-hint__swipe")).toContainText("swipe up")
@@ -279,6 +287,40 @@ test("the swipe finger stays off under reduced motion", async ({ page }) => {
   await staysHidden(page.locator(".ui-hint"))
   expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
 })
+
+/**
+ * The words are the lowest part of the hint. They sit the desktop's 12.5px above
+ * the blob. The finger travels up from its rest (lab line 60), so that rest is
+ * the lowest the dot reaches, and it stays above the blob too.
+ */
+async function sitsAboveBlob(page: Page): Promise<void> {
+  const hint = page.locator(".ui-hint")
+  await expect.poll(async () => opacity(hint), { timeout: 8000 }).toBeGreaterThan(0.9)
+  await page.locator(".ui-hint__finger").evaluate((element) => {
+    element.style.animationPlayState = "paused"
+    element.style.animationDelay = "-0.66s"
+  })
+  const boxes = await page.evaluate(() => {
+    const word = document.querySelector(".ui-hint__swipe")?.getBoundingClientRect()
+    const dot = document.querySelector(".ui-hint__finger")?.getBoundingClientRect()
+    const blob = document.querySelector(".ui-blob")?.getBoundingClientRect()
+    const travel = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--hint-finger-travel")
+    )
+    return {
+      wordBottom: word?.bottom ?? 0,
+      dotBottom: dot?.bottom ?? 0,
+      dotTop: dot?.top ?? 0,
+      blobTop: blob?.top ?? 0,
+      travel,
+    }
+  })
+  expect(boxes.blobTop - boxes.wordBottom).toBeGreaterThan(12)
+  expect(boxes.blobTop - boxes.wordBottom).toBeLessThan(13.5)
+  expect(boxes.travel).toBe(70)
+  expect(boxes.dotBottom).toBeLessThan(boxes.blobTop)
+  expect(boxes.dotTop - boxes.travel).toBeLessThan(boxes.wordBottom)
+}
 
 function opacity(hint: Locator): Promise<number> {
   return hint.evaluate((element) => Number(getComputedStyle(element).opacity))

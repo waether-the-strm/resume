@@ -107,6 +107,15 @@ export const hint: TourPart = ({ store, settle }) => {
       putAway(false)
       return
     }
+    // The blob's painted height is one row or two, and the phone tokens are not
+    // that height, so the stylesheet cannot place the finger from tokens alone.
+    // One property: how far the blob's top is from the viewport bottom. The
+    // sheet adds the desktop's 12.5px gap and lifts the box by the word's overhang.
+    const blob = document.querySelector(".ui-blob")
+    if (blob instanceof HTMLElement) {
+      const clear = window.innerHeight - blob.getBoundingClientRect().top
+      if (clear > 0) element.style.setProperty("--hint-blob-clear", `${clear}px`)
+    }
     element.classList.add("is-shown")
     shown = true
   }, wait)

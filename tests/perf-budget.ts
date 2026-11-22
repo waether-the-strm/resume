@@ -205,18 +205,28 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * Layout shift stayed 0 on all six loads. Finished paint stayed with the ceiling:
  * `/` 1952.4, 1939.4, 1945.1; `/pl/` 1941.2, 1943.0, 1938.6. The round above was
  * `/` 1942.2, 1944.8, 1948.7 and `/pl/` 1914.0, 1913.1, 1946.5. About 1% apart.
+ *
+ * Measured again on 22 Nov 2026, once the finger sits above the blob. Three cold
+ * loads, the same bytes each time. CSS 6873 (+41): the clearance calc. Script
+ * 12980 (+41): the part measures the blob's top. Document `/` 9999 (+3) and
+ * `/pl/` 10303 (+4): the hashed script address. Font did not move. Layout shift
+ * stayed 0. Three tour loads scored 0.0005 and the other three scored 0, inside
+ * the margin, so it is not a new baseline. Finished paint stayed with the
+ * ceiling: `/` 1946.8, 1943.1, 1918.0; `/pl/` 1942.4, 1943.6, 1944.5. The round
+ * above was `/` 1952.4, 1939.4, 1945.1 and `/pl/` 1941.2, 1943.0, 1938.6.
+ * About 1% apart.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9996, css: 6832, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10299, css: 6832, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9999, css: 6873, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10303, css: 6873, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 12939 },
-    "/pl/": { cls: 0, script: 12939 },
+    "/": { cls: 0, script: 12980 },
+    "/pl/": { cls: 0, script: 12980 },
   },
 }
 
