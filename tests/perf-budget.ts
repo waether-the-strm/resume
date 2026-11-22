@@ -127,18 +127,30 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * CSS 5491 (+87). Font and layout shift did not move. Paint stayed with rebuild, so the
  * ceiling stays: `/` 1885.4, 1919.1; `/pl/` 1882.3, 1956.2 (the third run's table was lost
  * to two unrelated test failures, #118).
+ *
+ * Measured again on 22 Nov 2026, with the exit warp on the look. Three cold loads, the
+ * same bytes each time. Document `/` 9679 and `/pl/` 9967. CSS 5900. Script 12387. Font
+ * and layout shift did not move. Paint stayed with the ceiling, so that ceiling stays:
+ * `/` 1891.8, 1894.8, 1871.2; `/pl/` 1862.2, 1925.3, 1893.5.
+ *
+ * The warp is the smaller part of that gap. Built with and without it, the stylesheet
+ * file is the same 24519 B. The document grows by 246 B raw, about 53 B gzip, on both
+ * locales: the inlined rules. The tour script grows by 581 B raw, about 169 B gzip. The
+ * rest (CSS 5900 against the recorded 5491, and the remainder of the document and the
+ * script) was already on rebuild and inside the margin. It is recorded here so the next
+ * change is measured from the page as it is.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9240, css: 5491, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9531, css: 5491, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9679, css: 5900, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9967, css: 5900, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 11838 },
-    "/pl/": { cls: 0, script: 11838 },
+    "/": { cls: 0, script: 12387 },
+    "/pl/": { cls: 0, script: 12387 },
   },
 }
 
