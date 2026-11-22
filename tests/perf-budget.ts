@@ -139,18 +139,26 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * rest (CSS 5900 against the recorded 5491, and the remainder of the document and the
  * script) was already on rebuild and inside the margin. It is recorded here so the next
  * change is measured from the page as it is.
+ *
+ * Measured again on 22 Nov 2026, with the sparks (#38). Three cold loads, the same bytes
+ * each time. CSS 6128 (+228): the `ui-spark` rules and its tokens, in the shared base sheet.
+ * Script 12702 (+315): the sparks part and the plan it asks. Document `/` 9679 and `/pl/`
+ * 9967, font and layout shift did not move. Paint stayed with the ceiling, so that ceiling
+ * stays: `/` 1914.2, 1906.9, 1904.6; `/pl/` 1902.1, 1963.0, 1895.6 (rebuild's last round:
+ * `/` 1891.8, 1894.8, 1871.2; `/pl/` 1862.2, 1925.3, 1893.5, about 1% to 3% apart, the
+ * same noise as between those three runs).
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9679, css: 5900, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9967, css: 5900, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9679, css: 6128, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9967, css: 6128, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 12387 },
-    "/pl/": { cls: 0, script: 12387 },
+    "/": { cls: 0, script: 12702 },
+    "/pl/": { cls: 0, script: 12702 },
   },
 }
 

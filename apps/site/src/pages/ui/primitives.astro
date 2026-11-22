@@ -108,6 +108,19 @@ import Work from "../../components/Work.astro"
       </ul>
     </section>
 
+    <section aria-labelledby="h-spark">
+      <h2 id="h-spark" class="type-micro part">The spark · ui-spark</h2>
+      <p class="type-lead intro">
+        The glint where how? leaves the equation and where it lands in the guide's corner. A script
+        adds it at a point, it plays once, and it removes itself. It carries no text and is hidden
+        from assistive technology. Below, at its peak, and live.
+      </p>
+      <div class="sparks">
+        <span class="still"><i class="ui-spark" aria-hidden="true"></i></span>
+        <button type="button" class="again" data-spark-again>fire a pair</button>
+      </div>
+    </section>
+
     <section aria-labelledby="h-rule">
       <h2 id="h-rule" class="type-micro part">Rules · ui-rule · ui-rule is-strong</h2>
       <div class="rules">
@@ -128,6 +141,24 @@ import Work from "../../components/Work.astro"
     .querySelector<HTMLElement>('.specimen [data-id="structure"]')
     ?.setAttribute("aria-current", "true")
   document.querySelector(".specimen [data-id='tokens']")?.classList.add("is-nearest", "is-landed")
+
+  // Fire a pair the way the home page does: one at the button, one a beat later to its right.
+  document.querySelector<HTMLElement>("[data-spark-again]")?.addEventListener("click", (event) => {
+    if (!(event.currentTarget instanceof HTMLElement)) return
+    const box = event.currentTarget.getBoundingClientRect()
+    for (const [late, x] of [
+      [false, box.left - 40],
+      [true, box.right + 40],
+    ] as const) {
+      const spark = document.createElement("i")
+      spark.className = late ? "ui-spark is-late" : "ui-spark"
+      spark.setAttribute("aria-hidden", "true")
+      spark.style.setProperty("--spark-x", `${x}px`)
+      spark.style.setProperty("--spark-y", `${box.top + box.height / 2}px`)
+      spark.addEventListener("animationend", () => spark.remove(), { once: true })
+      document.body.append(spark)
+    }
+  })
 </script>
 
 <style>
@@ -218,6 +249,34 @@ import Work from "../../components/Work.astro"
     display: flex;
     align-items: center;
     gap: 0.6em;
+  }
+  .sparks {
+    display: flex;
+    align-items: center;
+    gap: var(--space-block);
+    margin-top: var(--space-block);
+  }
+  .sparks .still {
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+  .sparks .still .ui-spark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    animation: none;
+    scale: var(--spark-peak);
+  }
+  .sparks .again {
+    font: inherit;
+    color: var(--ink);
+    background: none;
+    border: 1px solid var(--line);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
   }
   .rules {
     display: grid;
