@@ -6,6 +6,11 @@ session reads this before it promises Jan a time or a plan with times, and adds 
 The data is small and honest: a row with no estimate is still useful for the actual, and a number
 that cannot be sourced is marked "approx." or left empty.
 
+What it protects is Jan's energy more than his hours. His cost is attention and creative effort,
+part of which goes into coordinating the models; available time does not track what he gets done,
+available energy does, and it runs out after long rounds (Jan, 22 Nov 2026). So a plan is judged by
+how often it brings work back to him as much as by its minutes.
+
 ## How to add a row
 
 1. **Write the estimate when it is given**: in a briefing, a plan, an issue's timebox. In minutes,
@@ -22,6 +27,9 @@ that cannot be sourced is marked "approx." or left empty.
 4. **Waiting for Jan is its own column**, so it is not blamed on the work. Fill it only when it can
    be read from timestamps; leave "-" otherwise.
 5. **One line on what made the difference**: the thing that a later estimate should know.
+6. **Count the returns to Jan.** In the same last column, say how many times the work came back to
+   him (a question, a preview to look at, a decision): "returns: 2". Each one costs attention
+   whatever the clock says. A plan says in advance how many it expects, and batches them.
 
 Kind is one of build, review, verify, decide, docs. Who did it is lead, subagent, Cursor or Jan.
 Rewrite "What the numbers say so far" when rows are added.
