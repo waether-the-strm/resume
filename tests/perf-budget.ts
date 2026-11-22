@@ -148,6 +148,20 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * `/` 1891.8, 1894.8, 1871.2; `/pl/` 1862.2, 1925.3, 1893.5, about 1% to 3% apart, the
  * same noise as between those three runs).
  *
+ * Measured again on 22 Nov 2026, with the structured data and the share tags (#144).
+ * Three cold loads, the same bytes each time. Document `/` 10194 and `/pl/` 10502.
+ * A build of rebuild, one cold load on this machine the same hour, transferred
+ * document `/` 9952 and `/pl/` 10257, so this change adds 242 B and 245 B: the
+ * JSON-LD block and the share-image tags, gzipped inside the document. CSS 6160
+ * and script 12915 are that rebuild load as well. They sit ahead of the numbers
+ * recorded after the sparks (6128 and 12702) and were already on the branch;
+ * the stylesheet and the scripts are the same files. Font did not move. Layout
+ * shift stayed 0: one tour load of `/pl/` scored 0.0004 and the other two scored
+ * 0, under the margin. Paint stayed with rebuild, so the ceiling stays. This
+ * round: `/` 1916.5, 1904.1, 1921.7; `/pl/` 1917.7, 1889.0, 1908.1. Rebuild's
+ * load: `/` 1925.7, `/pl/` 1956.3. Rebuild's previous round: `/` 1914.2, 1906.9,
+ * 1904.6; `/pl/` 1902.1, 1963.0, 1895.6. About 1% to 3% apart, the same noise.
+ *
  * Measured again on 22 Nov 2026, with the scroll hint (#145). Three cold loads, the
  * same bytes each time. Document `/` 9981 (+302) and `/pl/` 10287 (+320): the hint's
  * markup. CSS 6549 (+421): `ui-hint` and its tokens, in the shared base sheet. Script
@@ -157,18 +171,33 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * 1939.4; `/pl/` 1932.3, 1962.6, 1901.3. Against the sparks round above, `/` is about
  * 1% to 2% higher and `/pl/` is level with 1963.0. Tour paint is reported only:
  * `/` 2068.0, 2021.7, 2034.5; `/pl/` 2036.0, 2005.4, 2034.5.
+ *
+ * Measured again on 22 Nov 2026, this branch after merging rebuild (#144 and #155).
+ * Three cold loads, the same bytes each time. Document `/` 9975 and `/pl/` 10279.
+ * One load of this branch before that merge, after #149 had removed the footer
+ * switch, transferred document `/` 9734 and `/pl/` 10035 and script 13006. #144
+ * adds 242 B and 245 B of JSON-LD and share tags, which lands on 9976 and 10280;
+ * this round is one byte under each. CSS 6549, the hint's sheet (#144's 6160 was
+ * rebuild without the hint). Script 13007: the hint round's 13321 was before #149,
+ * and #155's one position is the byte past 13006. Font did not move. Layout shift
+ * stayed 0. Two tour loads of `/` scored 0.0005 and 0.0004, the other four loads
+ * scored 0, inside the margin, so it is not a new baseline. Finished paint stayed
+ * with the ceiling: `/` 1921.3, 1944.5, 1944.9; `/pl/` 1917.3, 1951.3, 1910.9.
+ * The hint round was `/` 1938.5, 1937.1, 1939.4 and `/pl/` 1932.3, 1962.6, 1901.3.
+ * #144's round was `/` 1916.5, 1904.1, 1921.7 and `/pl/` 1917.7, 1889.0, 1908.1.
+ * About 1% to 3% apart, the same noise.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9981, css: 6549, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10287, css: 6549, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9975, css: 6549, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10279, css: 6549, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 13321 },
-    "/pl/": { cls: 0, script: 13321 },
+    "/": { cls: 0, script: 13007 },
+    "/pl/": { cls: 0, script: 13007 },
   },
 }
 

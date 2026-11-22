@@ -6,9 +6,11 @@
 // builds and previews stay out of the index. Previews also send X-Robots-Tag: noindex.
 //
 // /ui stays noindex even on a production build. Whether that catalogue is indexed is
-// the owner's call (ADR 0005). It stays in the sitemap.
+// the owner's call (ADR 0005). The sitemap leaves out every path `staysUnindexed`
+// marks, so it lists only what a production build may index.
 //
 // The 404 documents stay noindex. They are real URLs (/404, /pl/404) and are not results.
+// The sitemap integration already skips status pages; the filter skips them too.
 
 /** Must match the key in `env.schema` in astro.config.mjs. */
 export const PRODUCTION_ENV = "STRM_PRODUCTION"

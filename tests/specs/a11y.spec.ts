@@ -3,7 +3,9 @@ import { expect, test, type Page } from "@playwright/test"
 
 // The pages the issue names, in the theme the reader stored. data-theme is set the same way
 // the inline script does: strm-theme in localStorage, before the first paint.
-const pages = ["/", "/pl/", "/cv", "/ui/", "/ui/primitives/"] as const
+// `/cv/` is the address the host serves: the page is `cv/index.html`. The bare
+// path is not a preview URL once trailing slashes are required.
+const pages = ["/", "/pl/", "/cv/", "/ui/", "/ui/primitives/"] as const
 const themes = ["light", "dark"] as const
 
 // Desktop, and the short phone the static suite already measures. Computed font size
