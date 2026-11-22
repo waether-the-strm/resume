@@ -542,9 +542,17 @@ test("the store is told what the page kept of a write, never the fraction that w
   const told: number[] = []
   h.store.subscribe((state) => told.push(state.position))
   h.settle.goTo(1)
+  // A frame every 16 ms until the glide is done: each one writes a fraction of a pixel.
+  for (let frame = 0; frame < 60; frame++) {
+    h.flush()
+    h.advance(16)
+  }
   h.flush()
-  h.advance(900)
-  assert.ok(told.length > 3, "the glide told the store of its frames")
+  assert.ok(told.length > 10, "the glide told the store of its frames")
+  assert.ok(
+    h.writes.some((written) => Math.abs(written / pixel - Math.round(written / pixel)) > 0.01),
+    "the glide did write fractions of a pixel"
+  )
   for (const position of told) {
     const pixels = position / pixel
     assert.ok(
