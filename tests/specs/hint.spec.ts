@@ -79,6 +79,38 @@ test.describe("the scroll hint on a desktop", () => {
     expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBe("seen")
   })
 
+  test("shown again after a reload when the reader has not moved", async ({ page }) => {
+    await page.goto("/")
+    const hint = page.locator(".ui-hint")
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    await expect.poll(async () => opacity(hint), { timeout: 8000 }).toBeGreaterThan(0.9)
+    expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
+
+    await page.reload()
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    await expect.poll(async () => opacity(hint), { timeout: 8000 }).toBeGreaterThan(0.9)
+    expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
+  })
+
+  test("a load part way down writes nothing", async ({ page }) => {
+    // Scroll to the card while the document is still parsing, so the tour reads a
+    // position past the first frame (prototype line 659: more than 8px down).
+    await page.addInitScript(() => {
+      const scrollDown = () => {
+        const card = document.getElementById("jan")
+        if (!card) return
+        const y = card.getBoundingClientRect().top + scrollY
+        if (y > 8) scrollTo(0, y)
+      }
+      new MutationObserver(scrollDown).observe(document, { childList: true, subtree: true })
+    })
+    await page.goto("/")
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(8)
+    await staysHidden(page.locator(".ui-hint"))
+    expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
+  })
+
   test("the Polish page repeats the English word", async ({ page }) => {
     await page.goto("/pl/")
     await expect(page.locator(".ui-hint")).toContainText("scroll")

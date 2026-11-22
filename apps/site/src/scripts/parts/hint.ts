@@ -2,10 +2,11 @@
 // The server renders it hidden. This shows it after `--hint-wait` while the reader
 // is still on the first frame, and puts it away on the first wheel, key or touch.
 //
-// sessionStorage key `strm-hint`, value `seen`: this tab has already had the hint.
-// It was shown, dismissed, or the page opened already past the first frame. The
-// prototype (lines 657 to 661) only remembers for that page view; it does not
-// write storage. The issue asks for the session, so a reload does not show it again.
+// sessionStorage key `strm-hint`, value `seen`: the reader has dismissed the hint.
+// Written only then: the first wheel, key or touch, or the store leaving the first
+// frame after the hint was shown. Showing it writes nothing, and so does a load
+// that is already past the first frame, so the next load at the top can still
+// show it. The prototype (lines 657 to 661) only remembers for that page view.
 import type { TourPart } from "./types"
 
 /** sessionStorage key. The value `seen` means this tab should not show the hint. */
@@ -78,44 +79,50 @@ export const hint: TourPart = ({ store, settle }) => {
     return hintPastFirstFrame(state.position, state.stage, window.innerHeight)
   }
 
-  if (past()) {
-    remember()
-    return
-  }
+  // Already past the first frame. This load shows nothing and remembers nothing,
+  // so a later load at the top still can.
+  if (past()) return
 
   const wait = readWait(element)
   // Reduced motion zeroes the role, so the pause is 0 and the hint stays off.
   if (wait <= 0) return
 
   let done = false
-  const timer = window.setTimeout(() => {
-    if (done) return
-    if (past()) {
-      finish()
-      return
-    }
-    element.classList.add("is-shown")
-    remember()
-  }, wait)
-
-  const unsubscribe = store.subscribe(() => {
-    if (past()) finish()
-  })
-
-  const finish = () => {
+  let shown = false
+  const putAway = (persist: boolean) => {
     if (done) return
     done = true
     window.clearTimeout(timer)
     unsubscribe()
-    removeEventListener("wheel", finish)
-    removeEventListener("keydown", finish)
-    removeEventListener("touchstart", finish)
+    removeEventListener("wheel", onInput)
+    removeEventListener("keydown", onInput)
+    removeEventListener("touchstart", onInput)
     element.classList.remove("is-shown")
     element.classList.add("is-gone")
-    remember()
+    if (persist) remember()
   }
+  // The reader's own input. A wheel, key or touch counts even during the pause,
+  // before the hint has faded in.
+  const onInput = () => putAway(true)
 
-  addEventListener("wheel", finish, { passive: true })
-  addEventListener("keydown", finish)
-  addEventListener("touchstart", finish, { passive: true })
+  const timer = window.setTimeout(() => {
+    if (done) return
+    if (past()) {
+      putAway(false)
+      return
+    }
+    element.classList.add("is-shown")
+    shown = true
+  }, wait)
+
+  const unsubscribe = store.subscribe(() => {
+    if (!past()) return
+    // Leaving the first frame counts once the hint is on screen. Before that,
+    // this load simply never shows it.
+    putAway(shown)
+  })
+
+  addEventListener("wheel", onInput, { passive: true })
+  addEventListener("keydown", onInput)
+  addEventListener("touchstart", onInput, { passive: true })
 }
