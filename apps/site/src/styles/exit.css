@@ -2,22 +2,26 @@
    while the look is leaving. At rest it sets neither, so this file adds no filter
    and no opacity on the look.
 
-   Blur is the prototype's `x * 5` px and the fade is `max(0, 1 - x * x * 1.15)`
-   (prototype-v0.16.0.html, line 536). The displacement map (`scale` `x * 90`,
-   line 535) needs an SVG filter in the document. This part does not add a node,
-   so that map is not here: the warp the page can do from the same amount is the
-   blur and the fade.
+   The filter is the prototype's (prototype-v0.16.0.html, lines 535 to 536): the
+   displacement map `#exit-warp`, whose scale the part writes as `x * 90`, then a
+   blur of `x * 5` px. The fade is `max(0, 1 - x * x * 1.15)`.
 
-   `data-exit="fade"` is the coarse-pointer fallback: opacity only, until the
-   filter has been seen on a real phone. `data-exit="done"` is the far end, where
-   the prototype clears the filter and the board is gone. */
+   `data-exit="soft"` is a page that has no map: the blur and the fade alone.
+   `data-exit="done"` is the far end, where the prototype clears the filter and the
+   board is gone. */
 
-[data-tour] .message[data-exit="on"],
-[data-tour] .message[data-exit="done"],
-[data-tour] .message[data-exit="fade"] {
+[data-tour] .message[data-exit] {
   opacity: clamp(0, calc(1 - var(--warp) * var(--warp) * 1.15), 1);
 }
 
 [data-tour] .message[data-exit="on"] {
+  filter: url("#exit-warp") blur(calc(var(--warp) * 5px));
+}
+
+[data-tour] .message[data-exit="soft"] {
   filter: blur(calc(var(--warp) * 5px));
+}
+
+[data-tour] .message[data-exit="done"] {
+  filter: none;
 }

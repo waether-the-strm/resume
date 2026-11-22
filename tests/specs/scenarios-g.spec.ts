@@ -463,6 +463,7 @@ test.describe("G13", () => {
     expect(rested.exit, "at rest the warp is off").toBeNull()
     expect(rested.filter, "at rest the computed filter is none").toBe("none")
     expect(rested.opacity, "at rest the message is fully there").toBe(1)
+    expect(rested.scale, "at rest the map bends nothing").toBe(0)
 
     // A burst, not a settled tick: the idle is 170ms, and a settled tick from the
     // look would be pulled back into the hold before the warp could show.
@@ -473,6 +474,8 @@ test.describe("G13", () => {
     expect(mid.exit).toBe("on")
     expect(mid.inlineFilter, "the filter is the stylesheet, not an inline style").toBe("")
     expect(mid.inlineOpacity, "the fade is the stylesheet, not an inline style").toBe("")
+    expect(mid.filter, "the message is bent through the displacement map").toContain("#exit-warp")
+    expect(mid.scale, "the prototype's map scale is x * 90").toBeCloseTo(mid.warp * 90, 0)
     const blur = Number(/blur\(([0-9.]+)px\)/.exec(mid.filter)?.[1])
     expect(blur, "the prototype blurs by x * 5px").toBeCloseTo(mid.warp * 5, 1)
     const fade = Math.max(0, 1 - mid.warp * mid.warp * 1.15)
@@ -492,9 +495,10 @@ test.describe("G13", () => {
     expect(again.exit, "back on the look the warp is off").toBeNull()
     expect(again.filter).toBe("none")
     expect(again.opacity).toBe(1)
+    expect(again.scale, "back on the look the map bends nothing").toBe(0)
   })
 
-  test("a coarse pointer fades and does not blur", async ({ page }) => {
+  test("a coarse pointer gets the same exit", async ({ page }) => {
     const client = await page.context().newCDPSession(page)
     await client.send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 1 })
     await openTour(page, live.path)
@@ -511,9 +515,10 @@ test.describe("G13", () => {
     await settle(page)
 
     const leaving = await burst(page, 140)
-    expect(leaving.mid, "the fade is on while the look is leaving").not.toBeNull()
-    expect(leaving.mid!.exit, "coarse is opacity only").toBe("fade")
-    expect(leaving.mid!.filter, "no filter until a real phone has shown one").toBe("none")
+    expect(leaving.mid, "the warp is on while the look is leaving").not.toBeNull()
+    expect(leaving.mid!.exit, "one exit on every pointer").toBe("on")
+    expect(leaving.mid!.filter).toContain("#exit-warp")
+    expect(leaving.mid!.filter).toContain("blur(")
     expect(leaving.mid!.opacity).toBeLessThan(1)
     expect(leaving.mid!.inlineOpacity).toBe("")
   })
@@ -546,7 +551,7 @@ async function burst(page: Page, dy: number) {
     await page.mouse.wheel(0, dy)
     await page.waitForTimeout(16)
     const now = await readExit(page)
-    if ((now.exit === "on" || now.exit === "fade") && mid === null) mid = now
+    if (now.exit === "on" && mid === null) mid = now
     if (now.warp > highest.warp) highest = now
     if (now.warp < lowest.warp) lowest = now
   }
@@ -564,6 +569,7 @@ async function readExit(page: Page) {
       inlineOpacity: message.style.opacity,
       warp: Number.isFinite(warp) ? warp : 0,
       exit: message.getAttribute("data-exit"),
+      scale: Number(document.querySelector("#exit-warp feDisplacementMap")?.getAttribute("scale")),
       filter: computed.filter,
       opacity: Number(computed.opacity),
     }

@@ -18,3 +18,12 @@ export function exitAmount(
   if (past >= 1) return 1
   return past
 }
+
+/** The displacement map's scale at full warp. The prototype sets `x * 90` (line 535). */
+export const EXIT_DISPLACEMENT = 90
+
+/** The scale of the displacement map: nothing at rest and at the far end, where the filter is off. */
+export function exitDisplacement(amount: number): number {
+  if (amount <= 0 || amount >= 1) return 0
+  return amount * EXIT_DISPLACEMENT
+}
