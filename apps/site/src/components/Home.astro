@@ -83,6 +83,27 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
         <Message locale={locale} />
       </section>
     </div>
+    <!--
+      The exit's displacement map (#132, scenario G13): the prototype's #warp3. It holds no
+      content and paints nothing; the message is bent through it only while the look is
+      leaving. scripts/parts/exit.ts writes the scale, styles/exit.css applies the filter.
+    -->
+    <svg class="exit-map" width="0" height="0" aria-hidden="true" focusable="false">
+      <filter id="exit-warp" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.006 0.024"
+          numOctaves="2"
+          seed="11"
+          result="noise"></feTurbulence>
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="noise"
+          scale="0"
+          xChannelSelector="R"
+          yChannelSelector="G"></feDisplacementMap>
+      </filter>
+    </svg>
     <section class="jan" id="jan">
       <Card locale={locale} />
       <h2 class="type-micro work-heading" id="work">{t(locale, "work.heading")}</h2>
@@ -113,6 +134,9 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
 </script>
 
 <style>
+  .exit-map {
+    position: absolute;
+  }
   .skip {
     position: absolute;
     left: var(--space-base);
