@@ -147,6 +147,33 @@
   --blob-strip-drop: 6px;
   --blob-shadow: var(--shadow-raised);
   --blob-shadow-open: var(--shadow-raised);
+
+  /*
+   * Hint: the desktop scroll hint on the first frame. Lengths are the prototype's
+   * (v0.16.0, lines 189 to 194). The word is 11px on purpose: micro is 12px, and the
+   * prototype is not that role. Times are shares of a motion role, so the reduced
+   * profile makes them 0. 1.75 × scene is the prototype's 1400ms pause (line 660);
+   * 1.25 × micro is the 250ms leave (line 190); 2.25 × scene is the 1800ms wheel
+   * (line 193). The fade in is --motion-move, the prototype's 0.5s (line 189).
+   */
+  --hint-bottom: 104px;
+  --hint-gap: 6px;
+  --hint-size: 11px;
+  --hint-tracking: 0.14em;
+  --hint-mouse-width: 18px;
+  --hint-mouse-height: 28px;
+  --hint-mouse-weight: 1.5px;
+  --hint-mouse-radius: 10px;
+  --hint-wheel-width: 2px;
+  --hint-wheel-height: 6px;
+  --hint-wheel-top: 5px;
+  --hint-wheel-radius: 2px;
+  --hint-wheel-travel: 9px;
+  --hint-layer: 2;
+  --hint-wait: calc(var(--motion-scene) * 1.75);
+  --hint-leave: calc(var(--motion-micro) * 1.25);
+  --hint-wheel-time: calc(var(--motion-scene) * 2.25);
+  --hint-wheel-ease: var(--ease-in-out);
 }
 
 @media (max-width: 760px) {

@@ -71,6 +71,10 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
   </p>
   <Rail locale={locale} />
   <Blob locale={locale} />
+  <div class="ui-hint" aria-hidden="true">
+    <i class="ui-hint__mouse"></i>
+    <span class="ui-hint__word">{t(locale, "hint.scroll")}</span>
+  </div>
   <main>
     <div
       class="track"

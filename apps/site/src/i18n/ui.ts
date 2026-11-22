@@ -47,6 +47,8 @@ const en = {
   // already keeps in English.
   "blob.name": "Jan Mirecki",
   "blob.signature": " · design engineer · Oslo",
+  // The desktop scroll hint (#145). The prototype's word, under the mouse.
+  "hint.scroll": "scroll",
 }
 
 export type UiKey = keyof typeof en
@@ -95,6 +97,8 @@ const pl: Record<UiKey, string> = {
   // them if he wants them in Polish.
   "blob.name": "Jan Mirecki",
   "blob.signature": " · design engineer · Oslo",
+  // DRAFT for Jan: English repeated until the Polish is written.
+  "hint.scroll": "scroll",
 }
 
 // Not launched: Norwegian reuses English until its copy is written. Listed here on purpose,
