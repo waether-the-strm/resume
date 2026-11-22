@@ -79,6 +79,42 @@ test.describe("the scroll hint on a desktop", () => {
     expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBe("seen")
   })
 
+  test("a 1px wheel during the pause still shows the hint", async ({ page }) => {
+    await page.goto("/")
+    const hint = page.locator(".ui-hint")
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    expect(await opacity(hint)).toBeLessThan(0.05)
+
+    await page.mouse.move(640, 350)
+    await page.mouse.wheel(0, 1)
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThanOrEqual(8)
+    await expect.poll(async () => opacity(hint), { timeout: 8000 }).toBeGreaterThan(0.9)
+    expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
+  })
+
+  test("a lone modifier during the pause still shows the hint", async ({ page }) => {
+    await page.goto("/")
+    const hint = page.locator(".ui-hint")
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    expect(await opacity(hint)).toBeLessThan(0.05)
+
+    await page.evaluate(() => {
+      addEventListener(
+        "keydown",
+        (event) => {
+          document.documentElement.dataset.hintKey = event.key
+        },
+        { capture: true, once: true }
+      )
+    })
+    await page.keyboard.down("Meta")
+    await page.keyboard.up("Meta")
+    await expect(page.locator("html")).toHaveAttribute("data-hint-key", "Meta")
+    await expect.poll(async () => opacity(hint), { timeout: 8000 }).toBeGreaterThan(0.9)
+    expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
+    expect(await page.evaluate(() => scrollY)).toBeLessThanOrEqual(8)
+  })
+
   test("shown again after a reload when the reader has not moved", async ({ page }) => {
     await page.goto("/")
     const hint = page.locator(".ui-hint")

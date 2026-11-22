@@ -1,12 +1,14 @@
 // The scroll hint on the first frame (#145). The mouse is the `ui-hint` primitive.
 // The server renders it hidden. This shows it after `--hint-wait` while the reader
-// is still on the first frame, and puts it away on the first wheel, key or touch.
+// is still on the first frame, and puts it away only once the page is more than
+// 8px down (prototype lines 657 to 661). A wheel of a pixel, or a key that does
+// not move the page, leaves it alone: a resting hand and a modifier still going
+// down must not dismiss a hint that has not been seen.
 //
-// sessionStorage key `strm-hint`, value `seen`: the reader has dismissed the hint.
-// Written only then: the first wheel, key or touch, or the store leaving the first
-// frame after the hint was shown. Showing it writes nothing, and so does a load
-// that is already past the first frame, so the next load at the top can still
-// show it. The prototype (lines 657 to 661) only remembers for that page view.
+// sessionStorage key `strm-hint`, value `seen`: the reader has left the first
+// frame after the hint was shown. Showing it writes nothing. Leaving the first
+// frame before it was shown writes nothing, so the next load at the top can
+// still show it. A load that is already past the first frame writes nothing too.
 import type { TourPart } from "./types"
 
 /** sessionStorage key. The value `seen` means this tab should not show the hint. */
@@ -94,16 +96,10 @@ export const hint: TourPart = ({ store, settle }) => {
     done = true
     window.clearTimeout(timer)
     unsubscribe()
-    removeEventListener("wheel", onInput)
-    removeEventListener("keydown", onInput)
-    removeEventListener("touchstart", onInput)
     element.classList.remove("is-shown")
     element.classList.add("is-gone")
     if (persist) remember()
   }
-  // The reader's own input. A wheel, key or touch counts even during the pause,
-  // before the hint has faded in.
-  const onInput = () => putAway(true)
 
   const timer = window.setTimeout(() => {
     if (done) return
@@ -115,14 +111,12 @@ export const hint: TourPart = ({ store, settle }) => {
     shown = true
   }, wait)
 
+  // The page leaving the first frame is the only dismissal. A nudge that settles
+  // back above the 8px line never arrives here, so the hint still appears.
   const unsubscribe = store.subscribe(() => {
     if (!past()) return
-    // Leaving the first frame counts once the hint is on screen. Before that,
-    // this load simply never shows it.
+    // Before the hint is on screen this load simply never shows it, and the
+    // next load at the top still can.
     putAway(shown)
   })
-
-  addEventListener("wheel", onInput, { passive: true })
-  addEventListener("keydown", onInput)
-  addEventListener("touchstart", onInput, { passive: true })
 }

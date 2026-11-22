@@ -186,18 +186,28 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * The hint round was `/` 1938.5, 1937.1, 1939.4 and `/pl/` 1932.3, 1962.6, 1901.3.
  * #144's round was `/` 1916.5, 1904.1, 1921.7 and `/pl/` 1917.7, 1889.0, 1908.1.
  * About 1% to 3% apart, the same noise.
+ *
+ * Measured again on 22 Nov 2026, once the hint is dismissed only by leaving the
+ * first frame. Three cold loads, the same bytes each time. Script 12964 (−43):
+ * the part no longer listens for wheel, key or touch. Document `/` 9973 (−2) and
+ * `/pl/` 10278 (−1): the hashed script address in the page. CSS 6549 and the font
+ * did not move. Layout shift stayed 0, except one tour load of each locale at
+ * 0.0005, inside the margin, so it is not a new baseline. Finished paint stayed
+ * with the ceiling: `/` 1942.2, 1944.8, 1948.7; `/pl/` 1914.0, 1913.1, 1946.5.
+ * The round above was `/` 1921.3, 1944.5, 1944.9 and `/pl/` 1917.3, 1951.3, 1910.9.
+ * About 1% apart, the same noise.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9975, css: 6549, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10279, css: 6549, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9973, css: 6549, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10278, css: 6549, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 13007 },
-    "/pl/": { cls: 0, script: 13007 },
+    "/": { cls: 0, script: 12964 },
+    "/pl/": { cls: 0, script: 12964 },
   },
 }
 
