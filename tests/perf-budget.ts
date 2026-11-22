@@ -225,18 +225,29 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * Finished paint stayed with the ceiling: `/` 1954.1, 1947.1, 1956.2; `/pl/`
  * 1933.1, 1918.1, 1950.7. The round above was `/` 1946.8, 1943.1, 1918.0 and
  * `/pl/` 1942.4, 1943.6, 1944.5. About 1% apart.
+ *
+ * Measured again on 22 Nov 2026, with the temporary copy switch. Three cold
+ * loads. Script 16709 (+3729) on every load: the four English drafts travel in
+ * the tour script. Document `/` 10128 (+130) and `/pl/` 10433 (+131): the
+ * select in the settings strip. CSS 6910 (+27): the select's rules. Both were
+ * inside the previous margin; they are the page now. Font did not move.
+ * Layout shift stayed 0 on every finished load. One tour load scored 0.0005
+ * and the other five scored 0, inside the margin, so it is not a new baseline.
+ * Finished paint stayed with the ceiling: `/` 1987.7, 1981.8, 1982.6; `/pl/`
+ * 1970.8, 1975.4, 1950.7. The round above was `/` 1954.1, 1947.1, 1956.2 and
+ * `/pl/` 1933.1, 1918.1, 1950.7. About 2% apart.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9998, css: 6883, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10302, css: 6883, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 10128, css: 6910, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10433, css: 6910, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 12980 },
-    "/pl/": { cls: 0, script: 12980 },
+    "/": { cls: 0, script: 16709 },
+    "/pl/": { cls: 0, script: 16709 },
   },
 }
 

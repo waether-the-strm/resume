@@ -150,7 +150,7 @@ test.describe("the blob on the finished page", () => {
     const tops = await strip
       .locator(":scope > *")
       .evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().top)))
-    expect(tops).toHaveLength(3)
+    expect(tops).toHaveLength(4)
     expect(new Set(tops).size).toBe(1)
 
     const sizes = await blob.evaluate((el) => {
@@ -186,7 +186,7 @@ test.describe("the blob on the finished page", () => {
     const heights = await page
       .locator(".ui-blob.is-settings .ui-blob__strip > *")
       .evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().height)))
-    expect(heights).toHaveLength(3)
+    expect(heights).toHaveLength(4)
     for (const height of heights) expect(height).toBeGreaterThanOrEqual(44)
   })
 

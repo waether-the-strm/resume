@@ -6,6 +6,7 @@
 // builds markup.
 import type { Settle, Store } from "@strm/narrative"
 import type { Prefs, Theme } from "../../lib/prefs"
+import { watchCopySelect } from "../copy-variant.ts"
 import type { TourPart } from "./types"
 
 /** How long an open blob stays open without a further interaction. The prototype's 4500 ms. */
@@ -301,6 +302,9 @@ function bindBlob({ prefs, store, settle }: BlobDeps): void {
   document.addEventListener("pointerdown", onPointerDown)
   document.addEventListener("keydown", onKey)
   document.addEventListener("wheel", onWheel, { passive: true })
+
+  const copy = blobEl.querySelector<HTMLSelectElement>("[data-blob='copy'] select")
+  if (copy) watchCopySelect(copy)
 
   paintSound(prefs.sound())
   paintTheme(prefs.theme())

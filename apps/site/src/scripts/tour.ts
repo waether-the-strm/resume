@@ -18,6 +18,7 @@ import {
   type Track,
 } from "@strm/narrative"
 import { createPrefs } from "../lib/prefs"
+import { applyCopyVariant } from "./copy-variant.ts"
 import { createEquationView } from "./equation"
 import { parts } from "./parts"
 import { blobMenu } from "./parts/blob"
@@ -25,6 +26,9 @@ import { blobMenu } from "./parts/blob"
 const SKINS = ["none", "words", "structure", "look"] as const
 
 function start(): void {
+  // A known `?copy=` swaps the opening and the card before a word is read. No parameter,
+  // and an unknown value, leave the server's YAML.
+  applyCopyVariant()
   const root = document.documentElement
   const track = document.querySelector<HTMLElement>(".track")
   const stage = document.querySelector<HTMLElement>(".stage")
