@@ -49,6 +49,8 @@ const en = {
   "blob.signature": " · design engineer · Oslo",
   // The desktop scroll hint (#145). The prototype's word, under the mouse.
   "hint.scroll": "scroll",
+  // The phone scroll hint (#146). The lab's words, under the finger.
+  "hint.swipe": "swipe up",
 }
 
 export type UiKey = keyof typeof en
@@ -99,6 +101,8 @@ const pl: Record<UiKey, string> = {
   "blob.signature": " · design engineer · Oslo",
   // DRAFT for Jan: English repeated until the Polish is written.
   "hint.scroll": "scroll",
+  // DRAFT for Jan: English repeated until the Polish is written.
+  "hint.swipe": "swipe up",
 }
 
 // Not launched: Norwegian reuses English until its copy is written. Listed here on purpose,

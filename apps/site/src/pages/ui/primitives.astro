@@ -96,15 +96,18 @@ import Work from "../../components/Work.astro"
     <section aria-labelledby="h-hint">
       <h2 id="h-hint" class="type-micro part">The scroll hint · ui-hint</h2>
       <p class="type-lead intro">
-        The desktop hint on the first frame: a mouse, its wheel, and the word under it. The home
-        page keeps it hidden until the tour is on and a short pause has passed, and only for a fine
-        pointer on a wide screen. This section sets the tour and the shown state, so it sits where
-        the home page puts it, above the blob.
+        The hint on the first frame. A fine pointer on a wide screen gets the mouse, its wheel, and
+        the word under it. A coarse pointer, or a screen under 760px, gets the swipe finger instead:
+        the same element, the other form. The home page keeps it hidden until the tour is on and a
+        short pause has passed. This section sets the tour and the shown state, so it sits where the
+        home page puts it.
       </p>
       <div class="specimen" data-tour="on">
         <div class="ui-hint is-shown" aria-hidden="true">
           <i class="ui-hint__mouse"></i>
           <span class="ui-hint__word">{t("en", "hint.scroll")}</span>
+          <i class="ui-hint__finger"></i>
+          <span class="ui-hint__swipe">{t("en", "hint.swipe")}</span>
         </div>
       </div>
     </section>

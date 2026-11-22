@@ -62,8 +62,8 @@ function readWait(element: HTMLElement): number {
 export const hint: TourPart = ({ store, settle }) => {
   const element = document.querySelector(".ui-hint")
   if (!(element instanceof HTMLElement) || !settle) return
-  // Prototype line 658. The phone hint is a different issue and is not ported.
-  if (matchMedia("(pointer: coarse), (max-width: 760px)").matches) return
+  // One part, two forms. The coarse pointer and the narrow screen show the finger;
+  // the stylesheet decides which, and this does not.
 
   const memory = readStorage()
   if (memory?.getItem(HINT_SEEN_KEY) === HINT_SEEN_VALUE) return
