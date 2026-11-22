@@ -1,5 +1,5 @@
-import { expect, test, type Locator } from "@playwright/test"
-import { WHEEL_TICK_PX } from "../rest.ts"
+import { expect, test, type Locator, type Page } from "@playwright/test"
+import { holdFinger, touchSwipe, WHEEL_TICK_PX } from "../rest.ts"
 
 // Longer than the prototype's 1400ms pause plus the 500ms fade, so a late appearance fails.
 const HIDDEN_FOR_MS = 2500
@@ -42,6 +42,8 @@ test.describe("the scroll hint on a desktop", () => {
     expect(placed.bottomDelta).toBeLessThan(2)
     expect(placed.wheel).toBe("ui-hint-wheel")
     expect(placed.wheelDuration).not.toBe("0s")
+    expect(await display(page.locator(".ui-hint__mouse"))).not.toBe("none")
+    expect(await display(page.locator(".ui-hint__finger"))).toBe("none")
 
     const collision = await page.evaluate(() => {
       const boxes = (selector: string) => {
@@ -151,13 +153,120 @@ test.describe("the scroll hint on a desktop", () => {
     await page.goto("/pl/")
     await expect(page.locator(".ui-hint")).toContainText("scroll")
   })
+})
 
-  test("not shown at 390 wide", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 664 })
+test.describe("the scroll hint on a phone", () => {
+  test.use({
+    viewport: { width: 390, height: 664 },
+    hasTouch: true,
+    contextOptions: { reducedMotion: "no-preference" },
+  })
+
+  test.beforeEach(async ({ page }) => {
+    const client = await page.context().newCDPSession(page)
+    await client.send("Emulation.setEmulatedMedia", {
+      features: [
+        { name: "pointer", value: "coarse" },
+        { name: "prefers-reduced-motion", value: "no-preference" },
+      ],
+    })
+  })
+
+  test("shown on the first frame, gone after one swipe, not again this session", async ({
+    page,
+  }) => {
     await page.goto("/")
     await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
-    await staysHidden(page.locator(".ui-hint"))
+    expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true)
+    const hint = page.locator(".ui-hint")
+    const finger = page.locator(".ui-hint__finger")
+    await expect(hint).toContainText("swipe up")
+    await expect.poll(async () => opacity(hint), { timeout: 8000 }).toBeGreaterThan(0.9)
+    expect(await display(page.locator(".ui-hint__mouse"))).toBe("none")
+    expect(await display(finger)).not.toBe("none")
     expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
+
+    const placed = await hint.evaluate((element) => {
+      const style = getComputedStyle(element)
+      const box = element.getBoundingClientRect()
+      const dot = element.querySelector(".ui-hint__finger")
+      const dotStyle = dot ? getComputedStyle(dot) : null
+      return {
+        bottom: style.bottom,
+        width: style.width,
+        height: style.height,
+        centerDelta: Math.abs(box.left + box.width / 2 - innerWidth / 2),
+        dot: dotStyle ? { width: dotStyle.width, height: dotStyle.height } : null,
+        duration: dotStyle?.animationDuration ?? "",
+        name: dotStyle?.animationName ?? "",
+      }
+    })
+    expect(placed.width).toBe("100px")
+    expect(placed.height).toBe("90px")
+    expect(placed.centerDelta).toBeLessThan(2)
+    expect(placed.dot).toEqual({ width: "26px", height: "26px" })
+    expect(placed.name).toBe("ui-hint-swipe")
+    expect(placed.duration).not.toBe("0s")
+    await sitsAboveBlob(page)
+
+    const collision = await page.evaluate(() => {
+      const boxes = (selector: string) => {
+        const box = document.querySelector(selector)?.getBoundingClientRect()
+        if (!box || box.width === 0 || box.height === 0) return null
+        return { top: box.top, right: box.right, bottom: box.bottom, left: box.left }
+      }
+      const overlaps = (a: DOMRect | undefined, b: DOMRect | undefined) =>
+        !!a && !!b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top
+      const hintBox = document.querySelector(".ui-hint")?.getBoundingClientRect()
+      const word = document.querySelector(".ui-hint__swipe")?.getBoundingClientRect()
+      return {
+        hint: boxes(".ui-hint"),
+        word: boxes(".ui-hint__swipe"),
+        blob: boxes(".ui-blob"),
+        seed: boxes(".equation .seed"),
+        rail: boxes(".ui-rail"),
+        blobOverlap: overlaps(hintBox, document.querySelector(".ui-blob")?.getBoundingClientRect()),
+        wordOverlap: overlaps(word, document.querySelector(".ui-blob")?.getBoundingClientRect()),
+        seedOverlap: overlaps(
+          hintBox,
+          document.querySelector(".equation .seed")?.getBoundingClientRect()
+        ),
+        railOverlap: overlaps(hintBox, document.querySelector(".ui-rail")?.getBoundingClientRect()),
+      }
+    })
+    test.info().annotations.push({
+      type: "finger-collision",
+      description: JSON.stringify(collision),
+    })
+
+    // A finger that never moves the page leaves the hint up, and writes nothing.
+    const lift = await holdFinger(page)
+    await lift()
+    await expect.poll(async () => opacity(hint)).toBeGreaterThan(0.9)
+    expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
+
+    await touchSwipe(page, 120)
+    await expect.poll(async () => opacity(hint), { timeout: 3000 }).toBeLessThan(0.05)
+    await expect(hint).toHaveClass(/is-gone/)
+    expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBe("seen")
+
+    await page.reload()
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    await staysHidden(hint)
+    expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBe("seen")
+  })
+
+  test("sits above the blob on a taller phone", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto("/")
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true)
+    await sitsAboveBlob(page)
+  })
+
+  test("the Polish page repeats the English words", async ({ page }) => {
+    await page.goto("/pl/")
+    await expect(page.locator(".ui-hint__swipe")).toContainText("swipe up")
   })
 })
 
@@ -171,8 +280,54 @@ test("the scroll hint stays off under reduced motion", async ({ page }) => {
   expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
 })
 
+test("the swipe finger stays off under reduced motion", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 664 })
+  await page.goto("/")
+  await expect(page.locator("html")).not.toHaveAttribute("data-tour", /./)
+  await staysHidden(page.locator(".ui-hint"))
+  expect(await page.evaluate(() => sessionStorage.getItem("strm-hint"))).toBeNull()
+})
+
+/**
+ * The words are the lowest part of the hint. They sit the desktop's 12.5px above
+ * the blob. The finger travels up from its rest (lab line 60), so that rest is
+ * the lowest the dot reaches, and it stays above the blob too.
+ */
+async function sitsAboveBlob(page: Page): Promise<void> {
+  const hint = page.locator(".ui-hint")
+  await expect.poll(async () => opacity(hint), { timeout: 8000 }).toBeGreaterThan(0.9)
+  await page.locator(".ui-hint__finger").evaluate((element) => {
+    element.style.animationPlayState = "paused"
+    element.style.animationDelay = "-0.66s"
+  })
+  const boxes = await page.evaluate(() => {
+    const word = document.querySelector(".ui-hint__swipe")?.getBoundingClientRect()
+    const dot = document.querySelector(".ui-hint__finger")?.getBoundingClientRect()
+    const blob = document.querySelector(".ui-blob")?.getBoundingClientRect()
+    const travel = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--hint-finger-travel")
+    )
+    return {
+      wordBottom: word?.bottom ?? 0,
+      dotBottom: dot?.bottom ?? 0,
+      dotTop: dot?.top ?? 0,
+      blobTop: blob?.top ?? 0,
+      travel,
+    }
+  })
+  expect(boxes.blobTop - boxes.wordBottom).toBeGreaterThan(12)
+  expect(boxes.blobTop - boxes.wordBottom).toBeLessThan(13.5)
+  expect(boxes.travel).toBe(70)
+  expect(boxes.dotBottom).toBeLessThan(boxes.blobTop)
+  expect(boxes.dotTop - boxes.travel).toBeLessThan(boxes.wordBottom)
+}
+
 function opacity(hint: Locator): Promise<number> {
   return hint.evaluate((element) => Number(getComputedStyle(element).opacity))
+}
+
+function display(hint: Locator): Promise<string> {
+  return hint.evaluate((element) => getComputedStyle(element).display)
 }
 
 /** Fails if the hint becomes visible before `HIDDEN_FOR_MS` has passed. */

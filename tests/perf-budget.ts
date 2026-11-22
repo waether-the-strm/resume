@@ -196,18 +196,47 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * with the ceiling: `/` 1942.2, 1944.8, 1948.7; `/pl/` 1914.0, 1913.1, 1946.5.
  * The round above was `/` 1921.3, 1944.5, 1944.9 and `/pl/` 1917.3, 1951.3, 1910.9.
  * About 1% apart, the same noise.
+ *
+ * Measured again on 22 Nov 2026, with the phone's swipe finger (#146). Three cold
+ * loads, the same bytes each time. CSS 6832 (+283): the finger, its keyframes and
+ * its tokens, in the shared base sheet. Document `/` 9996 (+23) and `/pl/` 10299
+ * (+21): the finger and the words `swipe up`. Script 12939 (−25): the part no
+ * longer returns before showing anything on a coarse pointer. Font did not move.
+ * Layout shift stayed 0 on all six loads. Finished paint stayed with the ceiling:
+ * `/` 1952.4, 1939.4, 1945.1; `/pl/` 1941.2, 1943.0, 1938.6. The round above was
+ * `/` 1942.2, 1944.8, 1948.7 and `/pl/` 1914.0, 1913.1, 1946.5. About 1% apart.
+ *
+ * Measured again on 22 Nov 2026, once the finger sits above the blob. Three cold
+ * loads, the same bytes each time. CSS 6873 (+41): the clearance calc. Script
+ * 12980 (+41): the part measures the blob's top. Document `/` 9999 (+3) and
+ * `/pl/` 10303 (+4): the hashed script address. Font did not move. Layout shift
+ * stayed 0. Three tour loads scored 0.0005 and the other three scored 0, inside
+ * the margin, so it is not a new baseline. Finished paint stayed with the
+ * ceiling: `/` 1946.8, 1943.1, 1918.0; `/pl/` 1942.4, 1943.6, 1944.5. The round
+ * above was `/` 1952.4, 1939.4, 1945.1 and `/pl/` 1941.2, 1943.0, 1938.6.
+ * About 1% apart.
+ *
+ * Measured again on 22 Nov 2026, once `--hint-blob-clear` is a token. Three
+ * cold loads, the same bytes each time. CSS 6883 (+10): the initial value
+ * moved into the token file and the component reads it plainly. Document `/`
+ * 9998 (−1) and `/pl/` 10302 (−1): the hashed sheet address. Script and font
+ * did not move. Layout shift stayed 0. One tour load scored 0.0005 and the
+ * other five scored 0, inside the margin, so it is not a new baseline.
+ * Finished paint stayed with the ceiling: `/` 1954.1, 1947.1, 1956.2; `/pl/`
+ * 1933.1, 1918.1, 1950.7. The round above was `/` 1946.8, 1943.1, 1918.0 and
+ * `/pl/` 1942.4, 1943.6, 1944.5. About 1% apart.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9973, css: 6549, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10278, css: 6549, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9998, css: 6883, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10302, css: 6883, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 12964 },
-    "/pl/": { cls: 0, script: 12964 },
+    "/": { cls: 0, script: 12980 },
+    "/pl/": { cls: 0, script: 12980 },
   },
 }
 

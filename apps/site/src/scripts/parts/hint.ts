@@ -62,8 +62,8 @@ function readWait(element: HTMLElement): number {
 export const hint: TourPart = ({ store, settle }) => {
   const element = document.querySelector(".ui-hint")
   if (!(element instanceof HTMLElement) || !settle) return
-  // Prototype line 658. The phone hint is a different issue and is not ported.
-  if (matchMedia("(pointer: coarse), (max-width: 760px)").matches) return
+  // One part, two forms. The coarse pointer and the narrow screen show the finger;
+  // the stylesheet decides which, and this does not.
 
   const memory = readStorage()
   if (memory?.getItem(HINT_SEEN_KEY) === HINT_SEEN_VALUE) return
@@ -106,6 +106,15 @@ export const hint: TourPart = ({ store, settle }) => {
     if (past()) {
       putAway(false)
       return
+    }
+    // The blob's painted height is one row or two, and the phone tokens are not
+    // that height, so the stylesheet cannot place the finger from tokens alone.
+    // One property: how far the blob's top is from the viewport bottom. The
+    // sheet adds the desktop's 12.5px gap and lifts the box by the word's overhang.
+    const blob = document.querySelector(".ui-blob")
+    if (blob instanceof HTMLElement) {
+      const clear = window.innerHeight - blob.getBoundingClientRect().top
+      if (clear > 0) element.style.setProperty("--hint-blob-clear", `${clear}px`)
     }
     element.classList.add("is-shown")
     shown = true

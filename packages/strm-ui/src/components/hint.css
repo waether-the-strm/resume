@@ -1,19 +1,24 @@
 /*
- * Hint: the desktop scroll hint on the first frame. A mouse outline, a wheel that
- * travels down and fades, and a word under it. Decoration: no accessible name.
- * Hidden until the tour is on (`data-tour` on an ancestor, ADR 0009). A coarse
- * pointer or a screen under 760px hides it (prototype-v0.16.0.html, line 197);
- * the phone's line is not this primitive. The page's script adds `is-shown`
- * after a pause and `is-gone` on the first wheel, key or touch.
+ * Hint: the scroll hint on the first frame. On a fine pointer and a wide screen
+ * it is a mouse outline, a wheel that travels down and fades, and the word under
+ * it. On a coarse pointer or under 760px it is the lab's swipe finger: a soft
+ * accent dot that presses, travels up and fades, with its own words under it
+ * (docs/spec/lab/scroll-affordances.html, lines 57 to 60). Decoration: no
+ * accessible name. Hidden until the tour is on (`data-tour` on an ancestor,
+ * ADR 0009). The page's script adds `is-shown` after a pause and `is-gone` once
+ * the page has left the first frame.
  *
  *   <div class="ui-hint" aria-hidden="true">
  *     <i class="ui-hint__mouse"></i>
  *     <span class="ui-hint__word">scroll</span>
+ *     <i class="ui-hint__finger"></i>
+ *     <span class="ui-hint__swipe">swipe up</span>
  *   </div>
  *
  * The wheel's loop is the prototype's keyframes (line 194): invisible, then
- * solid, then 9px down and gone. `translate` and opacity are the only things
- * that move, on `--hint-wheel-time` and `--hint-wheel-ease`.
+ * solid, then 9px down and gone. The finger's loop is the lab's (line 60):
+ * invisible, pressed, 70px up, then gone. `translate`, `scale` and opacity are
+ * the only things that move.
  */
 .ui-hint {
   display: none;
@@ -92,12 +97,90 @@
   }
 }
 
+.ui-hint__finger,
+.ui-hint__swipe {
+  display: none;
+}
+
+.ui-hint__finger {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: var(--hint-finger-size);
+  height: var(--hint-finger-size);
+  margin-left: calc(var(--hint-finger-size) / -2);
+  border: var(--hint-finger-weight) solid var(--accent);
+  border-radius: 50%;
+  background: var(--hint-finger-fill);
+  animation: ui-hint-swipe var(--hint-finger-time) var(--hint-finger-ease) infinite;
+}
+
+/* Lab line 60. 15%, 30% and 75% are that keyframe, not a token. */
+@keyframes ui-hint-swipe {
+  0% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  30% {
+    translate: 0 0;
+    scale: var(--hint-finger-press);
+  }
+  75% {
+    translate: 0 calc(var(--hint-finger-travel) * -1);
+    scale: var(--hint-finger-press);
+    opacity: 1;
+  }
+  100% {
+    translate: 0 calc(var(--hint-finger-travel) * -1);
+    scale: 1;
+    opacity: 0;
+  }
+}
+
+.ui-hint__swipe {
+  position: absolute;
+  right: 0;
+  bottom: var(--hint-finger-word);
+  left: 0;
+  text-align: center;
+  letter-spacing: normal;
+  text-transform: none;
+  font-variation-settings:
+    "MONO" var(--voice-sans),
+    "wght" 400;
+}
+
 /*
- * Line 197, both conditions together. A width override in the token file would
- * miss a coarse pointer on a wide screen, which the prototype also hides.
+ * The lab's finger where the prototype hides the mouse (line 197): a coarse
+ * pointer or a screen under 760px. A width override in the token file would
+ * miss a coarse pointer on a wide screen.
  */
 @media (pointer: coarse), (max-width: 760px) {
   [data-tour] .ui-hint {
+    /*
+     * Words included: they hang `--hint-finger-word` below the box, so the box
+     * sits that far above the line that is `--hint-over-blob` clear of the blob.
+     */
+    bottom: calc(var(--hint-blob-clear) + var(--hint-over-blob) - var(--hint-finger-word));
+    display: block;
+    width: var(--hint-finger-box);
+    height: var(--hint-finger-height);
+    gap: 0;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  [data-tour] .ui-hint__mouse,
+  [data-tour] .ui-hint__word {
     display: none;
+  }
+
+  [data-tour] .ui-hint__finger,
+  [data-tour] .ui-hint__swipe {
+    display: block;
   }
 }
