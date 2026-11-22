@@ -1,27 +1,28 @@
-/* The exit warp, scenario G13. `exit.ts` sets `--warp` (0 to 1) and `data-exit`
-   while the look is leaving. At rest it sets neither, so this file adds no filter
-   and no opacity on the look.
+/* The exit warp, scenario G13. `exit.ts` sets `--warp` (0 to 1) and `data-exit` on
+   the stage, and `data-exit` on the message, while the look is leaving. At rest it
+   sets none of them, so this file adds no filter and no opacity on the look.
 
    The filter is the prototype's (prototype-v0.16.0.html, lines 535 to 536): the
    displacement map `#exit-warp`, whose scale the part writes as `x * 90`, then a
-   blur of `x * 5` px. The fade is `max(0, 1 - x * x * 1.15)`.
+   blur of `x * 5` px. The fade is `max(0, 1 - x * x * 1.15)`. The filter is on the
+   stage, so what the map pushes past the message's own edges is still painted.
 
-   `data-exit="soft"` is a page that has no map: the blur and the fade alone.
-   `data-exit="done"` is the far end, where the prototype clears the filter and the
-   board is gone. */
+   A message that is leaving is not there to be used: it takes no pointer, so a hover
+   on the call cannot repaint a line of it sharp.
+
+   `data-exit="soft"` is a page that has no map: the blur and the fade alone, on the
+   message. `data-exit="done"` is the far end, where the prototype clears the filter
+   and the board is gone. */
 
 [data-tour] .message[data-exit] {
   opacity: clamp(0, calc(1 - var(--warp) * var(--warp) * 1.15), 1);
+  pointer-events: none;
 }
 
-[data-tour] .message[data-exit="on"] {
+[data-tour] .stage[data-exit="on"] {
   filter: url("#exit-warp") blur(calc(var(--warp) * 5px));
 }
 
 [data-tour] .message[data-exit="soft"] {
   filter: blur(calc(var(--warp) * 5px));
-}
-
-[data-tour] .message[data-exit="done"] {
-  filter: none;
 }
