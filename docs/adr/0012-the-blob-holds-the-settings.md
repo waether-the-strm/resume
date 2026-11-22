@@ -22,9 +22,9 @@ two columns hold well: sound, the start, the work, language, theme, and later a 
   Dynamic and finished, timed by the motion roles so the reduced profile stops them. Spacing is
   worked out, not left at the defaults of the sketch.
 
-How this is read, to be confirmed on the first build: Jan's words were "combo B, but with the quiet
-strip". B was settings unfolding under the grid as rows; C was a strip of small toggles always
-visible. The reading here is B's unfolding with C's strip as what unfolds.
+How this was read: Jan's words were "combo B, but with the quiet strip". B was settings unfolding
+under the grid as rows; C was a strip of small toggles always visible. The reading was B's unfolding
+with C's strip as what unfolds. Jan confirmed it on the first build (#129, 22 Nov 2026).
 
 ## Rejected
 
@@ -45,3 +45,7 @@ the reader's controls already are.
   JavaScript) the blob's menu cannot be opened today. Whether the blob's controls should work there
   too is the open point 8 of #89.
 - The sound control moves from the grid to the strip, so the grid becomes navigation only.
+- The first build settled four things. `settings` spans both columns, so the site map (#91) can take
+  a cell beside it. The strip sits in a well of the page's colour, which separates it from the title
+  of the current stop below. The language control shows the current language and links to the next,
+  with the target in its accessible name. The landmark holds the blob and the `tldr` link.
