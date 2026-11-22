@@ -30,6 +30,7 @@ session reviews and merges (see the `session` skill, "Delegated work").
 | `tests/`              | Playwright: scenarios, rest measurements, accessibility           |
 | `docs/NOW.md`         | current state                                                     |
 | `docs/log/`           | the working log, one file per day                                 |
+| `docs/estimates.md`   | estimates against actual time; read before giving Jan a time      |
 | `docs/adr/`           | one record per architectural decision, with the options rejected  |
 | `docs/v1-content/`    | the v1 pages, the source for the v2 content collections (phase 3) |
 

@@ -21,6 +21,7 @@ lost when the session ends. Everything here is public: no private notes, no empl
    session: what it is about, why now, what to expect once it is merged, how it fits the
    architecture. Three to five sentences, as `AGENTS.md` ("The briefing") describes. If the batch
    does not serve the goal in NOW, say so and ask him.
+5. Read `docs/estimates.md` before giving Jan a time, or a plan with times.
 
 ## During
 
@@ -33,6 +34,8 @@ lost when the session ends. Everything here is public: no private notes, no empl
 - A decision that is not obvious goes to Jan, one question at a time, with a recommendation; a
   visual one on a render. His answer becomes `docs/adr/NNNN-title.md`, including the options
   rejected and why.
+- A time given to Jan (in a briefing, a plan, a timebox) is written into the table in
+  `docs/estimates.md` when it is given, in minutes, with who gave it.
 - Never tag from `rebuild`. A `v*.*.*` tag deploys to production.
 
 ## End
@@ -48,7 +51,9 @@ lost when the session ends. Everything here is public: no private notes, no empl
    Decided (who decided, link to the ADR), Open, Next. Write for a reader who was not there. Include
    what went wrong and what it taught; that is the useful part.
 5. `pnpm format`, commit, push. Confirm CI is green on `rebuild`.
-6. Name the next step to Jan in one sentence, with a rough size in minutes.
+6. **`docs/estimates.md`**: fill the actuals of the rows this session opened, from the pull
+   requests' and runs' timestamps, and rewrite "What the numbers say so far" if the rows change it.
+7. Name the next step to Jan in one sentence, with a rough size in minutes.
 
 ## Delegated work
 
