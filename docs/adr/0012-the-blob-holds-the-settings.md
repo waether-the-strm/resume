@@ -41,9 +41,15 @@ the reader's controls already are.
 
 - Language stays a link in the markup, because it changes the address, even though it looks like a
   setting.
-- The footer keeps language and theme as the fallback: without the tour (reduced motion, no
-  JavaScript) the blob's menu cannot be opened today. Whether the blob's controls should work there
-  too is the open point 8 of #89.
+- The footer is no longer the fallback (Jan, 22 Nov 2026, #147). The footer's language links and
+  theme switch are gone; the blob is the only place for them. Because the blob's menu used to open
+  only while the tour ran, that is two changes together:
+  - The blob works without the tour. With JavaScript and reduced motion the title is a real button
+    and the menu, the settings, sound, theme and language behave as on the tour, by the same
+    folding rules. What needs the engine shows the finished page's state: the title keeps the last
+    stop, the name row stays folded, `the start` scrolls to the top.
+  - Without JavaScript, language is a link in a `noscript` footer, the other launched language and
+    nothing else. Theme cannot change without a script; the system's applies.
 - The sound control moves from the grid to the strip, so the grid becomes navigation only.
 - The first build settled four things. `settings` spans both columns, so the site map (#91) can take
   a cell beside it. The strip sits in a well of the page's colour, which separates it from the title
