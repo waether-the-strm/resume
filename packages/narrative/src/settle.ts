@@ -173,10 +173,18 @@ export function createSettle(deps: SettleDeps): Settle {
     return (stop.from + stop.to) / 2
   }
 
+  /**
+   * The page is written, and the store is told what the page then holds. A browser keeps a
+   * scroll position in whole pixels, so what was written and what can be read back differ by
+   * a fraction; the adapter's own sample of the page reads the kept value. Told the written
+   * one here and the kept one there, the store saw two positions for one frame, and when a
+   * threshold lay between them a one-shot fired for a crossing nobody made (the sparks,
+   * three pairs where the reader crossed once). There is one position: the page's.
+   */
   function commit(position: number): void {
-    last = position
     scroller.write(position)
-    store.setPosition(position)
+    last = scroller.read()
+    store.setPosition(last)
   }
 
   function arrive(): void {
