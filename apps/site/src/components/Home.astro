@@ -10,7 +10,6 @@ import Card from "./Card.astro"
 import Equation from "./Equation.astro"
 import Message from "./Message.astro"
 import Rail from "./Rail.astro"
-import ThemeSwitch from "./ThemeSwitch.astro"
 import Work from "./Work.astro"
 import "../styles/tour.css"
 
@@ -114,23 +113,26 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
       <Work locale={locale} />
     </section>
   </main>
-  <footer>
-    <nav class="type-label languages" aria-label={t(locale, "nav.language")}>
-      {
-        launched.map((other) => (
-          <a
-            href={localePath(other)}
-            lang={other}
-            hreflang={other}
-            aria-current={other === locale ? "true" : undefined}
-          >
-            {localeNames[other]}
-          </a>
-        ))
-      }
-    </nav>
-    <ThemeSwitch locale={locale} />
-  </footer>
+  <!--
+    The blob holds language and theme (ADR 0012). Without JavaScript its menu cannot open, so the
+    other language stays one link away, here. With scripts on, nothing of this is rendered, so no
+    empty band is left at the foot. Theme cannot change without a script: the system's applies.
+  -->
+  <noscript>
+    <footer>
+      <nav class="type-label languages" aria-label={t(locale, "nav.language")}>
+        {
+          launched
+            .filter((other) => other !== locale)
+            .map((other) => (
+              <a href={localePath(other)} lang={other} hreflang={other}>
+                {localeNames[other]}
+              </a>
+            ))
+        }
+      </nav>
+    </footer>
+  </noscript>
 </Base>
 
 <script>
@@ -186,10 +188,6 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
     color: var(--ink-mute);
     text-decoration: none;
     padding-block: var(--space-snug);
-  }
-  .languages a[aria-current] {
-    color: var(--ink);
-    border-bottom: 1px solid var(--accent);
   }
 
   @media (max-width: 760px) {

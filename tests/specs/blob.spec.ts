@@ -16,7 +16,89 @@ test.describe("the blob on the finished page", () => {
     await expect(page.locator(".ui-blob__grid").locator("button, a")).toHaveCount(3)
     await expect(page.locator(".ui-blob__strip").locator("button, a")).toHaveCount(3)
     await expect(page.locator(".ui-blob__settings")).toHaveAttribute("inert", "")
-    await expect(page.locator(".ui-blob__title")).toHaveAttribute("tabindex", "-1")
+    // The server renders the title out of the tab order; the script that starts the menu
+    // (the tour, or on its own under reduced motion) makes it a button. This was
+    // `tabindex -1` for good on the finished page, before #147.
+    await expect(page.locator(".ui-blob__title")).toHaveAttribute("tabindex", "0")
+  })
+
+  test("the menu works without the tour: Enter opens, settings unfold, theme steps, Escape folds", async ({
+    page,
+  }) => {
+    await page.goto("/")
+    const html = page.locator("html")
+    await expect(html).not.toHaveAttribute("data-tour", /.*/)
+    const blob = page.locator(".ui-blob")
+    const title = page.locator(".ui-blob__title")
+    const menu = page.locator(".ui-blob__menu")
+    const strip = page.locator(".ui-blob__settings")
+    await expect(title).toHaveAttribute("tabindex", "0")
+
+    await title.focus()
+    await page.keyboard.press("Enter")
+    await expect(title).toHaveAttribute("aria-expanded", "true")
+    await expect(menu).not.toHaveAttribute("inert", "")
+
+    await page.locator("[data-blob='settings']").click()
+    await expect(blob).toHaveClass(/is-settings/)
+    await expect(strip).not.toHaveAttribute("inert", "")
+
+    const theme = page.locator("[data-blob='theme']")
+    await expect(theme.locator(".is-on")).toHaveText("system")
+    await theme.click()
+    await expect(theme.locator(".is-on")).toHaveText("light")
+    await expect(html).toHaveAttribute("data-theme", "light")
+    expect(await page.evaluate(() => localStorage.getItem("strm-theme"))).toBe("light")
+
+    const sound = page.locator("[data-blob='sound']")
+    await sound.click()
+    await expect(sound).toHaveAttribute("aria-pressed", "false")
+    expect(await page.evaluate(() => localStorage.getItem("strm-sound"))).toBe("0")
+
+    // The title keeps what the server rendered, and the name row stays folded.
+    await expect(page.locator(".ui-blob__stop.is-current .ui-blob__label")).toHaveText("the look")
+    await expect(blob).toHaveClass(/is-slim/)
+
+    await page.keyboard.press("Escape")
+    await expect(menu).toHaveAttribute("inert", "")
+    await expect(blob).not.toHaveClass(/is-settings/)
+    await expect(title).toBeFocused()
+  })
+
+  test("a click on the title with a mouse leaves the menu open", async ({ page }) => {
+    // A mouse opens the blob by coming in. The click that follows used to fold it at once,
+    // which with reduced motion read as a menu that does not open.
+    await page.goto("/")
+    const title = page.locator(".ui-blob__title")
+    const menu = page.locator(".ui-blob__menu")
+    await title.hover()
+    await expect(menu).not.toHaveAttribute("inert", "")
+    await title.click()
+    await expect(menu).not.toHaveAttribute("inert", "")
+    await expect(title).toHaveAttribute("aria-expanded", "true")
+    await page.locator("[data-blob='settings']").click()
+    await expect(page.locator(".ui-blob__settings")).not.toHaveAttribute("inert", "")
+  })
+
+  test("the language link goes to the other language", async ({ page }) => {
+    await page.goto("/")
+    await page.locator(".ui-blob__title").focus()
+    await page.keyboard.press("Enter")
+    await page.locator("[data-blob='settings']").click()
+    await page.locator("[data-blob='language']").click()
+    await expect(page).toHaveURL(/\/pl\/$/)
+    await expect(page.locator("html")).toHaveAttribute("lang", "pl")
+  })
+
+  test("the start scrolls the finished page to the top", async ({ page }) => {
+    await page.goto("/")
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100)
+    await page.locator(".ui-blob__title").focus()
+    await page.keyboard.press("Enter")
+    await page.locator("[data-blob='start']").click()
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+    await expect(page.locator(".ui-blob__menu")).toHaveAttribute("inert", "")
   })
 
   test("a raised surface, and two columns with settings across the next row", async ({ page }) => {
@@ -321,11 +403,6 @@ test.describe("the blob on the tour", () => {
     await expect(theme.locator(".is-on")).toHaveText("light")
     await expect(html).toHaveAttribute("data-theme", "light")
     expect(await page.evaluate(() => localStorage.getItem("strm-theme"))).toBe("light")
-    // The footer's switch is the same preference.
-    await expect(page.locator(".theme-switch [data-value='light']")).toHaveAttribute(
-      "aria-pressed",
-      "true"
-    )
 
     await theme.click()
     await expect(theme.locator(".is-on")).toHaveText("dark")
@@ -387,5 +464,25 @@ test.describe("the blob on the tour", () => {
     await page.locator("[data-blob='start']").click()
     await expect(page.locator(".ui-blob__stop.is-current")).toHaveAttribute("data-stop", "0")
     await expect(page.locator(".ui-blob__menu")).toHaveAttribute("inert", "")
+  })
+})
+
+test.describe("the blob without JavaScript", () => {
+  test.use({ javaScriptEnabled: false })
+
+  test("the other language is one visible link, and the title is not in the tab order", async ({
+    page,
+  }) => {
+    await page.goto("/")
+    const link = page.locator("footer nav a")
+    await expect(link).toBeVisible()
+    await expect(link).toHaveText("Polski")
+    await expect(link).toHaveAttribute("href", "/pl/")
+    await expect(page.locator(".ui-blob__title")).not.toHaveAttribute("tabindex", "0")
+    await expect(page.locator(".ui-blob__menu")).toHaveAttribute("inert", "")
+
+    await page.goto("/pl/")
+    await expect(page.locator("footer nav a")).toHaveText("English")
+    await expect(page.locator("footer nav a")).toHaveAttribute("href", "/")
   })
 })
