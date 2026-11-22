@@ -43,10 +43,10 @@
   --mark-size: 36px;
 
   /*
-   * badge: the faint mark beside a title. Decoration: low contrast is intended, so the ground
-   * is the soft ink half dissolved into the page and the glyph is the page's own colour.
+   * badge: the quiet mark beside a title. Decoration, so it stays below the title: the ground
+   * is the soft ink and the glyph is the page's own colour.
    */
-  --badge-ground: color-mix(in oklab, var(--ink-soft) 52%, var(--paper));
+  --badge-ground: var(--ink-soft);
   --badge-ink: var(--paper);
   --badge-size: 0.74em;
   --badge-min: 1.5em;
@@ -116,7 +116,16 @@
   --blob-title-pad: 8px 10px 6px;
   --blob-title-gap: 20px;
   --blob-name-pad: 6px 10px 9px;
-  --blob-note: 11px;
+  --blob-note: 9px;
+  --blob-note-quiet: 0.3;
+  --blob-note-quiet-scale: 0.8;
+  --blob-dots: 13px;
+  --blob-strip-fill: var(--paper);
+  --blob-strip-size: var(--type-micro-size);
+  --blob-strip-row: 34px;
+  --blob-strip-gap: 18px;
+  --blob-strip-pair: 6px;
+  --blob-strip-drop: 6px;
   --blob-shadow: var(--shadow-raised);
   --blob-shadow-open: var(--shadow-raised);
 }
@@ -131,6 +140,8 @@
     --work-visual: 150px;
     --blob-size: 12.5px;
     --blob-bottom: 12px;
+    --blob-strip-row: 44px;
+    --blob-strip-gap: 14px;
     --message-gap: 18px;
     --message-who-space: 22px;
 

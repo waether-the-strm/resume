@@ -1,6 +1,13 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { BLOB_LEAVE_MS, BLOB_STAY_MS, blobView, createBlobFold, type BlobClock } from "./blob.ts"
+import {
+  BLOB_LEAVE_MS,
+  BLOB_STAY_MS,
+  blobView,
+  createBlobFold,
+  nextTheme,
+  type BlobClock,
+} from "./blob.ts"
 
 function fakeClock(): BlobClock & { fire(): void; ms(): number | null } {
   let queued: { callback: () => void; ms: number } | null = null
@@ -128,4 +135,10 @@ test("closing reports the change once", () => {
   fold.close()
   fold.close()
   assert.deepEqual(changes, [true, false])
+})
+
+test("the theme steps from the system's to light, to dark, and back", () => {
+  assert.equal(nextTheme(null), "light")
+  assert.equal(nextTheme("light"), "dark")
+  assert.equal(nextTheme("dark"), null)
 })

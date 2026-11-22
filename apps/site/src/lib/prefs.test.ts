@@ -382,3 +382,31 @@ test("bindSwitches does nothing when there is no document", () => {
   prefs.setTheme("dark")
   assert.equal(prefs.theme(), "dark")
 })
+
+test("a change of the attribute made elsewhere is heard, and a store's own write is heard once", () => {
+  const root = fakeRoot()
+  let changed = (): void => {}
+  const prefs = createPrefs({
+    storage: memoryStorage(),
+    root,
+    reducedMotion: () => false,
+    watch: (callback) => {
+      changed = callback
+    },
+  })
+  const heard: [string | null, string | null][] = []
+  prefs.subscribe((state, previous) => heard.push([previous.theme, state.theme]))
+
+  // Another store on the page wrote the attribute.
+  root.setAttribute("data-theme", "dark")
+  changed()
+  assert.deepEqual(heard, [[null, "dark"]])
+
+  // This store writes; the watcher reports the same change afterwards.
+  prefs.setTheme("light")
+  changed()
+  assert.deepEqual(heard, [
+    [null, "dark"],
+    ["dark", "light"],
+  ])
+})
