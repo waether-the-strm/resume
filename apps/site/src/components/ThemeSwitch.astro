@@ -1,6 +1,7 @@
 ---
-// The theme switch in the footer (#109). Theme and language stay out of the blob (ADR 0010):
-// they are settings of the site. The markup is what bindSwitches expects: data-switch="theme"
+// The theme switch in the footer (#109). The blob holds theme and language too (ADR 0012);
+// the footer keeps them as the fallback, because without the tour the blob's menu cannot be
+// opened. Both write the same preference. The markup is what bindSwitches expects: data-switch="theme"
 // and a button whose data-value is "", "light" or "dark". Empty clears the attribute and the
 // stored choice, so the system decides. Hidden until that script has marked the current
 // button, so without JavaScript the control does not look usable. Strings live in i18n/ui.ts.

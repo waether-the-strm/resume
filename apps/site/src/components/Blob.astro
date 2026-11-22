@@ -1,9 +1,9 @@
 ---
-// The blob: where the reader is, and a few controls (#35, ADR 0010). Every word is
-// rendered here, on the server. scripts/parts/blob.ts only marks which stop is current,
-// whether the menu is open, and whether sound is on.
+// The blob: where the reader is, and a few controls (#35, ADR 0010, ADR 0012). Every word
+// is rendered here, on the server. scripts/parts/blob.ts only marks which stop is current,
+// whether the menu and the settings are open, and which value each setting shows.
 import { narrative } from "../i18n/content"
-import type { Locale } from "../i18n/locales"
+import { launched, localeNames, localePath, type Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
 import { stopMark } from "../lib/stop-mark"
 
@@ -13,6 +13,8 @@ interface Props {
   flow?: boolean
   /** Primitives page: rendered unfolded, so the two columns can be seen. */
   open?: boolean
+  /** Primitives page: rendered with the settings strip unfolded as well. */
+  settings?: boolean
   /**
    * The name row is folded. The home page leaves this set: without the tour the name
    * is already on the page. The script unfolds it when the tour says otherwise.
@@ -27,6 +29,7 @@ const {
   locale,
   flow = false,
   open = false,
+  settings = false,
   slim = true,
   menuId = "blob-menu",
   labelledBy,
@@ -42,35 +45,84 @@ const signature = `${signatureName}${signatureRest}`
 const nameLabel = `${signature}, ${story.after}`
 
 const rootClass = ["blob", flow ? "is-flow" : ""].filter(Boolean).join(" ")
-const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
+const blobClass = [
+  "ui-blob",
+  slim ? "is-slim" : "",
+  open ? "is-open" : "",
+  open && settings ? "is-settings" : "",
+]
   .filter(Boolean)
   .join(" ")
+const settingsId = `${menuId}-settings`
+const settingsOpen = open && settings
+
+// Language changes the address, so it is a link (ADR 0012): to the next launched language.
+const next = launched[(launched.indexOf(locale) + 1) % launched.length] ?? locale
 ---
 
-<div class={rootClass}>
-  <nav
-    class={blobClass}
-    aria-label={labelledBy ? undefined : t(locale, "blob.landmark")}
-    aria-labelledby={labelledBy}
-    data-sound="on"
-  >
+<!-- The landmark holds the blob and the tldr link beside it: both are the reader's controls. -->
+<nav
+  class={rootClass}
+  aria-label={labelledBy ? undefined : t(locale, "blob.landmark")}
+  aria-labelledby={labelledBy}
+>
+  <div class={blobClass} data-sound="on">
     <div class="ui-blob__menu" id={menuId} inert={!open}>
       <div class="ui-blob__menu-clip">
-        <button type="button" data-blob="sound" aria-pressed="true">
-          <span>{t(locale, "blob.sound")}</span>
-          <span class="ui-blob__value">
-            <span class="ui-blob__on">{t(locale, "blob.on")}</span>
-            <span class="ui-blob__off">{t(locale, "blob.off")}</span>
-          </span>
-        </button>
-        <button type="button" data-blob="start">
-          <span>{t(locale, "blob.start")}</span>
-          <span class="ui-blob__mark" aria-hidden="true">↑</span>
-        </button>
-        <a href="#work" data-blob="work">
-          <span>{t(locale, "blob.work")}</span>
-          <span class="ui-blob__mark" aria-hidden="true">↓</span>
-        </a>
+        <div class="ui-blob__grid">
+          <button type="button" data-blob="start">
+            <span>{t(locale, "blob.start")}</span>
+            <span class="ui-blob__mark" aria-hidden="true">↑</span>
+          </button>
+          <a href="#work" data-blob="work">
+            <span>{t(locale, "blob.work")}</span>
+            <span class="ui-blob__mark" aria-hidden="true">↓</span>
+          </a>
+          <button
+            type="button"
+            class="ui-blob__more"
+            data-blob="settings"
+            aria-expanded={settingsOpen ? "true" : "false"}
+            aria-controls={settingsId}
+          >
+            <span>{t(locale, "blob.settings")}</span>
+            <span class="ui-blob__mark ui-blob__dots" aria-hidden="true">
+              <svg viewBox="0 0 13 3">
+                <circle cx="1.5" cy="1.5" r="1.25"></circle>
+                <circle cx="6.5" cy="1.5" r="1.25"></circle>
+                <circle cx="11.5" cy="1.5" r="1.25"></circle>
+              </svg>
+            </span>
+          </button>
+        </div>
+        <div class="ui-blob__settings" id={settingsId} inert={!settingsOpen}>
+          <div class="ui-blob__settings-clip">
+            <div class="ui-blob__strip">
+              <button type="button" data-blob="sound" aria-pressed="true">
+                <span>{t(locale, "blob.sound")}</span>
+                <span class="ui-blob__value">
+                  <span class="is-on" data-v="on">{t(locale, "blob.on")}</span>
+                  <span data-v="off">{t(locale, "blob.off")}</span>
+                </span>
+              </button>
+              <button type="button" data-blob="theme">
+                <span>{t(locale, "blob.theme")}</span>
+                <span class="ui-blob__value">
+                  <span class="is-on" data-v="system">{t(locale, "blob.theme.system")}</span>
+                  <span data-v="light">{t(locale, "blob.theme.light")}</span>
+                  <span data-v="dark">{t(locale, "blob.theme.dark")}</span>
+                </span>
+              </button>
+              <a href={localePath(next)} hreflang={next} data-blob="language">
+                <span>{t(locale, "blob.language")}</span>
+                <span class="ui-blob__value">
+                  <span class="is-on" lang={locale}>{localeNames[locale]}</span>
+                </span>
+                <span class="ui-blob__next" lang={next}>{localeNames[next]}</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <button
@@ -104,10 +156,9 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
         </span>
       </span>
       <span class="ui-blob__note" aria-hidden="true">
-        <svg viewBox="0 0 10 14">
-          <ellipse cx="3.2" cy="11.3" rx="2.5" ry="1.8"></ellipse>
-          <path
-            d="M5.2 11.2V1.3h1.15V9.6c.9-.6 1.8-.7 2.5-.3.15.1.2.3.05.45-.2.15-.5.1-.8-.05-.8-.3-1.4.05-1.9.6v1z"
+        <svg viewBox="0 0 9 14">
+          <ellipse cx="2.9" cy="11.3" rx="2.9" ry="2.1" transform="rotate(-18 2.9 11.3)"></ellipse>
+          <path d="M4.7 0.4h1.1c.1 1.7 2.9 2.5 2.9 5.3 0 .8-.2 1.6-.6 2.2.1-2-1-3-2.3-3.5v6.9H4.7z"
           ></path>
         </svg>
       </span>
@@ -118,11 +169,11 @@ const blobClass = ["ui-blob", slim ? "is-slim" : "", open ? "is-open" : ""]
         <span class="ui-blob__go" aria-hidden="true">→</span>
       </span>
     </a>
-  </nav>
+  </div>
   <a class="ui-blob__tldr" href="#jan" aria-label={t(locale, "blob.tldr.long")}>
     {t(locale, "blob.tldr")}
   </a>
-</div>
+</nav>
 
 <style>
   .blob .ui-blob {

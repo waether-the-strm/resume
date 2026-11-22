@@ -77,14 +77,26 @@ import Work from "../../components/Work.astro"
             labelledBy="blob-unfolded"
           />
         </div>
+        <div>
+          <p id="blob-settings" class="state">Unfolded, with the settings</p>
+          <Blob
+            locale="en"
+            flow
+            open
+            settings
+            slim={false}
+            menuId="blob-menu-settings-open"
+            labelledBy="blob-settings"
+          />
+        </div>
       </div>
     </section>
 
     <section aria-labelledby="h-badge">
       <h2 id="h-badge" class="type-micro part">The badge · ui-badge</h2>
       <p class="type-lead intro">
-        The mark to the left of a stop's title, in the rail and the blob. Decoration, deliberately
-        faint: one character is a circle, three a short pill, and it never outweighs the title.
+        The mark to the left of a stop's title, in the rail and the blob. Decoration, quieter than
+        the title: one character is a circle, three a short pill, and it never outweighs the title.
       </p>
       <ul class="badges">
         <li><span class="ui-badge" data-mark="0" aria-hidden="true"></span> w+w+w</li>

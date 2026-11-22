@@ -1,16 +1,36 @@
 /*
  * Blob: where the reader is, and a few controls. It floats at the bottom of the page;
- * the page places it. Folded, it is the step and the name. Unfolded, the controls are
- * two columns. Three controls leave the fourth cell empty.
+ * the page places it. Folded, it is the step and the name. Unfolded, a grid of two
+ * columns holds what leads somewhere, and its last row, `settings`, unfolds a quiet
+ * strip of what changes the page in place (ADR 0012).
  *
- *   <nav class="ui-blob" aria-label="Where you are, and a few controls">
+ *   <nav aria-label="Where you are, and a few controls">
+ *   <div class="ui-blob">
  *     <div class="ui-blob__menu" id="blob-menu" inert>
  *       <div class="ui-blob__menu-clip">
- *         <button type="button" data-blob="sound" aria-pressed="true">
- *           <span>sound</span><span class="ui-blob__value"><span class="ui-blob__on">on</span></span>
- *         </button>
- *         <button type="button" data-blob="start"><span>the start</span></button>
- *         <a href="#work" data-blob="work"><span>the work</span></a>
+ *         <div class="ui-blob__grid">
+ *           <button type="button" data-blob="start"><span>the start</span><span class="ui-blob__mark">↑</span></button>
+ *           <a href="#work" data-blob="work"><span>the work</span><span class="ui-blob__mark">↓</span></a>
+ *           <button type="button" class="ui-blob__more" data-blob="settings" aria-expanded="false" aria-controls="blob-menu-settings">
+ *             <span>settings</span><span class="ui-blob__mark ui-blob__dots"><svg>…</svg></span>
+ *           </button>
+ *         </div>
+ *         <div class="ui-blob__settings" id="blob-menu-settings" inert>
+ *           <div class="ui-blob__settings-clip">
+ *             <div class="ui-blob__strip">
+ *               <button type="button" data-blob="sound" aria-pressed="true">
+ *                 <span>sound</span>
+ *                 <span class="ui-blob__value"><span class="is-on" data-v="on">on</span><span data-v="off">off</span></span>
+ *               </button>
+ *               <button type="button" data-blob="theme">…system, light, dark…</button>
+ *               <a href="/pl/" hreflang="pl" data-blob="language">
+ *                 <span>language</span>
+ *                 <span class="ui-blob__value"><span class="is-on">English</span></span>
+ *                 <span class="ui-blob__next" lang="pl">Polski</span>
+ *               </a>
+ *             </div>
+ *           </div>
+ *         </div>
  *       </div>
  *     </div>
  *     <button type="button" class="ui-blob__title" aria-expanded="false" aria-controls="blob-menu">
@@ -20,11 +40,13 @@
  *       <span class="ui-blob__note" aria-hidden="true"><svg>…</svg></span>
  *     </button>
  *     <a class="ui-blob__id" href="#jan"><span class="ui-blob__id-clip"><span><b>Jan Mirecki</b> · design engineer · Oslo</span></span></a>
- *   </nav>
+ *   </div>
  *   <a class="ui-blob__tldr" href="#jan">tldr</a>
+ *   </nav>
  *
- * Open is `is-open`. The name row folds with `is-slim`. The current stop is `is-current`.
- * `data-sound="off"` strikes the note. `data-after` on the tldr link hides it.
+ * Open is `is-open`. The strip is unfolded with `is-settings`. The name row folds with
+ * `is-slim`. The current stop is `is-current`. A value shows the option marked `is-on`.
+ * `data-sound="off"` quiets the note. `data-after` on the tldr link hides it.
  */
 .ui-blob {
   display: grid;
@@ -97,14 +119,17 @@
 .ui-blob__menu-clip {
   overflow: hidden;
   min-height: 0;
+}
+.ui-blob__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   /* The rule between the two rows belongs to the grid, not to a cell, so it spans the
      surface whatever the last row holds. */
   background: linear-gradient(var(--line), var(--line)) 0 var(--blob-row) / 100% 1px no-repeat;
 }
-.ui-blob__menu button,
-.ui-blob__menu a {
+/* Two classes here and on the strip's controls, so they keep their padding and colour
+   over the reset of the blob's buttons and links above. */
+.ui-blob .ui-blob__grid > * {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -113,24 +138,129 @@
   padding-inline: var(--blob-row-pad);
   color: var(--ink);
   text-align: left;
+  transition: color var(--motion-micro) var(--ease-out);
 }
-
-.ui-blob__menu button:hover,
-.ui-blob__menu a:hover {
+.ui-blob .ui-blob__grid > *:hover,
+.ui-blob.is-settings .ui-blob__grid > .ui-blob__more {
   color: var(--accent-text);
 }
-.ui-blob__value,
 .ui-blob__mark {
   color: var(--accent-text);
 }
-.ui-blob__off {
-  display: none;
+
+/* Settings: the last row of the grid, across both columns. It leads nowhere; it unfolds
+   the strip under it. Its mark is three dots that stand up while the strip is open. */
+.ui-blob__grid > .ui-blob__more {
+  grid-column: 1 / -1;
 }
-.ui-blob [aria-pressed="false"] .ui-blob__on {
-  display: none;
+.ui-blob__dots svg {
+  display: block;
+  width: var(--blob-dots);
+  height: auto;
+  fill: currentColor;
+  transition: rotate var(--motion-move) var(--ease-spring);
 }
-.ui-blob [aria-pressed="false"] .ui-blob__off {
-  display: inline;
+.ui-blob.is-settings .ui-blob__dots svg {
+  rotate: 90deg;
+}
+
+/* The quiet strip. It sits in a well of the page's own colour, a step below the raised
+   surface, so it reads as a different kind of thing from the grid above it and from the
+   title under it. Smaller and muted; one line when there is room. */
+.ui-blob__settings {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--motion-move) var(--ease-spring);
+}
+.ui-blob.is-settings .ui-blob__settings {
+  grid-template-rows: 1fr;
+}
+.ui-blob__settings-clip {
+  overflow: hidden;
+  min-height: 0;
+}
+.ui-blob__strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--blob-strip-gap);
+  margin-bottom: var(--blob-pad);
+  padding-inline: var(--blob-row-pad);
+  border-radius: var(--radius-control);
+  background: var(--blob-strip-fill);
+  font-size: var(--blob-strip-size);
+}
+.ui-blob .ui-blob__strip > * {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--blob-strip-pair);
+  min-height: var(--blob-strip-row);
+  color: var(--ink-mute);
+  opacity: 0;
+  translate: 0 calc(var(--blob-strip-drop) * -1);
+  transition:
+    opacity var(--motion-enter) var(--ease-out),
+    translate var(--motion-move) var(--ease-spring);
+}
+.ui-blob.is-settings .ui-blob__strip > * {
+  opacity: 1;
+  translate: 0;
+}
+/* They arrive one after another. The pause is a share of a motion role, so the reduced
+   profile takes it away with the rest. */
+.ui-blob.is-settings .ui-blob__strip > :nth-child(1) {
+  transition-delay: calc(var(--motion-micro) * 0.4);
+}
+.ui-blob.is-settings .ui-blob__strip > :nth-child(2) {
+  transition-delay: calc(var(--motion-micro) * 0.7);
+}
+.ui-blob.is-settings .ui-blob__strip > :nth-child(3) {
+  transition-delay: var(--motion-micro);
+}
+
+/* A value: every option sits in one cell, so the widest sets the width and a change
+   moves nothing beside it. The one that leaves sinks; the one that arrives drops in. */
+.ui-blob__value {
+  display: inline-grid;
+  color: var(--ink);
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 500;
+  transition: color var(--motion-micro) var(--ease-out);
+}
+.ui-blob__value > * {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  opacity: 0;
+  translate: 0 0.5em;
+  transition:
+    opacity var(--motion-micro) var(--ease-out),
+    translate var(--motion-micro) var(--ease-out),
+    visibility 0s var(--motion-micro);
+}
+.ui-blob__value > .is-on {
+  visibility: visible;
+  opacity: 1;
+  translate: 0;
+  transition: none;
+  animation: ui-blob-value var(--motion-move) var(--ease-spring);
+}
+@keyframes ui-blob-value {
+  from {
+    opacity: 0;
+    translate: 0 -0.7em;
+  }
+}
+.ui-blob__strip > *:hover .ui-blob__value {
+  color: var(--accent-text);
+}
+/* Where the language link goes: in its name, not on show. */
+.ui-blob__next {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* Two classes, so the row keeps its padding over the reset of the blob's buttons and
@@ -177,9 +307,11 @@
   }
 }
 .ui-blob__note {
-  position: relative;
   display: inline-grid;
   color: var(--accent-text);
+  transition:
+    opacity var(--motion-enter) var(--ease-out),
+    scale var(--motion-move) var(--ease-spring);
 }
 .ui-blob__note svg {
   display: block;
@@ -187,17 +319,10 @@
   height: auto;
   fill: currentColor;
 }
+/* Sound off: the note goes quiet. It shrinks a little and fades; it is not struck. */
 .ui-blob[data-sound="off"] .ui-blob__note {
-  color: var(--ink-soft);
-}
-.ui-blob[data-sound="off"] .ui-blob__note::after {
-  content: "";
-  position: absolute;
-  left: -1px;
-  right: -1px;
-  top: 55%;
-  height: 1px;
-  background: currentColor;
+  opacity: var(--blob-note-quiet);
+  scale: var(--blob-note-quiet-scale);
 }
 
 .ui-blob__id {

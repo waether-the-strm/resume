@@ -12,7 +12,9 @@
 //
 // Theme and motion are read from the attribute. Sound is read from storage. Nothing is cached,
 // so two stores on one page agree when asked. A subscriber hears writes made through its own
-// store. Reading and writing never throw when storage is missing, blocked, or full.
+// store, and a change of the attributes made by anything else on the page (another store: the
+// blob and the footer each have one). Reading and writing never throw when storage is missing,
+// blocked, or full.
 
 export const THEME_KEY = "strm-theme"
 export const MOTION_KEY = "strm-motion"
@@ -54,6 +56,11 @@ export interface PrefsEnv {
   root: AttrRoot
   /** True when the operating system asks for reduced motion. */
   reducedMotion: () => boolean
+  /**
+   * Calls back when the theme or motion attribute changed, whoever wrote it. Optional: a
+   * store without it hears only its own writes.
+   */
+  watch?: (changed: () => void) => void
 }
 
 export interface Prefs {
@@ -222,22 +229,42 @@ function browserReduced(): boolean {
   }
 }
 
+function browserWatch(changed: () => void): void {
+  try {
+    if (typeof document === "undefined" || typeof MutationObserver !== "function") return
+    new MutationObserver(changed).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: [THEME_ATTR, MOTION_ATTR],
+    })
+  } catch {
+    // No observer: the store still hears its own writes.
+  }
+}
+
 function browserEnv(): PrefsEnv {
   return {
     storage: browserStorage(),
     root: browserRoot(),
     reducedMotion: browserReduced,
+    watch: browserWatch,
   }
 }
 
 export function createPrefs(env: PrefsEnv = browserEnv()): Prefs {
   const listeners = new Set<PrefsListener>()
+  // What the listeners were last told, so a change made elsewhere has a "before".
+  let told = snapshot(env)
 
   function emit(previous: PrefsState): void {
     const next = snapshot(env)
+    told = next
     if (same(previous, next)) return
     for (const listener of [...listeners]) listener(next, previous)
   }
+
+  // A write through this store has already been told by the time the watcher calls back,
+  // so it is heard once.
+  env.watch?.(() => emit(told))
 
   // The attribute is written first. If that fails, storage is left so a reload cannot
   // restore a choice the page never showed.

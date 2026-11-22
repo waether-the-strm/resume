@@ -1,8 +1,10 @@
-// The blob: where the reader is, and a few controls (#35, ADR 0010).
+// The blob: where the reader is, and a few controls (#35, ADR 0010, ADR 0012).
 //
 // The server renders every title, the step numbers and the controls. This part only
 // writes attributes and classes: which stop is current, whether the name row is folded,
-// whether the menu is open, and whether sound is on. It never builds markup.
+// whether the menu and its settings are open, and which value a setting shows. It never
+// builds markup.
+import type { Theme } from "../../lib/prefs"
 import type { TourPart } from "./types"
 
 /** How long an open blob stays open without a further interaction. The prototype's 4500 ms. */
@@ -27,6 +29,12 @@ export function blobView(state: { nearest: number; named: boolean; after: boolea
     current: state.after ? "after" : state.nearest,
     slim: state.named || state.after,
   }
+}
+
+/** The theme setting is one control that steps through its values: the system's, light, dark. */
+export function nextTheme(theme: Theme | null): Theme | null {
+  if (theme === null) return "light"
+  return theme === "light" ? "dark" : null
 }
 
 export interface BlobFold {
@@ -138,16 +146,23 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
   const menu = root?.querySelector<HTMLElement>(".ui-blob__menu")
   const name = root?.querySelector<HTMLAnchorElement>(".ui-blob__id")
   const sound = root?.querySelector<HTMLButtonElement>("[data-blob='sound']")
+  const theme = root?.querySelector<HTMLButtonElement>("[data-blob='theme']")
+  const more = root?.querySelector<HTMLButtonElement>("[data-blob='settings']")
+  const strip = root?.querySelector<HTMLElement>(".ui-blob__settings")
   const start = root?.querySelector<HTMLButtonElement>("[data-blob='start']")
   const work = root?.querySelector<HTMLAnchorElement>("[data-blob='work']")
   const tldr = document.querySelector<HTMLAnchorElement>(".ui-blob__tldr")
   if (!root || !title || !menu || !name || !sound || !start || !work || !tldr) return
+  if (!theme || !more || !strip) return
   // Copies, so the closures below keep the narrowed types.
   const blobEl: HTMLElement = root
   const titleEl: HTMLButtonElement = title
   const menuEl: HTMLElement = menu
   const nameEl: HTMLAnchorElement = name
   const soundEl: HTMLButtonElement = sound
+  const themeEl: HTMLButtonElement = theme
+  const moreEl: HTMLButtonElement = more
+  const stripEl: HTMLElement = strip
   const startEl: HTMLButtonElement = start
   const workEl: HTMLAnchorElement = work
   const tldrEl: HTMLAnchorElement = tldr
@@ -181,9 +196,28 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
     tldrEl.toggleAttribute("data-after", state.after)
   }
 
+  /** Marks which of a setting's rendered values is the one on show. */
+  function show(control: HTMLElement, value: string): void {
+    for (const option of control.querySelectorAll<HTMLElement>("[data-v]")) {
+      option.classList.toggle("is-on", option.dataset.v === value)
+    }
+  }
+
   function paintSound(on: boolean): void {
     soundEl.setAttribute("aria-pressed", String(on))
     blobEl.dataset.sound = on ? "on" : "off"
+    show(soundEl, on ? "on" : "off")
+  }
+
+  function paintTheme(value: Theme | null): void {
+    show(themeEl, value ?? "system")
+  }
+
+  function setSettings(open: boolean): void {
+    blobEl.classList.toggle("is-settings", open)
+    moreEl.setAttribute("aria-expanded", String(open))
+    if (open) stripEl.removeAttribute("inert")
+    else stripEl.setAttribute("inert", "")
   }
 
   const fold = createBlobFold(
@@ -196,6 +230,8 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
       titleEl.setAttribute("aria-expanded", String(open))
       if (open) menuEl.removeAttribute("inert")
       else menuEl.setAttribute("inert", "")
+      // The blob opens on its navigation. The settings are asked for each time.
+      if (!open) setSettings(false)
     }
   )
 
@@ -212,8 +248,14 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
   nameEl.addEventListener("click", (event) => {
     if (!fold.namePressed(coarsePointer())) event.preventDefault()
   })
+  moreEl.addEventListener("click", () => {
+    setSettings(moreEl.getAttribute("aria-expanded") !== "true")
+  })
   soundEl.addEventListener("click", () => {
     prefs.setSound(!prefs.sound())
+  })
+  themeEl.addEventListener("click", () => {
+    prefs.setTheme(nextTheme(prefs.theme()))
   })
   startEl.addEventListener("click", () => {
     fold.close()
@@ -237,7 +279,11 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
   document.addEventListener("wheel", onWheel, { passive: true })
 
   paintSound(prefs.sound())
-  prefs.subscribe((state) => paintSound(state.sound))
+  paintTheme(prefs.theme())
+  prefs.subscribe((state) => {
+    paintSound(state.sound)
+    paintTheme(state.theme)
+  })
 
   let position = store.get().position
   paint(store.get())
