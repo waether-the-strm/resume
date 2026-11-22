@@ -10,6 +10,15 @@ import {
   type PhaseDirection,
 } from "@strm/narrative"
 
+/**
+ * How long `how?` stands alone in the middle before it moves left to make room for its
+ * answer, counted from when it appeared: its own fade (0.6 s in tour.css) and a beat to
+ * be read. A glide from `who` to the equation crosses the centred phase in less than half
+ * a second, so without this the word never rests. Not the prototype's: there the move
+ * follows the scroll at once.
+ */
+export const HOW_BEAT_MS = 1000
+
 export interface EquationView {
   /** The progress of the scene, 0 to 1. */
   update(t: number): void
@@ -32,23 +41,58 @@ export function createEquationView(
   root: HTMLElement,
   onCorner: (on: boolean) => void,
   /** `how` crossed between the equation and the corner, forward (1) or back (-1). */
-  onMove: (direction: 1 | -1) => void = () => {}
+  onMove: (direction: 1 | -1) => void = () => {},
+  now: () => number = () => performance.now()
 ): EquationView {
   const rows = [...root.querySelectorAll<HTMLElement>(".above .row")]
   const how = root.querySelector<HTMLElement>(".how")
   const label = how?.querySelector<HTMLElement>(".q") ?? null
   const displacement = document.querySelector("#equation-warp feDisplacementMap")
   let corner = false
+  let arrived = Number.NEGATIVE_INFINITY
 
-  /** How far `how?` is from the middle of the equation, so it can arrive centred. */
-  function centre(on: boolean): void {
+  /**
+   * Where `how?` stands. Centred, it is shifted to the middle of the equation; left, the
+   * shift is nothing. It appears in the middle without travelling there, and going back it
+   * fades where it stands: the shift is only taken away once the word sits left.
+   */
+  function place(phase: number, direction: PhaseDirection): void {
     if (!label) return
+    const centred = equationAt(phase).centred
+    if (!centred) {
+      // Before `how?` is on the page it keeps the place it left from, unseen. A state
+      // landed on (the first paint, a frozen moment) starts clean.
+      if (equationAt(phase).how || direction === 0) root.style.setProperty("--how-shift", "0px")
+      return
+    }
+    // Arriving from before it was there, or landing here: no slide to the middle.
+    const snap = direction !== -1
+    if (snap) root.setAttribute("data-how-snap", "")
     root.style.setProperty("--how-shift", "0px")
-    if (!on) return
     const box = root.getBoundingClientRect()
     const own = label.getBoundingClientRect()
     const shift = box.left + box.width / 2 - (own.left + own.width / 2)
     root.style.setProperty("--how-shift", `${shift.toFixed(1)}px`)
+    if (snap) {
+      // The middle is its place before the transition is allowed again.
+      void label.offsetWidth
+      root.removeAttribute("data-how-snap")
+    }
+  }
+
+  /** The beat: what is left of it when the reader moves on delays the move to the left. */
+  function beat(phase: number, direction: PhaseDirection): void {
+    const state = equationAt(phase)
+    if (direction !== 1) {
+      root.style.setProperty("--how-wait", "0ms")
+      return
+    }
+    if (state.centred) arrived = now()
+    // Only the phase in which it moves left: later phases leave the delay as it was set.
+    if (state.left && !equationAt(phase - 1).left) {
+      const wait = Math.max(0, HOW_BEAT_MS - (now() - arrived))
+      root.style.setProperty("--how-wait", `${Math.round(wait)}ms`)
+    }
   }
 
   const tracker = createPhaseTracker(defaultThresholds, ({ phase, direction }) => {
@@ -68,8 +112,9 @@ export function createEquationView(
       row.toggleAttribute("data-asked", state.rows[index]?.asked ?? false)
       melt(row.querySelector(".a"), state.rows[index]?.answered ?? false, direction)
     })
+    beat(phase, direction)
     melt(how?.querySelector(".a") ?? null, state.howAnswered, direction)
-    centre(state.centred)
+    place(phase, direction)
     // Before the dissolve nothing is dissolved; after it, the phase itself says `alone`.
     if (phase !== WARP_PHASE) {
       root.style.setProperty("--warp", "0")

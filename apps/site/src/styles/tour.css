@@ -367,7 +367,10 @@
   }
 }
 
-/* `how?` arrives centred, moves left to its `=`, and its answer melts in. */
+/* `how?` arrives centred, stands there a beat, moves left to its `=`, and its answer melts
+   in. `--how-wait` is what is left of the beat when the reader has already moved on
+   (scripts/equation.ts): the move, the `=` and the answer wait for it together. Going back
+   it returns to the middle and fades there. */
 .equation .how {
   opacity: 0;
   translate: 0 -0.6em;
@@ -381,7 +384,7 @@
 }
 .equation .how .op {
   opacity: 0;
-  transition: opacity 0.4s 0.2s;
+  transition: opacity 0.4s calc(0.2s + var(--how-wait, 0ms));
 }
 .equation[data-left]:not([data-alone]) .how .op {
   opacity: 1;
@@ -391,8 +394,15 @@
   justify-self: start;
   translate: var(--how-shift, 0) 0;
   transition:
-    translate 0.6s var(--ease-out),
+    translate 0.6s var(--ease-out) var(--how-wait, 0ms),
     opacity 0.15s;
+}
+/* It appears in the middle; it does not slide there from the left. */
+.equation[data-how-snap] .how .q {
+  transition: none;
+}
+.equation .how .a[data-melt="in"] {
+  animation-delay: var(--how-wait, 0ms);
 }
 .equation[data-gone] .how .q {
   opacity: 0;

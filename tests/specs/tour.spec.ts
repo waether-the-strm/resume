@@ -141,6 +141,54 @@ test.describe("keys and sound", () => {
     expect(await scene(page)).toBe("0")
   })
 
+  test("how? stands in the middle for a beat before it moves left, and fades there going back", async ({
+    page,
+  }) => {
+    await page.goto("/")
+    await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
+    await settled(page)
+    const equation = page.locator(".equation")
+    const how = () =>
+      equation.evaluate((el) => {
+        const label = el.querySelector(".how .q")!
+        const box = el.getBoundingClientRect()
+        const own = label.getBoundingClientRect()
+        return {
+          // How far the word is from the middle of the equation.
+          off: Math.round(Math.abs(box.left + box.width / 2 - (own.left + own.width / 2))),
+          wait: parseFloat((el as HTMLElement).style.getPropertyValue("--how-wait")) || 0,
+          shift: parseFloat((el as HTMLElement).style.getPropertyValue("--how-shift")) || 0,
+        }
+      })
+
+    // Three steps rest on `who`, before `how?` is there.
+    for (let step = 0; step < 3; step++) {
+      await page.keyboard.press("ArrowDown")
+      await settled(page)
+    }
+    await expect(equation).not.toHaveAttribute("data-how", "")
+
+    // The next step glides to the equation's stop and crosses the centred phase on the way.
+    await page.keyboard.press("ArrowDown")
+    await expect(equation).toHaveAttribute("data-left", "")
+    const moved = await how()
+    expect(moved.wait, "the glide crossed the middle faster than the beat").toBeGreaterThan(0)
+    expect(moved.off, "the word is still in the middle when the scroll has moved on").toBeLessThan(
+      12
+    )
+    // After the beat it has gone left, and its answer is there.
+    await expect.poll(async () => (await how()).off, { timeout: 4000 }).toBeGreaterThan(60)
+    await expect(equation.locator(".how .a")).toHaveAttribute("data-melt", "in")
+    await settled(page)
+
+    // Going back it returns to the middle and is not sent left again as it fades.
+    await page.keyboard.press("ArrowUp")
+    await expect(equation).not.toHaveAttribute("data-how", "")
+    const left = await how()
+    expect(left.wait, "no wait on the way back").toBe(0)
+    expect(Math.abs(left.shift), "it keeps the middle while it fades").toBeGreaterThan(60)
+  })
+
   test("G4: after the last stop the next key lands on the card", async ({ page }) => {
     await page.goto("/")
     await expect(page.locator("html")).toHaveAttribute("data-tour", "on")
