@@ -65,6 +65,21 @@ test.describe("the blob on the finished page", () => {
     await expect(title).toBeFocused()
   })
 
+  test("a click on the title with a mouse leaves the menu open", async ({ page }) => {
+    // A mouse opens the blob by coming in. The click that follows used to fold it at once,
+    // which with reduced motion read as a menu that does not open.
+    await page.goto("/")
+    const title = page.locator(".ui-blob__title")
+    const menu = page.locator(".ui-blob__menu")
+    await title.hover()
+    await expect(menu).not.toHaveAttribute("inert", "")
+    await title.click()
+    await expect(menu).not.toHaveAttribute("inert", "")
+    await expect(title).toHaveAttribute("aria-expanded", "true")
+    await page.locator("[data-blob='settings']").click()
+    await expect(page.locator(".ui-blob__settings")).not.toHaveAttribute("inert", "")
+  })
+
   test("the language link goes to the other language", async ({ page }) => {
     await page.goto("/")
     await page.locator(".ui-blob__title").focus()

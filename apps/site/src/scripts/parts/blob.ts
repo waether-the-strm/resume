@@ -100,6 +100,13 @@ export function createBlobFold(clock: BlobClock, onChange: (open: boolean) => vo
   return {
     isOpen: () => open,
     toggle() {
+      // Under a resting mouse the blob is already open, opened by the pointer coming in.
+      // A press on the title then is the reader reaching for it, not asking it to fold:
+      // it stays, and the stay starts again. It folds when the pointer leaves.
+      if (open && over) {
+        arm(BLOB_STAY_MS)
+        return
+      }
       setOpen(!open)
     },
     close() {
