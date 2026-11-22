@@ -157,6 +157,24 @@ test.describe("static page, JavaScript disabled", () => {
           await expectNoHorizontalOverflow(page)
         })
 
+        test("the foot is one link to the other language, and no theme switch (#147)", async ({
+          page,
+        }) => {
+          const other =
+            locale.lang === "en" ? { href: "/pl/", lang: "pl" } : { href: "/", lang: "en" }
+          const links = page.locator("footer nav a")
+          await expect(links).toHaveCount(1)
+          await expect(links).toBeVisible()
+          await expect(links).toHaveAttribute("href", other.href)
+          await expect(links).toHaveAttribute("hreflang", other.lang)
+          await expect(page.locator("footer nav")).toHaveAttribute(
+            "aria-label",
+            locale.lang === "en" ? "Language" : "Język"
+          )
+          await expect(page.locator(".theme-switch")).toHaveCount(0)
+          await expect(page.locator(".ui-blob__title")).not.toHaveAttribute("tabindex", "0")
+        })
+
         test("sets lang and hreflang", async ({ page }) => {
           await expectLanguage(page, locale.lang)
         })
