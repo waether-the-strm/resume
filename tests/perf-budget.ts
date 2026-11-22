@@ -147,18 +147,32 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * stays: `/` 1914.2, 1906.9, 1904.6; `/pl/` 1902.1, 1963.0, 1895.6 (rebuild's last round:
  * `/` 1891.8, 1894.8, 1871.2; `/pl/` 1862.2, 1925.3, 1893.5, about 1% to 3% apart, the
  * same noise as between those three runs).
+ *
+ * Measured again on 22 Nov 2026, with the structured data and the share tags (#144).
+ * Three cold loads, the same bytes each time. Document `/` 10194 and `/pl/` 10502.
+ * A build of rebuild, one cold load on this machine the same hour, transferred
+ * document `/` 9952 and `/pl/` 10257, so this change adds 242 B and 245 B: the
+ * JSON-LD block and the share-image tags, gzipped inside the document. CSS 6160
+ * and script 12915 are that rebuild load as well. They sit ahead of the numbers
+ * recorded after the sparks (6128 and 12702) and were already on the branch;
+ * the stylesheet and the scripts are the same files. Font did not move. Layout
+ * shift stayed 0: one tour load of `/pl/` scored 0.0004 and the other two scored
+ * 0, under the margin. Paint stayed with rebuild, so the ceiling stays. This
+ * round: `/` 1916.5, 1904.1, 1921.7; `/pl/` 1917.7, 1889.0, 1908.1. Rebuild's
+ * load: `/` 1925.7, `/pl/` 1956.3. Rebuild's previous round: `/` 1914.2, 1906.9,
+ * 1904.6; `/pl/` 1902.1, 1963.0, 1895.6. About 1% to 3% apart, the same noise.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9679, css: 6128, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9967, css: 6128, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 10194, css: 6160, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10502, css: 6160, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 12702 },
-    "/pl/": { cls: 0, script: 12702 },
+    "/": { cls: 0, script: 12915 },
+    "/pl/": { cls: 0, script: 12915 },
   },
 }
 

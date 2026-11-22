@@ -25,7 +25,7 @@ pointer, and no warp under reduced motion. The wheel walk at 1280×820 is `test.
 there, and the assertion stays what G3 says. The file is the `scenarios-g` project: the walks are
 most of the Playwright job, and the performance budget waits until they are done.
 
-`specs/a11y.spec.ts` runs axe-core (`@axe-core/playwright`) on `/`, `/pl/`, `/cv`, `/ui/` and
+`specs/a11y.spec.ts` runs axe-core (`@axe-core/playwright`) on `/`, `/pl/`, `/cv/`, `/ui/` and
 `/ui/primitives/`, in light and dark, at 1280×820 and 390×664. Any violation fails the run. An
 incomplete result is annotated on the test and does not fail it: axe did not decide. Theme is
 `strm-theme` in localStorage, read by the same inline script the page uses.

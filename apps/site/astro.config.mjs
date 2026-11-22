@@ -1,9 +1,24 @@
+import { execFileSync } from "node:child_process"
 import sitemap from "@astrojs/sitemap"
 import { defineConfig, envField } from "astro/config"
+import { staysUnindexed } from "./src/lib/indexing.ts"
+
+// One date for every URL: the commit this build was made from, not the clock
+// at build time. A rebuild of the same commit does not pretend the pages
+// changed. It is not per page. The route list has no map from a URL to the
+// file that last changed it, and a second map would drift.
+function commitLastModified() {
+  const iso = execFileSync("git", ["log", "-1", "--format=%cI"], { encoding: "utf8" }).trim()
+  return new Date(iso)
+}
 
 export default defineConfig({
   site: "https://strm.dev",
   output: "static",
+  // Folder indexes. Cloudflare's default html_handling is auto-trailing-slash,
+  // and this repo does not set it (wrangler.jsonc), so the host serves `/cv/`
+  // and redirects `/cv` to it. See src/lib/address.ts.
+  trailingSlash: "always",
   // Stylesheets. `build.inlineStylesheets` stays "auto" (the default): a stylesheet is
   // inlined into the document when it is smaller than `vite.build.assetsInlineLimit`
   // (default 4096 B), and emitted as a render-blocking file when it is not. The limit is
@@ -45,11 +60,13 @@ export default defineConfig({
   },
   // Astro 7 does not write a sitemap. This integration lists built pages and adds
   // hreflang only for a path that exists in more than one locale. Norwegian is
-  // not launched, so it is not an alternate. /ui and /ui/primitives stay in the
-  // list. They are noindex until the owner decides whether the catalogue is
-  // indexed (ADR 0005).
+  // not launched, so it is not an alternate. Paths that stay unindexed (/ui,
+  // the 404) are left out: the sitemap lists only what a production build may
+  // index. lastmod is the commit above, the same value on every URL.
   integrations: [
     sitemap({
+      filter: (page) => !staysUnindexed(new URL(page).pathname),
+      lastmod: commitLastModified(),
       i18n: {
         defaultLocale: "en",
         locales: {
