@@ -18,7 +18,11 @@
   --spark-y: 0px;
   --spark-size: 30px;
   --spark-peak: 1.25;
-  --spark-ink: var(--ink);
+  /* The prototype's spark is white with an accent glow that its own clip cuts off. On paper
+     white does not show, so the spark takes the accent: it marks `how`, which is the accent's. */
+  --spark-ink: var(--accent);
+  --spark-turn-peak: 20deg;
+  --spark-turn: 70deg;
   --spark-shape: polygon(50% 0, 57% 43%, 100% 50%, 57% 57%, 50% 100%, 43% 57%, 0 50%, 43% 43%);
   --spark-time: var(--motion-move);
   --spark-ease: var(--ease-out);

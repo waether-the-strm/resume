@@ -25,14 +25,18 @@
   animation-delay: var(--spark-beat);
 }
 
+/* It turns as it flares: the prototype's 0, 20 and 70 degrees (line 93). */
 @keyframes ui-spark {
   0% {
     scale: 0;
+    rotate: 0deg;
   }
   35% {
     scale: var(--spark-peak);
+    rotate: var(--spark-turn-peak);
   }
   100% {
     scale: 0;
+    rotate: var(--spark-turn);
   }
 }
