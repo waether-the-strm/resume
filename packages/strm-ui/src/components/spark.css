@@ -1,0 +1,38 @@
+/*
+ * Spark: the glint where `how?` leaves the equation and where it lands in the guide's corner.
+ * Decoration: no text, not in the accessibility tree. A script adds it at a point of the viewport
+ * (--spark-x, --spark-y) and removes it when the animation ends. The late one waits a beat, so the
+ * two read as one thing travelling. Reduced motion zeroes the roles: the animation then ends at
+ * once and the spark is never seen.
+ *   <i class="ui-spark" aria-hidden="true" style="--spark-x: 120px; --spark-y: 80px"></i>
+ *   <i class="ui-spark is-late" aria-hidden="true"></i>
+ */
+.ui-spark {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--spark-layer);
+  width: var(--spark-size);
+  height: var(--spark-size);
+  pointer-events: none;
+  background: var(--spark-ink);
+  clip-path: var(--spark-shape);
+  translate: calc(var(--spark-x) - 50%) calc(var(--spark-y) - 50%);
+  scale: 0;
+  animation: ui-spark var(--spark-time) var(--spark-ease) both;
+}
+.ui-spark.is-late {
+  animation-delay: var(--spark-beat);
+}
+
+@keyframes ui-spark {
+  0% {
+    scale: 0;
+  }
+  35% {
+    scale: var(--spark-peak);
+  }
+  100% {
+    scale: 0;
+  }
+}

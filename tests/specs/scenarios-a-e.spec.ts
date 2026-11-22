@@ -428,8 +428,118 @@ for (const viewport of viewports) {
           }
         })
 
-        test.fixme("A13: sparks at the crossings are not built", async () => {
-          // Nothing in the page stands for a spark (#38).
+        test("A13: a spark where how leaves the equation and one where it lands, again on the way back", async ({
+          page,
+        }) => {
+          test.setTimeout(60_000)
+          await openLive(page, locale.path)
+          // Record every spark the moment it is added: what it is, where it is, and where the
+          // two places stood at that instant. The wheel below is real input; this only watches.
+          await page.evaluate(() => {
+            const seen: unknown[] = []
+            // The tour takes some places off the page while it announces the crossing, so a
+            // frame loop keeps the last place each one was seen at, as the reader saw it.
+            const last: Record<"equation" | "corner", { x: number; y: number } | null> = {
+              equation: null,
+              corner: null,
+            }
+            const look = (selector: string) => {
+              const box = document.querySelector(selector)?.getBoundingClientRect()
+              return box && box.width > 0
+                ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+                : null
+            }
+            const frame = () => {
+              last.equation = look(".equation .how .q") ?? last.equation
+              if (document.querySelector(".guide")?.hasAttribute("data-how")) {
+                last.corner = look(".guide .how") ?? last.corner
+              }
+              requestAnimationFrame(frame)
+            }
+            frame()
+            new MutationObserver((records) => {
+              for (const node of records.flatMap((record) => [...record.addedNodes])) {
+                if (!(node instanceof HTMLElement) || !node.classList.contains("ui-spark")) continue
+                seen.push({
+                  hidden: node.getAttribute("aria-hidden"),
+                  text: node.textContent,
+                  late: node.classList.contains("is-late"),
+                  x: parseFloat(node.style.getPropertyValue("--spark-x")),
+                  y: parseFloat(node.style.getPropertyValue("--spark-y")),
+                  equation: last.equation,
+                  corner: last.corner,
+                })
+              }
+            }).observe(document.body, { childList: true })
+            ;(window as unknown as { sparksSeen: unknown[] }).sparksSeen = seen
+          })
+          type Seen = {
+            hidden: string | null
+            text: string | null
+            late: boolean
+            x: number
+            y: number
+            equation: { x: number; y: number } | null
+            corner: { x: number; y: number } | null
+          }
+          const seen = () =>
+            page.evaluate(() => (window as unknown as { sparksSeen: Seen[] }).sparksSeen)
+          const near = (spark: Seen, place: Seen["equation"]) =>
+            place !== null && Math.hypot(spark.x - place.x, spark.y - place.y) <= 12
+          const wheelUntil = async (delta: number, arrived: () => Promise<boolean>) => {
+            for (let tick = 0; tick < 60; tick++) {
+              if (await arrived()) return
+              await page.mouse.wheel(0, delta)
+              await page.waitForTimeout(120)
+            }
+            throw new Error("the wheel never took how across the crossing")
+          }
+          const inCorner = () =>
+            page.locator(".guide").evaluate((guide) => guide.hasAttribute("data-how"))
+
+          // Before the crossing there is none.
+          expect(await seen()).toHaveLength(0)
+          await wheelUntil(100, inCorner)
+          await expect.poll(async () => (await seen()).length).toBe(2)
+          const forward = await seen()
+          expect(forward.map((spark) => spark.late)).toEqual([false, true])
+          expect(
+            near(forward[0] as Seen, forward[0]?.equation ?? null),
+            "first: the equation"
+          ).toBe(true)
+          // The corner is fixed to the viewport: read it where it stands once the spark has landed.
+          const corner = await page.locator(".guide .how").evaluate((element) => {
+            const box = element.getBoundingClientRect()
+            return { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+          })
+          expect(near(forward[1] as Seen, corner), "second: the corner").toBe(true)
+          for (const spark of forward) {
+            expect(spark.hidden).toBe("true")
+            expect(spark.text).toBe("")
+          }
+          // The two places are apart, so each spark is where it says and not both in one spot.
+          expect(
+            Math.hypot(forward[0]!.x - forward[1]!.x, forward[0]!.y - forward[1]!.y)
+          ).toBeGreaterThan(20)
+          // Each removes itself when its animation ends.
+          await expect(page.locator(".ui-spark")).toHaveCount(0)
+          // A scroll that stays past the crossing fires no more.
+          await page.mouse.wheel(0, 100)
+          await page.waitForTimeout(300)
+          expect(await seen()).toHaveLength(2)
+
+          // Back across it: mirrored, the corner first and the equation a beat later.
+          await wheelUntil(-100, async () => !(await inCorner()))
+          await expect.poll(async () => (await seen()).length).toBe(4)
+          const back = (await seen()).slice(2)
+          expect(back.map((spark) => spark.late)).toEqual([false, true])
+          const equationNow = await page.locator(".equation .how .q").evaluate((element) => {
+            const box = element.getBoundingClientRect()
+            return { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+          })
+          expect(near(back[0] as Seen, corner), "back, first: the corner").toBe(true)
+          expect(near(back[1] as Seen, equationNow), "back, second: the equation").toBe(true)
+          await expect(page.locator(".ui-spark")).toHaveCount(0)
         })
 
         test("B1: the words heading melts in, the message is not visible yet", async ({ page }) => {
