@@ -4,7 +4,8 @@
 // writes attributes and classes: which stop is current, whether the name row is folded,
 // whether the menu and its settings are open, and which value a setting shows. It never
 // builds markup.
-import type { Theme } from "../../lib/prefs"
+import type { Settle, Store } from "@strm/narrative"
+import type { Prefs, Theme } from "../../lib/prefs"
 import type { TourPart } from "./types"
 
 /** How long an open blob stays open without a further interaction. The prototype's 4500 ms. */
@@ -99,6 +100,13 @@ export function createBlobFold(clock: BlobClock, onChange: (open: boolean) => vo
   return {
     isOpen: () => open,
     toggle() {
+      // Under a resting mouse the blob is already open, opened by the pointer coming in.
+      // A press on the title then is the reader reaching for it, not asking it to fold:
+      // it stays, and the stay starts again. It folds when the pointer leaves.
+      if (open && over) {
+        arm(BLOB_STAY_MS)
+        return
+      }
       setOpen(!open)
     },
     close() {
@@ -140,7 +148,20 @@ function coarsePointer(): boolean {
   }
 }
 
-export const blob: TourPart = ({ store, settle, prefs }) => {
+interface BlobDeps {
+  prefs: Prefs
+  /** The tour's state. Absent on the finished page: the title keeps what the server rendered. */
+  store?: Store
+  /** Steering. Absent, or null when a moment is frozen: `the start` then scrolls the page. */
+  settle?: Settle | null
+}
+
+/**
+ * The one implementation, two ways to start it. With the tour it follows the story; without
+ * it (reduced motion, or any page where the tour did not start) it is only the menu, the
+ * settings and the preferences, and the finished page stays as the server rendered it.
+ */
+function bindBlob({ prefs, store, settle }: BlobDeps): void {
   const root = document.querySelector<HTMLElement>(".ui-blob")
   const title = root?.querySelector<HTMLButtonElement>(".ui-blob__title")
   const menu = root?.querySelector<HTMLElement>(".ui-blob__menu")
@@ -154,6 +175,9 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
   const tldr = document.querySelector<HTMLAnchorElement>(".ui-blob__tldr")
   if (!root || !title || !menu || !name || !sound || !start || !work || !tldr) return
   if (!theme || !more || !strip) return
+  // Whoever starts first binds; a second start, from the tour or the entry, does nothing.
+  if (root.dataset.bound !== undefined) return
+  root.dataset.bound = ""
   // Copies, so the closures below keep the narrowed types.
   const blobEl: HTMLElement = root
   const titleEl: HTMLButtonElement = title
@@ -167,9 +191,8 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
   const workEl: HTMLAnchorElement = work
   const tldrEl: HTMLAnchorElement = tldr
 
-  // The title does nothing until this part is running, so the finished page (no script,
-  // or reduced motion, which never starts the parts) does not put a dead control in
-  // the tab order. Once the tour is on, it is a real button.
+  // The title does nothing until this is running, so a page without script does not put a
+  // dead control in the tab order. Once bound, it is a real button.
   titleEl.tabIndex = 0
 
   const stops = [...blobEl.querySelectorAll<HTMLElement>(".ui-blob__stop")]
@@ -259,7 +282,8 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
   })
   startEl.addEventListener("click", () => {
     fold.close()
-    settle?.goTo(0)
+    if (store) settle?.goTo(0)
+    else window.scrollTo({ top: 0, behavior: prefs.motionAllowed() ? "smooth" : "auto" })
   })
   workEl.addEventListener("click", () => fold.close())
 
@@ -285,6 +309,11 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
     paintTheme(state.theme)
   })
 
+  if (!store) {
+    // No story to follow: the reader's own scrolling folds it, as the tour's position would.
+    window.addEventListener("scroll", () => fold.scroll(), { passive: true })
+    return
+  }
   let position = store.get().position
   paint(store.get())
   store.subscribe((state) => {
@@ -293,4 +322,12 @@ export const blob: TourPart = ({ store, settle, prefs }) => {
     position = state.position
     fold.scroll()
   })
+}
+
+/** On the tour: the part that follows the story. */
+export const blob: TourPart = ({ store, settle, prefs }) => bindBlob({ prefs, store, settle })
+
+/** On the finished page: the menu and the settings, with no store. Safe to call twice. */
+export function blobMenu(prefs: Prefs): void {
+  bindBlob({ prefs })
 }

@@ -4,7 +4,8 @@
 // what the guide says. All the looks are CSS (styles/tour.css). The engine knows no DOM;
 // this file knows nothing about the story.
 //
-// It does not run under reduced motion: that reader keeps the finished page.
+// It does not run under reduced motion: that reader keeps the finished page, with the blob's
+// menu started on its own (blobMenu), so language and theme are one press away there too.
 import {
   createScenes,
   createSettle,
@@ -19,6 +20,7 @@ import {
 import { createPrefs } from "../lib/prefs"
 import { createEquationView } from "./equation"
 import { parts } from "./parts"
+import { blobMenu } from "./parts/blob"
 
 const SKINS = ["none", "words", "structure", "look"] as const
 
@@ -34,6 +36,7 @@ function start(): void {
   if (!track || !stage || !message || !guide || !prefs.motionAllowed() || frozen.kind === "card") {
     root.removeAttribute("data-tour")
     if (frozen.kind === "card") document.getElementById("jan")?.scrollIntoView()
+    blobMenu(prefs)
     return
   }
 
@@ -43,6 +46,7 @@ function start(): void {
   } | null
   if (!data) {
     root.removeAttribute("data-tour")
+    blobMenu(prefs)
     return
   }
   const laid = layout(data.stops, data.weights)

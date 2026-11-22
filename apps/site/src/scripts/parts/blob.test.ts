@@ -142,3 +142,20 @@ test("the theme steps from the system's to light, to dark, and back", () => {
   assert.equal(nextTheme("light"), "dark")
   assert.equal(nextTheme("dark"), null)
 })
+
+test("a press on the title under a resting mouse does not fold what the mouse opened", () => {
+  const clock = fakeClock()
+  const fold = createBlobFold(clock, () => {})
+  fold.enter()
+  fold.toggle()
+  assert.equal(fold.isOpen(), true)
+  assert.equal(clock.ms(), 4500)
+  fold.leave()
+  clock.fire()
+  assert.equal(fold.isOpen(), false)
+  // Without a mouse over it (a tap, a key) the title still toggles.
+  fold.toggle()
+  assert.equal(fold.isOpen(), true)
+  fold.toggle()
+  assert.equal(fold.isOpen(), false)
+})
