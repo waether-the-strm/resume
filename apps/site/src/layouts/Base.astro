@@ -3,9 +3,13 @@ import "@strm/ui/index.css"
 import themeInit from "@strm/ui/theme-init.js?raw"
 import recursiveFont from "@strm/ui/fonts/recursive.woff2?url"
 import { STRM_PRODUCTION } from "astro:env/server"
-import { emitsNoindex } from "../lib/indexing"
+import { singleWithLocale } from "../i18n/content"
 import { defaultLocale, launched, localePath, type Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
+import { withTrailingSlash } from "../lib/address"
+import { emitsNoindex } from "../lib/indexing"
+import { shareHeight, shareImagePath, shareWidth } from "../lib/share"
+import { homeDocument, jsonLd, personFromCv, profileDocument } from "../lib/structured-data"
 
 interface Props {
   title: string
@@ -17,9 +21,31 @@ interface Props {
 const { title, description, locale = defaultLocale, path } = Astro.props
 const noindex = emitsNoindex(Astro.url.pathname, STRM_PRODUCTION)
 const absolute = (to: string) => new URL(to, Astro.site).href
-const canonical = path !== undefined ? absolute(localePath(locale, path)) : undefined
+// The host serves a folder index at the trailing-slash URL. See lib/address.ts.
+const served = (forLocale: Locale, page: string) =>
+  absolute(withTrailingSlash(localePath(forLocale, page)))
+const canonical = path !== undefined ? served(locale, path) : undefined
 const summary = description ?? t(locale, "site.description")
 const siteName = t(locale, "site.title")
+const shareImage = absolute(shareImagePath(locale))
+const shareAlt = t(locale, "share.alt")
+const structured = await structuredData()
+
+async function structuredData(): Promise<string | undefined> {
+  if (path !== "/" && path !== "/cv") return undefined
+  if (!Astro.site) throw new Error("site is not configured")
+  // One person. The CV entry exists in English; Polish shows that entry. Reading
+  // English here keeps the facts and does not print a fallback for the home page.
+  const cv = (await singleWithLocale("cv", defaultLocale)).data
+  const person = personFromCv(cv, Astro.site.href)
+  if (path === "/") {
+    const home = served(locale, "/")
+    if (!home) throw new Error("The home page has no canonical URL")
+    return jsonLd(homeDocument(person, { name: siteName, url: home, inLanguage: locale }))
+  }
+  if (!canonical) throw new Error("The CV has no canonical URL")
+  return jsonLd(profileDocument(person, canonical))
+}
 ---
 
 <!doctype html>
@@ -34,16 +60,12 @@ const siteName = t(locale, "site.title")
     {
       path !== undefined &&
         launched.map((other) => (
-          <link rel="alternate" hreflang={other} href={absolute(localePath(other, path))} />
+          <link rel="alternate" hreflang={other} href={served(other, path)} />
         ))
     }
     {
       path !== undefined && (
-        <link
-          rel="alternate"
-          hreflang="x-default"
-          href={absolute(localePath(defaultLocale, path))}
-        />
+        <link rel="alternate" hreflang="x-default" href={served(defaultLocale, path)} />
       )
     }
     {canonical && <link rel="canonical" href={canonical} />}
@@ -58,9 +80,16 @@ const siteName = t(locale, "site.title")
     {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={summary} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:width" content={String(shareWidth)} />
+    <meta property="og:image:height" content={String(shareHeight)} />
+    <meta property="og:image:alt" content={shareAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={summary} />
+    <meta name="twitter:image" content={shareImage} />
+    <meta name="twitter:image:alt" content={shareAlt} />
+    {structured && <script is:inline type="application/ld+json" set:html={structured} />}
     <link rel="sitemap" type="application/xml" href={absolute("/sitemap-index.xml")} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>

@@ -6,6 +6,9 @@ const en = {
   "site.title": "Jan Mirecki, design engineer",
   "site.description":
     "Jan Mirecki, design engineer in Oslo. 15 years designing for the web, 11 years building it.",
+  // Alt text for the share image. The same words as the site title; Jan rewrites
+  // the image and this line together. The image is a proposal, not a final look.
+  "share.alt": "Jan Mirecki, design engineer",
   "nav.skip": "Skip to the card",
   "nav.paths": "Ways in",
   "nav.language": "Language",
@@ -57,6 +60,8 @@ const pl: Record<UiKey, string> = {
   "site.title": "Jan Mirecki, design engineer",
   "site.description":
     "Jan Mirecki, design engineer z Oslo. 15 lat projektowania dla sieci, 11 lat jej budowania.",
+  // DRAFT for Jan: English repeated until the Polish is written.
+  "share.alt": "Jan Mirecki, design engineer",
   "nav.skip": "Przejdź do wizytówki",
   "nav.paths": "Wejścia",
   "nav.language": "Język",
