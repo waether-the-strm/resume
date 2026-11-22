@@ -19,9 +19,11 @@ not repeated. The gesture lengths and the settle poll are the prototype's tools
 (`docs/spec/tools/rest.mjs`, `stops.mjs`), called as helpers. There is no `html[data-stop]`; a rest
 is placed against `.track[data-track]`. Each test writes one file under `test-results/rest/`; the
 global teardown concatenates them into `test-results/rest.md` and, in CI, appends that to the job
-summary. G13 is `test.fixme`: the exit warp is not built. The wheel walk at 1280×820 is `test.fail`:
-G3 fails there, and the assertion stays what G3 says. The file is the `scenarios-g` project: the
-walks are most of the Playwright job, and the performance budget waits until they are done.
+summary. G13 scrolls on from the look and checks the warp: blur and fade from the stylesheet, empty
+inline filter and opacity at rest, opacity only on a coarse pointer, and no warp under reduced
+motion. The wheel walk at 1280×820 is `test.fail`: G3 fails there, and the assertion stays what G3
+says. The file is the `scenarios-g` project: the walks are most of the Playwright job, and the
+performance budget waits until they are done.
 
 `specs/a11y.spec.ts` runs axe-core (`@axe-core/playwright`) on `/`, `/pl/`, `/cv`, `/ui/` and
 `/ui/primitives/`, in light and dark, at 1280×820 and 390×664. Any violation fails the run. An

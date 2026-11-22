@@ -37,8 +37,7 @@ import {
 //   G10 the blob, G12 its menu tests/specs/blob.spec.ts
 //   G9 the finished page with no tour, at 390×664   tests/specs/static-page.spec.ts
 //
-// This file adds G1, G2, G3, G6, G7 and the live half of G9. G13 is a fixme: the exit
-// warp is issue #38, and it is not built. The page has no `html[data-stop]`; a rest is
+// This file adds G1, G2, G3, G6, G7, the live half of G9, and G13. The page has no `html[data-stop]`; a rest is
 // placed against `.track[data-track]`, and checked against the blob's title and the
 // rail's nearest stop. `aria-current` is the chapter (G11), not the hold.
 test.use({ contextOptions: { reducedMotion: "no-preference" } })
@@ -440,8 +439,133 @@ test.describe("G9 at 390×664", () => {
   }
 })
 
-test.fixme("G13: the exit warp is not built", async () => {
-  // #38. Scrolling on from the look warps, blurs and fades the board over about
-  // 0.55 screens; scrolling back re-forms it. At rest on the look the message
-  // has no filter and no opacity. The page has neither yet.
+test.describe("G13", () => {
+  test.use({ viewport: { width: 1280, height: 820 } })
+
+  test("leaving the look warps and fades the message, and the rest has neither", async ({
+    page,
+  }) => {
+    await openTour(page, live.path)
+    await page.mouse.move(640, 410)
+    const stops = page.locator(".ui-rail__stop")
+    const count = await stops.count()
+    let last = -1
+    for (let index = 0; index < count; index++) {
+      if (await stops.nth(index).isVisible()) last = index
+    }
+    expect(last, "a rail stop for the look").toBeGreaterThan(0)
+    await stops.nth(last).click()
+    await settle(page)
+
+    const rested = await readExit(page)
+    expect(rested.inlineFilter, "at rest the inline filter is empty").toBe("")
+    expect(rested.inlineOpacity, "at rest the inline opacity is empty").toBe("")
+    expect(rested.exit, "at rest the warp is off").toBeNull()
+    expect(rested.filter, "at rest the computed filter is none").toBe("none")
+    expect(rested.opacity, "at rest the message is fully there").toBe(1)
+
+    // A burst, not a settled tick: the idle is 170ms, and a settled tick from the
+    // look would be pulled back into the hold before the warp could show.
+    // 140px is about 0.17 of this screen, so the 0.55-screen warp spans a few ticks.
+    const leaving = await burst(page, 140)
+    expect(leaving.mid, "a frame inside the 0.55 screens is still blurring").not.toBeNull()
+    const mid = leaving.mid!
+    expect(mid.exit).toBe("on")
+    expect(mid.inlineFilter, "the filter is the stylesheet, not an inline style").toBe("")
+    expect(mid.inlineOpacity, "the fade is the stylesheet, not an inline style").toBe("")
+    const blur = Number(/blur\(([0-9.]+)px\)/.exec(mid.filter)?.[1])
+    expect(blur, "the prototype blurs by x * 5px").toBeCloseTo(mid.warp * 5, 1)
+    const fade = Math.max(0, 1 - mid.warp * mid.warp * 1.15)
+    expect(mid.opacity, "the fade is max(0, 1 - x * x * 1.15)").toBeCloseTo(fade, 1)
+    expect(leaving.highest.warp, "the warp keeps going past that frame").toBeGreaterThan(mid.warp)
+
+    const returning = await burst(page, -140)
+    expect(returning.lowest.warp, "scrolling back re-forms the message").toBeLessThan(
+      leaving.highest.warp
+    )
+
+    await stops.nth(last).click()
+    await settle(page)
+    const again = await readExit(page)
+    expect(again.inlineFilter, "back on the look the inline filter is empty").toBe("")
+    expect(again.inlineOpacity, "back on the look the inline opacity is empty").toBe("")
+    expect(again.exit, "back on the look the warp is off").toBeNull()
+    expect(again.filter).toBe("none")
+    expect(again.opacity).toBe(1)
+  })
+
+  test("a coarse pointer fades and does not blur", async ({ page }) => {
+    const client = await page.context().newCDPSession(page)
+    await client.send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 1 })
+    await openTour(page, live.path)
+    const coarse = await page.evaluate(() => window.matchMedia("(pointer: coarse)").matches)
+    expect(coarse, "the emulation is a coarse pointer").toBe(true)
+    await page.mouse.move(200, 400)
+    const stops = page.locator(".ui-rail__stop")
+    const count = await stops.count()
+    let last = -1
+    for (let index = 0; index < count; index++) {
+      if (await stops.nth(index).isVisible()) last = index
+    }
+    await stops.nth(last).click()
+    await settle(page)
+
+    const leaving = await burst(page, 140)
+    expect(leaving.mid, "the fade is on while the look is leaving").not.toBeNull()
+    expect(leaving.mid!.exit, "coarse is opacity only").toBe("fade")
+    expect(leaving.mid!.filter, "no filter until a real phone has shown one").toBe("none")
+    expect(leaving.mid!.opacity).toBeLessThan(1)
+    expect(leaving.mid!.inlineOpacity).toBe("")
+  })
 })
+
+test.describe("G13, reduced motion", () => {
+  test.use({
+    viewport: { width: 1280, height: 820 },
+    contextOptions: { reducedMotion: "reduce" },
+  })
+
+  test("a reduced page does not warp", async ({ page }) => {
+    // The tour does not run under reduced motion (tour.ts), so the part never
+    // starts. Scrolling the finished page must still leave the message alone.
+    await page.goto(live.path)
+    await page.mouse.move(640, 410)
+    const leaving = await burst(page, 140)
+    expect(leaving.highest.exit).toBeNull()
+    expect(leaving.highest.inlineFilter).toBe("")
+    expect(leaving.highest.inlineOpacity).toBe("")
+    expect(leaving.highest.filter).toBe("none")
+  })
+})
+
+async function burst(page: Page, dy: number) {
+  let mid: Awaited<ReturnType<typeof readExit>> | null = null
+  let highest = await readExit(page)
+  let lowest = highest
+  for (let tick = 0; tick < 14; tick++) {
+    await page.mouse.wheel(0, dy)
+    await page.waitForTimeout(16)
+    const now = await readExit(page)
+    if ((now.exit === "on" || now.exit === "fade") && mid === null) mid = now
+    if (now.warp > highest.warp) highest = now
+    if (now.warp < lowest.warp) lowest = now
+  }
+  return { mid, highest, lowest }
+}
+
+async function readExit(page: Page) {
+  return page.evaluate(() => {
+    const message = document.querySelector(".message")
+    if (!(message instanceof HTMLElement)) throw new Error("no message")
+    const computed = getComputedStyle(message)
+    const warp = Number(message.style.getPropertyValue("--warp"))
+    return {
+      inlineFilter: message.style.filter,
+      inlineOpacity: message.style.opacity,
+      warp: Number.isFinite(warp) ? warp : 0,
+      exit: message.getAttribute("data-exit"),
+      filter: computed.filter,
+      opacity: Number(computed.opacity),
+    }
+  })
+}
