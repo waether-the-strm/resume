@@ -45,9 +45,9 @@ the reader's controls already are.
   theme switch are gone; the blob is the only place for them. Because the blob's menu used to open
   only while the tour ran, that is two changes together:
   - The blob works without the tour. With JavaScript and reduced motion the title is a real button
-    and the menu, the settings, sound, theme and language behave as on the tour, by the same
-    folding rules. What needs the engine shows the finished page's state: the title keeps the last
-    stop, the name row stays folded, `the start` scrolls to the top.
+    and the menu, the settings, sound, theme and language behave as on the tour, by the same folding
+    rules. What needs the engine shows the finished page's state: the title keeps the last stop, the
+    name row stays folded, `the start` scrolls to the top.
   - Without JavaScript, language is a link in a `noscript` footer, the other launched language and
     nothing else. Theme cannot change without a script; the system's applies.
 - The sound control moves from the grid to the strip, so the grid becomes navigation only.
