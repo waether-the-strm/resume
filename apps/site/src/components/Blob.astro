@@ -6,6 +6,7 @@ import { narrative } from "../i18n/content"
 import { launched, localeNames, localePath, type Locale } from "../i18n/locales"
 import { t } from "../i18n/ui"
 import { stopMark } from "../lib/stop-mark"
+import { copyOptions } from "../scripts/copy-variant"
 
 interface Props {
   locale: Locale
@@ -120,6 +121,16 @@ const next = launched[(launched.indexOf(locale) + 1) % launched.length] ?? local
                 </span>
                 <span class="ui-blob__next" lang={next}>{localeNames[next]}</span>
               </a>
+              <label data-blob="copy">
+                <span>{t(locale, "blob.copy")}</span>
+                <select>
+                  {
+                    copyOptions.map((option) => (
+                      <option value={option.value}>{option.label}</option>
+                    ))
+                  }
+                </select>
+              </label>
             </div>
           </div>
         </div>

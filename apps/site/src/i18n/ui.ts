@@ -33,7 +33,7 @@ const en = {
   "blob.off": "off",
   "blob.start": "the start",
   "blob.work": "the work",
-  // The settings (#127, ADR 0012): a row that unfolds a strip of three. Lower case, like
+  // The settings (#127, ADR 0012): a row that unfolds a strip. Lower case, like
   // the rest of the blob; the footer's switch keeps its own capitalised words.
   "blob.settings": "settings",
   "blob.theme": "theme",
@@ -41,6 +41,8 @@ const en = {
   "blob.theme.light": "light",
   "blob.theme.dark": "dark",
   "blob.language": "language",
+  // Temporary (#163): the copy-variant switch. It goes away when one version is chosen.
+  "blob.copy": "copy",
   "blob.tldr": "tldr",
   "blob.tldr.long": "tldr, go to the card",
   // The name row. The name is a fact; the role and the city are the words the card
@@ -91,6 +93,8 @@ const pl: Record<UiKey, string> = {
   "blob.theme.light": "light",
   "blob.theme.dark": "dark",
   "blob.language": "language",
+  // DRAFT for Jan: English repeated until the Polish is written.
+  "blob.copy": "copy",
   "blob.tldr": "tldr",
   // DRAFT for Jan: the accessible name. The visible text stays "tldr". The rest reuses
   // `nav.skip` ("Przejdź do wizytówki"), so the name says where the link goes.

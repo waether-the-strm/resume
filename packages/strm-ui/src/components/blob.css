@@ -28,6 +28,9 @@
  *                 <span class="ui-blob__value"><span class="is-on">English</span></span>
  *                 <span class="ui-blob__next" lang="pl">Polski</span>
  *               </a>
+ *               <label data-blob="copy"><span>copy</span>
+ *                 <select><option value="">0. Current Draft</option><option value="a">A. Dry &amp; Witty</option></select>
+ *               </label>
  *             </div>
  *           </div>
  *         </div>
@@ -215,6 +218,21 @@
 }
 .ui-blob.is-settings .ui-blob__strip > :nth-child(3) {
   transition-delay: var(--motion-micro);
+}
+.ui-blob.is-settings .ui-blob__strip > :nth-child(4) {
+  transition-delay: calc(var(--motion-micro) * 1.3);
+}
+.ui-blob__strip select {
+  font: inherit;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 500;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
 /* A value: every option sits in one cell, so the widest sets the width and a change
