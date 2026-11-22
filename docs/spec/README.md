@@ -18,6 +18,7 @@ in an ADR.
 | `notes/verify.md` | How the prototype was rendered and checked. |
 | `tools/` | `rest.mjs` and `stops.mjs` measure where scrolling comes to rest; `snap.sh` and `phone.html` render the frozen moments. |
 | `lab/exit-effects.html` | Seven ways for the look to leave towards the card, as stills. |
+| `lab/scroll-affordances.html` | Ways to say "scroll" on the first frame: on a desktop the mouse wheel or a line with a chevron, on a phone the swipe finger or the warm line. Jan's choice for the phone is the swipe finger (22 Nov 2026). |
 
 ## Where to find things in the prototype
 
