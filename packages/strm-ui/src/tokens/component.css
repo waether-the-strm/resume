@@ -193,12 +193,15 @@
   --hint-finger-word: -26px;
   /*
    * The gap under the words, matching the desktop hint at 1280×700 (#145):
-   * the mouse's box ended 12.5px above the blob. The part writes
-   * `--hint-blob-clear` (viewport bottom to the blob's top) because the blob
-   * is one row or two, and the phone tokens do not give that painted height.
-   * Until that property exists, the box stays at the lab's 34px.
+   * the mouse's box ended 12.5px above the blob. `--hint-blob-clear` is the
+   * distance from the viewport bottom to the blob's top. Its initial value
+   * keeps the lab's 34px. The part replaces it when the hint is shown, because
+   * the blob is one row or two and the phone tokens are not that painted height.
    */
   --hint-over-blob: 12.5px;
+  --hint-blob-clear: calc(
+    var(--hint-finger-bottom) - var(--hint-over-blob) + var(--hint-finger-word)
+  );
   --hint-finger-time: calc(var(--motion-scene) * 2.75);
   --hint-finger-ease: var(--ease-in-out);
 }

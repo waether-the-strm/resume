@@ -215,14 +215,24 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * ceiling: `/` 1946.8, 1943.1, 1918.0; `/pl/` 1942.4, 1943.6, 1944.5. The round
  * above was `/` 1952.4, 1939.4, 1945.1 and `/pl/` 1941.2, 1943.0, 1938.6.
  * About 1% apart.
+ *
+ * Measured again on 22 Nov 2026, once `--hint-blob-clear` is a token. Three
+ * cold loads, the same bytes each time. CSS 6883 (+10): the initial value
+ * moved into the token file and the component reads it plainly. Document `/`
+ * 9998 (−1) and `/pl/` 10302 (−1): the hashed sheet address. Script and font
+ * did not move. Layout shift stayed 0. One tour load scored 0.0005 and the
+ * other five scored 0, inside the margin, so it is not a new baseline.
+ * Finished paint stayed with the ceiling: `/` 1954.1, 1947.1, 1956.2; `/pl/`
+ * 1933.1, 1918.1, 1950.7. The round above was `/` 1946.8, 1943.1, 1918.0 and
+ * `/pl/` 1942.4, 1943.6, 1944.5. About 1% apart.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9999, css: 6873, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10303, css: 6873, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9998, css: 6883, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10302, css: 6883, font: 49656 },
   },
   tour: {
     "/": { cls: 0, script: 12980 },

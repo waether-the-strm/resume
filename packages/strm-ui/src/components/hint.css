@@ -164,15 +164,8 @@
     /*
      * Words included: they hang `--hint-finger-word` below the box, so the box
      * sits that far above the line that is `--hint-over-blob` clear of the blob.
-     * With no measurement, the fallback is the lab's 34px.
      */
-    bottom: calc(
-      var(
-          --hint-blob-clear,
-          calc(var(--hint-finger-bottom) - var(--hint-over-blob) + var(--hint-finger-word))
-        ) +
-        var(--hint-over-blob) - var(--hint-finger-word)
-    );
+    bottom: calc(var(--hint-blob-clear) + var(--hint-over-blob) - var(--hint-finger-word));
     display: block;
     width: var(--hint-finger-box);
     height: var(--hint-finger-height);
