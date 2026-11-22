@@ -2,6 +2,7 @@
 // strm-ui primitives, assembled by the same components the home page uses, with its real
 // content. The layout around the primitives belongs to those components.
 import Base from "../../layouts/Base.astro"
+import { t } from "../../i18n/ui"
 import Blob from "../../components/Blob.astro"
 import Card from "../../components/Card.astro"
 import Message from "../../components/Message.astro"
@@ -88,6 +89,22 @@ import Work from "../../components/Work.astro"
             menuId="blob-menu-settings-open"
             labelledBy="blob-settings"
           />
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-hint">
+      <h2 id="h-hint" class="type-micro part">The scroll hint · ui-hint</h2>
+      <p class="type-lead intro">
+        The desktop hint on the first frame: a mouse, its wheel, and the word under it. The home
+        page keeps it hidden until the tour is on and a short pause has passed, and only for a fine
+        pointer on a wide screen. This section sets the tour and the shown state, so it sits where
+        the home page puts it, above the blob.
+      </p>
+      <div class="specimen" data-tour="on">
+        <div class="ui-hint is-shown" aria-hidden="true">
+          <i class="ui-hint__mouse"></i>
+          <span class="ui-hint__word">{t("en", "hint.scroll")}</span>
         </div>
       </div>
     </section>

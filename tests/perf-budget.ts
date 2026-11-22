@@ -147,18 +147,28 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * stays: `/` 1914.2, 1906.9, 1904.6; `/pl/` 1902.1, 1963.0, 1895.6 (rebuild's last round:
  * `/` 1891.8, 1894.8, 1871.2; `/pl/` 1862.2, 1925.3, 1893.5, about 1% to 3% apart, the
  * same noise as between those three runs).
+ *
+ * Measured again on 22 Nov 2026, with the scroll hint (#145). Three cold loads, the
+ * same bytes each time. Document `/` 9981 (+302) and `/pl/` 10287 (+320): the hint's
+ * markup. CSS 6549 (+421): `ui-hint` and its tokens, in the shared base sheet. Script
+ * 13321 (+619): the hint part. Font did not move. Layout shift stayed 0, except one
+ * tour `/` sample at 0.0004, inside the 0.01 margin, so it is not a new baseline.
+ * Finished paint stayed with rebuild, so that ceiling stays: `/` 1938.5, 1937.1,
+ * 1939.4; `/pl/` 1932.3, 1962.6, 1901.3. Against the sparks round above, `/` is about
+ * 1% to 2% higher and `/pl/` is level with 1963.0. Tour paint is reported only:
+ * `/` 2068.0, 2021.7, 2034.5; `/pl/` 2036.0, 2005.4, 2034.5.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
   tour: Record<PagePath, TourSample>
 } = {
   finished: {
-    "/": { finishedPaintMs: 2009, cls: 0, document: 9679, css: 6128, font: 49656 },
-    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 9967, css: 6128, font: 49656 },
+    "/": { finishedPaintMs: 2009, cls: 0, document: 9981, css: 6549, font: 49656 },
+    "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10287, css: 6549, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 12702 },
-    "/pl/": { cls: 0, script: 12702 },
+    "/": { cls: 0, script: 13321 },
+    "/pl/": { cls: 0, script: 13321 },
   },
 }
 

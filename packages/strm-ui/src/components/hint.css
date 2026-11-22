@@ -1,0 +1,103 @@
+/*
+ * Hint: the desktop scroll hint on the first frame. A mouse outline, a wheel that
+ * travels down and fades, and a word under it. Decoration: no accessible name.
+ * Hidden until the tour is on (`data-tour` on an ancestor, ADR 0009). A coarse
+ * pointer or a screen under 760px hides it (prototype-v0.16.0.html, line 197);
+ * the phone's line is not this primitive. The page's script adds `is-shown`
+ * after a pause and `is-gone` on the first wheel, key or touch.
+ *
+ *   <div class="ui-hint" aria-hidden="true">
+ *     <i class="ui-hint__mouse"></i>
+ *     <span class="ui-hint__word">scroll</span>
+ *   </div>
+ *
+ * The wheel's loop is the prototype's keyframes (line 194): invisible, then
+ * solid, then 9px down and gone. `translate` and opacity are the only things
+ * that move, on `--hint-wheel-time` and `--hint-wheel-ease`.
+ */
+.ui-hint {
+  display: none;
+  pointer-events: none;
+}
+
+[data-tour] .ui-hint {
+  position: fixed;
+  z-index: var(--hint-layer);
+  left: 50%;
+  bottom: var(--hint-bottom);
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: var(--hint-gap);
+  margin: 0;
+  opacity: 0;
+  color: var(--ink-mute);
+  font-size: var(--hint-size);
+  letter-spacing: var(--hint-tracking);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-variation-settings:
+    "MONO" var(--voice-mono),
+    "wght" 400;
+  transition: opacity var(--motion-move) var(--ease-out);
+}
+
+.ui-hint.is-shown {
+  opacity: 1;
+}
+
+.ui-hint.is-gone {
+  opacity: 0;
+  transition-duration: var(--hint-leave);
+}
+
+.ui-hint__mouse {
+  position: relative;
+  display: block;
+  width: var(--hint-mouse-width);
+  height: var(--hint-mouse-height);
+  border: var(--hint-mouse-weight) solid var(--ink);
+  border-radius: var(--hint-mouse-radius);
+}
+
+.ui-hint__mouse::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: var(--hint-wheel-top);
+  width: var(--hint-wheel-width);
+  height: var(--hint-wheel-height);
+  margin-left: calc(var(--hint-wheel-width) / -2);
+  background: var(--accent);
+  border-radius: var(--hint-wheel-radius);
+  animation: ui-hint-wheel var(--hint-wheel-time) var(--hint-wheel-ease) infinite;
+}
+
+/* Prototype line 194. 25% and 80% are that keyframe, not a token. */
+@keyframes ui-hint-wheel {
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  80% {
+    translate: 0 var(--hint-wheel-travel);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/*
+ * Line 197, both conditions together. A width override in the token file would
+ * miss a coarse pointer on a wide screen, which the prototype also hides.
+ */
+@media (pointer: coarse), (max-width: 760px) {
+  [data-tour] .ui-hint {
+    display: none;
+  }
+}
