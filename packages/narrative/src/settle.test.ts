@@ -36,6 +36,8 @@ function setup(options?: {
   cardAt?: number
   height?: number
   onWrite?: () => void
+  /** What the page keeps of a write. A browser keeps whole pixels. */
+  keep?: (written: number) => number
 }): Harness {
   const track = options?.track ?? simple
   const store = createStore(track)
@@ -50,7 +52,7 @@ function setup(options?: {
   const scroller: Scroller = {
     read: () => position,
     write(next) {
-      position = next
+      position = options?.keep ? options.keep(next) : next
       writes.push(next)
       options?.onWrite?.()
     },
@@ -531,4 +533,24 @@ test("dispose drops a pending settle and a running glide", () => {
   gliding.advance(900)
   gliding.flush()
   assert.deepEqual(gliding.writes, [])
+})
+
+test("the store is told what the page kept of a write, never the fraction that was written", () => {
+  // The page keeps whole pixels. A glide writes fractions of one.
+  const pixel = 1 / HEIGHT
+  const h = setup({ position: 0.5, keep: (written) => Math.round(written / pixel) * pixel })
+  const told: number[] = []
+  h.store.subscribe((state) => told.push(state.position))
+  h.settle.goTo(1)
+  h.flush()
+  h.advance(900)
+  assert.ok(told.length > 3, "the glide told the store of its frames")
+  for (const position of told) {
+    const pixels = position / pixel
+    assert.ok(
+      Math.abs(pixels - Math.round(pixels)) < 1e-6,
+      `${position} is not a whole pixel: the store saw a position the page never held`
+    )
+  }
+  assert.equal(h.store.get().position, h.position)
 })
