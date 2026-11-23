@@ -192,7 +192,7 @@ export function mountTesting(doc: Document, session: WatchedSession): void {
       writeMinimized(session.memory, minimized)
       paint(minimized ? "[data-testing='expand']" : "[data-testing='shrink']")
     })
-    const move = iconButton(phrases.move, "✥", "move")
+    const move = iconButton(phrases.move, "←→", "move")
     move.classList.add("testing-grip")
     move.addEventListener("pointerdown", startDrag)
     const closeWidget = iconButton(phrases.closeWidget, "×", "close-widget")
