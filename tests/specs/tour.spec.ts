@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "../fixture.ts"
 
 // The tour runs only when motion is allowed.
 test.use({ contextOptions: { reducedMotion: "no-preference" } })
@@ -94,9 +94,9 @@ test("the first frame holds a seed of the line: it glints once, and coming back 
 
 test.describe("keys and sound", () => {
   /** The stop the page has come to rest on, as the guide and the stage show it. */
-  const scene = (page: import("@playwright/test").Page) =>
+  const scene = (page: import("../fixture.ts").Page) =>
     page.locator(".stage").getAttribute("data-scene")
-  const settled = async (page: import("@playwright/test").Page) => {
+  const settled = async (page: import("../fixture.ts").Page) => {
     let last = -1
     await expect
       .poll(

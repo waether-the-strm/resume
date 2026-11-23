@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process"
 import sitemap from "@astrojs/sitemap"
 import { defineConfig, envField } from "astro/config"
+import { telemetryPreview } from "./preview-telemetry.mjs"
 import { staysUnindexed } from "./src/lib/indexing.ts"
 
 // One date for every URL: the commit this build was made from, not the clock
@@ -32,7 +33,7 @@ export default defineConfig({
   // first paint no longer waits for the font and the page shifts when it arrives. Measured
   // in `tests/perf-budget.ts`. Check the home page's `<link rel="stylesheet">` count when a
   // sheet nears the limit.
-  vite: { build: { assetsInlineLimit: 16384 } },
+  vite: { build: { assetsInlineLimit: 16384 }, plugins: [telemetryPreview()] },
   // STRM_PRODUCTION=true marks the build that may be indexed. Astro's boolean
   // field accepts only the strings "true" and "false". Unset stays noindex.
   // The production workflow sets it; previews do not. See src/lib/indexing.ts.

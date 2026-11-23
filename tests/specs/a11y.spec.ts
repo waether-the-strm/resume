@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright"
-import { expect, test, type Page } from "@playwright/test"
+import { expect, test, type Page } from "../fixture.ts"
 
 // The pages the issue names, in the theme the reader stored. data-theme is set the same way
 // the inline script does: strm-theme in localStorage, before the first paint.

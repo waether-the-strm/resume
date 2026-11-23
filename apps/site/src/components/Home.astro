@@ -12,6 +12,7 @@ import Message from "./Message.astro"
 import Rail from "./Rail.astro"
 import Work from "./Work.astro"
 import "../styles/tour.css"
+import "../styles/testing.css"
 
 interface Props {
   locale: Locale
@@ -139,6 +140,9 @@ const scenes = [story.guide.scenes.words, story.guide.scenes.structure, story.gu
 
 <script>
   import "../scripts/tour.ts"
+</script>
+<script>
+  import "../scripts/testing/boot.ts"
 </script>
 
 <style>

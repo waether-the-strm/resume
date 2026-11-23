@@ -53,7 +53,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm --filter @strm/site exec astro preview --host ${host} --port ${port} --ignore-lock`,
+    // Astro's static preview drops Vite plugins, so this wraps it and answers
+    // POST /api/telemetry with the same handler the Worker uses.
+    command: `node --experimental-strip-types ../apps/site/preview-with-telemetry.mjs --host ${host} --port ${port}`,
     url: `http://${host}:${port}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

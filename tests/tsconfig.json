@@ -5,6 +5,7 @@
   },
   "include": [
     "playwright.config.ts",
+    "fixture.ts",
     "global-teardown.ts",
     "perf-budget.ts",
     "perf-budget.test.ts",

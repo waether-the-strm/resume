@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from "@playwright/test"
+import { expect, test, type Locator, type Page } from "../fixture.ts"
 
 // Scenarios A to E (docs/spec/TEST-SCENARIOS.md). One test per row, named by its id.
 // The page is frozen with `?stage=S&t=T` or `?stage=jan`, except A13 and D7, which are

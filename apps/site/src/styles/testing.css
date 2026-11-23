@@ -1,0 +1,198 @@
+/*
+ * The temporary testing layer. It is not a strm-ui component: the page composes
+ * ui-panel and ui-pill, and every colour, space, radius and time comes from a
+ * token. Nothing here matches an element the server rendered, so without the
+ * script the page looks as it does today.
+ */
+
+.testing button:not(.ui-pill) {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.testing button.ui-pill {
+  border: 0;
+  cursor: pointer;
+}
+
+.testing p,
+.testing h2,
+.testing legend {
+  margin: 0;
+}
+
+.testing fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+  display: grid;
+  gap: var(--space-tight);
+}
+
+.testing-bar {
+  position: fixed;
+  z-index: 30;
+  top: var(--space-base);
+  right: var(--space-base);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-tight);
+  max-width: calc(100% - (2 * var(--space-base)));
+  padding: var(--space-tight) var(--space-snug);
+}
+
+.testing-variant,
+.testing-hint,
+.testing-change,
+.testing-ends {
+  color: var(--ink-mute);
+}
+
+.testing-backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: grid;
+  padding: var(--space-base);
+  background: var(--veil);
+  place-items: center;
+}
+
+.testing-backdrop[data-testing="drawer-backdrop"] {
+  background: transparent;
+  align-items: end;
+  justify-content: end;
+}
+
+.testing-sheet {
+  width: min(40rem, 100%);
+  max-height: calc(100svh - (2 * var(--space-base)));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+  overflow: auto;
+}
+
+.testing-backdrop[data-testing="drawer-backdrop"] .testing-sheet {
+  width: min(32rem, 100%);
+}
+
+.testing-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-base);
+}
+
+.testing-body,
+.testing-form,
+.testing-field-wrap {
+  display: grid;
+  gap: var(--space-snug);
+}
+
+.testing-lang {
+  display: flex;
+  flex: none;
+  gap: var(--space-tight);
+}
+
+.testing-lang button {
+  padding: var(--space-hair) var(--space-tight);
+  border-radius: var(--radius-control);
+  color: var(--ink-mute);
+}
+
+.testing-lang button[aria-pressed="true"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.testing-help {
+  min-width: var(--space-loose);
+  min-height: var(--space-loose);
+  padding: var(--space-hair);
+  border-radius: var(--radius-pill);
+  color: var(--ink-mute);
+}
+
+.testing-field {
+  width: 100%;
+  padding: var(--space-snug) var(--space-base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
+.testing textarea.testing-field {
+  min-height: calc(var(--space-section) + var(--space-base));
+  resize: vertical;
+}
+
+.testing-scale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-tight);
+}
+
+.testing-choice {
+  position: relative;
+  display: inline-grid;
+}
+
+.testing-choice input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.testing-choice span {
+  display: grid;
+  place-items: center;
+  min-width: var(--space-loose);
+  min-height: var(--space-loose);
+  padding: var(--space-tight) var(--space-snug);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  color: var(--ink);
+}
+
+.testing-choice input:checked + span {
+  border-color: var(--accent-fill);
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+
+.testing-choice:has(input:focus-visible) span {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.testing-ends {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-base);
+}
+
+.testing-error {
+  color: var(--accent-text);
+}
+
+.testing-error:empty {
+  display: none;
+}
+
+.testing-foot {
+  display: flex;
+  justify-content: flex-start;
+}

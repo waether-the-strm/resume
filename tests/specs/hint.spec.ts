@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from "@playwright/test"
+import { expect, test, type Locator, type Page } from "../fixture.ts"
 import { holdFinger, touchSwipe, WHEEL_TICK_PX } from "../rest.ts"
 
 // Longer than the prototype's 1400ms pause plus the 500ms fade, so a late appearance fails.

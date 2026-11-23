@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "../fixture.ts"
 
 // The finished page: reduced motion, no tour. The server's blob is the last stop.
 test.describe("the blob on the finished page", () => {
