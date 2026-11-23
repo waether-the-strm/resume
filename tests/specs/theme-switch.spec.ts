@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test"
+import { expect, test, type Page } from "../fixture.ts"
 
 // The theme lives in the blob (ADR 0012, #147). These specs ran on the footer's switch; the
 // behaviour is the same, asserted on the blob on the finished page.

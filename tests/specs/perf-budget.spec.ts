@@ -3,12 +3,13 @@ import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import {
   expect,
+  markTestingWelcomed,
   test,
   type BrowserContext,
   type CDPSession,
   type Page,
   type Response,
-} from "@playwright/test"
+} from "../fixture.ts"
 import {
   assemble,
   formatSummary,
@@ -54,6 +55,7 @@ test.describe("performance budget", () => {
         ...phone,
         reducedMotion: "no-preference",
       })
+      await tourContext.addInitScript(markTestingWelcomed)
       const tourPage = await tourContext.newPage()
       const tourClient = await tourContext.newCDPSession(tourPage)
       clients.push(tourClient)
@@ -192,6 +194,12 @@ async function measure(page: Page, state: PageState, path: PagePath): Promise<Sa
     expect(response?.status(), `${state} ${path} status`).toBeLessThan(400)
     if (state === "tour") await expectFirstScene(page)
     const reading = await readPage(page, state)
+    // The testing layer posts as soon as the page boots. On this throttle that
+    // fetch can finish after the paint snapshot, so the response has no resource
+    // timing yet. Paint is already recorded; let the network settle and read
+    // the timings again.
+    await page.waitForLoadState("networkidle", { timeout: 15_000 })
+    reading.resources = await resourceTimings(page)
     if (state === "finished" && !reading.loaded) {
       throw new Error(
         `${path} upright Recursive Variable did not load (${reading.faceStatus || "no faces"})`
@@ -245,6 +253,20 @@ type BrowserReading = {
   lcpMs: number | null
   navigation: RawMeasurement["navigation"] | null
   resources: RawMeasurement["resources"]
+}
+
+async function resourceTimings(page: Page): Promise<RawMeasurement["resources"]> {
+  return page.evaluate(() =>
+    performance.getEntriesByType("resource").map((entry) => {
+      const timing = entry as PerformanceResourceTiming
+      return {
+        url: timing.name,
+        transferSize: timing.transferSize,
+        encodedBodySize: timing.encodedBodySize,
+        headerDelayMs: timing.responseStart - timing.requestStart,
+      }
+    })
+  )
 }
 
 async function readPage(page: Page, state: PageState): Promise<BrowserReading> {

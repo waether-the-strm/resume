@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from "@playwright/test"
+import { expect, test, type Locator, type Page } from "../fixture.ts"
 
 // Real selection through the browser, not a synthetic change event.
 async function openCopy(page: Page): Promise<Locator> {

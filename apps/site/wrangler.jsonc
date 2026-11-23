@@ -2,11 +2,27 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "strm-dev",
   "compatibility_date": "2026-11-20",
-  // A static site: no Worker script, only the Astro build output (ADR 0002).
+  // Static assets, plus one route for the temporary testing endpoint (ADR 0002:
+  // no Astro adapter). Every other request is still the built site.
+  "main": "./worker/index.ts",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"],
   },
+  // D1 is not bound yet. A placeholder database_id fails `wrangler preview`
+  // (the API rejects an id that is not a real database). The schema is
+  // migrations/0001_telemetry.sql. Bind it as TELEMETRY_DB when the database
+  // exists. Until then the Worker logs the validated event and answers 200.
+  // "d1_databases": [
+  //   {
+  //     "binding": "TELEMETRY_DB",
+  //     "database_name": "strm-telemetry",
+  //     "database_id": "<real uuid>",
+  //     "migrations_dir": "./migrations"
+  //   }
+  // ],
   // Required by `wrangler preview`; an empty block means previews use the settings above.
   "previews": {},
 }
