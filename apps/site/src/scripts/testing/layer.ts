@@ -8,11 +8,16 @@ import { testingCopy, type TestingLang, type TestingPhrases } from "./copy.ts"
 import { feedbackSubmitted, modalDismissed, postTelemetry, postTelemetryAwait } from "./events.ts"
 import {
   copyVariant,
+  readMinimized,
+  readPlace,
   replaceQuery,
   tourOwnsProgress,
   writeLang,
+  writeMinimized,
   writeName,
+  writePlace,
   writeWelcomed,
+  type WidgetPlace,
 } from "./session.ts"
 import { pageContext, type WatchedSession } from "./watch.ts"
 
@@ -22,6 +27,17 @@ interface Scores {
   visuals?: number
   clarity?: number
   tone?: number
+}
+
+interface Drag {
+  pointerId: number
+  originX: number
+  originY: number
+  startLeft: number
+  startTop: number
+  moved: boolean
+  hadPlace: boolean
+  bar: HTMLElement
 }
 
 export function mountTesting(doc: Document, session: WatchedSession): void {
@@ -46,13 +62,22 @@ export function mountTesting(doc: Document, session: WatchedSession): void {
   let sent = false
   let thanksName = ""
   let sending = false
+  let minimized = readMinimized(session.memory)
+  let place = readPlace(session.memory)
+  let widgetClosed = false
+  let drag: Drag | null = null
   const frozen: Element[] = []
 
   const paint = (focusSelector: string | null) => {
+    endDrag(false)
     const phrases = testingCopy[session.lang]
     root.replaceChildren()
     if (view === "bar") {
-      root.append(buildBar(phrases))
+      if (!widgetClosed) {
+        const bar = buildBar(phrases)
+        root.append(bar)
+        settle(bar)
+      }
       setInert(false)
     } else if (view === "modal") {
       root.append(buildModal(phrases))
@@ -65,6 +90,12 @@ export function mountTesting(doc: Document, session: WatchedSession): void {
   }
 
   const onKey = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && drag) {
+      event.preventDefault()
+      event.stopPropagation()
+      endDrag(false)
+      return
+    }
     const dialog = root.querySelector<HTMLElement>("[data-testing-dialog]")
     if (!dialog) return
     if (event.key === "Escape") {
@@ -149,6 +180,129 @@ export function mountTesting(doc: Document, session: WatchedSession): void {
     if (next !== here) viewWindow.history.replaceState(viewWindow.history.state, "", next)
   }
 
+  function chrome(phrases: TestingPhrases): HTMLElement {
+    const group = el(doc, "div", "testing-chrome")
+    const toggle = iconButton(
+      minimized ? phrases.expand : phrases.shrink,
+      minimized ? "+" : "–",
+      minimized ? "expand" : "shrink"
+    )
+    toggle.addEventListener("click", () => {
+      minimized = !minimized
+      writeMinimized(session.memory, minimized)
+      paint(minimized ? "[data-testing='expand']" : "[data-testing='shrink']")
+    })
+    const move = iconButton(phrases.move, "✥", "move")
+    move.classList.add("testing-grip")
+    move.addEventListener("pointerdown", startDrag)
+    const closeWidget = iconButton(phrases.closeWidget, "×", "close-widget")
+    closeWidget.addEventListener("click", () => {
+      widgetClosed = true
+      paint(null)
+    })
+    group.append(toggle, move, closeWidget)
+    return group
+  }
+
+  function iconButton(label: string, mark: string, testing: string): HTMLButtonElement {
+    const button = el(doc, "button", "type-micro testing-chrome-button")
+    button.type = "button"
+    button.dataset.testing = testing
+    button.setAttribute("aria-label", label)
+    const glyph = el(doc, "span", "testing-mark", mark)
+    glyph.setAttribute("aria-hidden", "true")
+    button.append(glyph)
+    return button
+  }
+
+  function settle(bar: HTMLElement): void {
+    if (!place) return
+    pin(bar, clamp(bar, place.x, place.y))
+  }
+
+  function pin(bar: HTMLElement, next: WidgetPlace): void {
+    bar.style.right = "auto"
+    bar.style.left = `${next.x}px`
+    bar.style.top = `${next.y}px`
+  }
+
+  function clamp(node: HTMLElement, x: number, y: number): WidgetPlace {
+    const maxX = Math.max(0, doc.documentElement.clientWidth - node.offsetWidth)
+    const maxY = Math.max(0, viewWindow.innerHeight - node.offsetHeight)
+    return {
+      x: Math.round(Math.min(maxX, Math.max(0, x))),
+      y: Math.round(Math.min(maxY, Math.max(0, y))),
+    }
+  }
+
+  function startDrag(event: PointerEvent): void {
+    if (event.button !== 0) return
+    const handle = event.currentTarget
+    if (!(handle instanceof HTMLElement)) return
+    const bar = handle.closest<HTMLElement>("[data-testing='bar']")
+    if (!bar) return
+    event.preventDefault()
+    const rect = bar.getBoundingClientRect()
+    drag = {
+      pointerId: event.pointerId,
+      originX: event.clientX,
+      originY: event.clientY,
+      startLeft: rect.left,
+      startTop: rect.top,
+      moved: false,
+      hadPlace: place !== null,
+      bar,
+    }
+    pin(bar, { x: rect.left, y: rect.top })
+    handle.setPointerCapture(event.pointerId)
+    viewWindow.addEventListener("pointermove", onDragMove)
+    viewWindow.addEventListener("pointerup", onDragEnd)
+    viewWindow.addEventListener("pointercancel", onDragCancel)
+  }
+
+  function onDragMove(event: PointerEvent): void {
+    if (!drag || event.pointerId !== drag.pointerId) return
+    const dx = event.clientX - drag.originX
+    const dy = event.clientY - drag.originY
+    if (Math.hypot(dx, dy) >= 4) drag.moved = true
+    const next = clamp(drag.bar, drag.startLeft + dx, drag.startTop + dy)
+    pin(drag.bar, next)
+  }
+
+  function onDragEnd(event: PointerEvent): void {
+    if (!drag || event.pointerId !== drag.pointerId) return
+    endDrag(drag.moved)
+  }
+
+  function onDragCancel(event: PointerEvent): void {
+    if (!drag || event.pointerId !== drag.pointerId) return
+    endDrag(false)
+  }
+
+  function endDrag(persist: boolean): void {
+    const current = drag
+    if (!current) return
+    drag = null
+    viewWindow.removeEventListener("pointermove", onDragMove)
+    viewWindow.removeEventListener("pointerup", onDragEnd)
+    viewWindow.removeEventListener("pointercancel", onDragCancel)
+    if (!current.bar.isConnected) return
+    if (persist) {
+      const rect = current.bar.getBoundingClientRect()
+      const next = clamp(current.bar, rect.left, rect.top)
+      place = next
+      writePlace(session.memory, next.x, next.y)
+      pin(current.bar, next)
+      return
+    }
+    if (current.hadPlace && place) pin(current.bar, clamp(current.bar, place.x, place.y))
+    else {
+      current.bar.style.left = ""
+      current.bar.style.top = ""
+      current.bar.style.right = ""
+    }
+  }
+
   function setInert(on: boolean): void {
     if (!on) {
       for (const node of frozen) node.removeAttribute("inert")
@@ -166,17 +320,20 @@ export function mountTesting(doc: Document, session: WatchedSession): void {
     const bar = el(doc, "aside", "testing-bar ui-panel")
     bar.dataset.testing = "bar"
     bar.setAttribute("aria-label", phrases.barLabel)
-    const variant = el(doc, "span", "type-micro testing-variant")
-    variant.textContent = phrases.variantLine(copyVariant(viewWindow.location.search))
-    const feedback = el(doc, "button", "ui-pill", phrases.feedback)
-    feedback.type = "button"
-    feedback.dataset.testing = "feedback"
-    feedback.addEventListener("click", openDrawer)
-    const help = el(doc, "button", "type-micro testing-help", "?")
-    help.type = "button"
-    help.setAttribute("aria-label", phrases.instructions)
-    help.addEventListener("click", openModal)
-    bar.append(variant, feedback, langSwitch(phrases), help)
+    if (!minimized) {
+      const variant = el(doc, "span", "type-micro testing-variant")
+      variant.textContent = phrases.variantLine(copyVariant(viewWindow.location.search))
+      const feedback = el(doc, "button", "ui-pill", phrases.feedback)
+      feedback.type = "button"
+      feedback.dataset.testing = "feedback"
+      feedback.addEventListener("click", openDrawer)
+      const help = el(doc, "button", "type-micro testing-help", "?")
+      help.type = "button"
+      help.setAttribute("aria-label", phrases.instructions)
+      help.addEventListener("click", openModal)
+      bar.append(variant, feedback, langSwitch(phrases), help)
+    }
+    bar.append(chrome(phrases))
     return bar
   }
 
@@ -196,6 +353,7 @@ export function mountTesting(doc: Document, session: WatchedSession): void {
       phrases.quick,
       phrases.comparative,
       phrases.respond,
+      phrases.widget,
     ]) {
       body.append(el(doc, "p", undefined, text))
     }

@@ -33,6 +33,7 @@ export interface TestingPhrases {
   quick: string
   comparative: string
   respond: string
+  widget: string
   dismiss: string
   nameLabel: string
   namePlaceholder: string
@@ -40,6 +41,10 @@ export interface TestingPhrases {
   feedback: string
   instructions: string
   close: string
+  shrink: string
+  expand: string
+  move: string
+  closeWidget: string
   variant: (id: CopyId) => string
   variantLine: (id: CopyId) => string
   visuals: string
@@ -83,6 +88,8 @@ export const testingCopy: Record<TestingLang, TestingPhrases> = {
       "Comparative (3 min): switch the five text versions in the top menu (only one will remain) and say which sounds best.",
     respond:
       "The “Leave feedback” button in the corner is there to make specific notes easy. A Messenger message, an email, or a voice note is equally welcome.",
+    widget:
+      "You can shrink this feedback bar to an icon, move it, or close it. If you close it, refresh the page and it comes back.",
     dismiss: "Got it",
     nameLabel: "Your name or nickname",
     namePlaceholder: "Your name or nickname",
@@ -90,6 +97,10 @@ export const testingCopy: Record<TestingLang, TestingPhrases> = {
     feedback: "Leave feedback",
     instructions: "Open the testing notes",
     close: "Close",
+    shrink: "Shrink to an icon",
+    expand: "Expand",
+    move: "Move",
+    closeWidget: "Close the bar",
     variant: (id) => variantEn[id],
     variantLine: (id) => `Copy · ${variantEn[id]}`,
     visuals: "Visuals & flow",
@@ -118,52 +129,59 @@ export const testingCopy: Record<TestingLang, TestingPhrases> = {
       `Thanks, ${name}. This stays in the corner, so you can leave another note after you switch variants.`,
   },
   pl: {
-    barLabel: "Test strony",
+    barLabel: "Panel testowy strony",
     drawerLabel: "Oceń stronę",
-    langLabel: "Język opinii",
-    title: "To szkic nowej strony.",
+    langLabel: "Język formularza",
+    title: "To szkic mojej nowej strony.",
     titleNamed: (name) => `Hej ${name}! Dzięki, że tu jesteś.`,
     honest:
-      "Liczy się szczere pierwsze wrażenie — niezależnie od zawodu i od tego, jak technicznie na to patrzysz.",
+      "Liczy się szczere pierwsze wrażenie – nieważne, czym się zajmujesz i czy patrzysz na to okiem specjalisty, czy zupełnie na luzie.",
     language:
-      "Na tym etapie pracujemy tylko nad angielskim tekstem: pięć wersji, domyślna i A–D. Polska strona jest jeszcze bardzo wczesna, więc oceniając teksty zostaw stronę po angielsku.",
+      "Na razie szlifuję tylko angielskie teksty: masz do wyboru pięć wersji (domyślną oraz A–D). Polska wersja strony jest jeszcze w surowym szkicu, więc oceniając treść, zostań przy angielskiej.",
     quick:
-      "Szybka (1 min): zobacz stronę taką, jaka jest, i oceń wrażenie wizualne oraz czytelność.",
+      "Wersja szybka (1 min): przejrzyj stronę tak, jak się otworzyła, i daj znać, jak się na nią patrzy i czy wszystko jest czytelne.",
     comparative:
-      "Porównawcza (3 min): przełącz pięć wersji tekstu w menu u góry (zostanie tylko jedna) i powiedz, która brzmi najlepiej.",
+      "Wersja porównawcza (3 min): przeklikaj pięć wersji tekstu w menu u góry (finalnie zostanie tylko jedna) i wskaż, która brzmi najlepiej.",
     respond:
-      "Przycisk „Oceń stronę” w rogu jest po to, żeby łatwo zostawić konkretną notatkę. Wiadomość na Messengerze, e-mail albo notatka głosowa są tak samo mile widziane.",
+      "Przycisk „Oceń stronę” w rogu ułatwi Ci szybkie zebranie uwag. Jeśli jednak wolisz napisać na Messengerze, wysłać maila albo nagrać głosówkę – śmiało, każda forma jest super.",
+    widget:
+      "Ten pasek z opinią możesz zwinąć do ikony, przesunąć albo zamknąć. Jeśli go zamkniesz, wystarczy odświeżyć stronę, żeby wrócił.",
     dismiss: "Jasne",
-    nameLabel: "Jak masz na imię / ksywka?",
-    namePlaceholder: "Jak masz na imię / ksywka?",
-    changeName: "To nie Ty? Zmień imię",
+    nameLabel: "Twoje imię lub ksywka",
+    namePlaceholder: "Twoje imię lub ksywka",
+    changeName: "To nie Ty? Zmień",
     feedback: "Oceń stronę",
-    instructions: "Otwórz instrukcję",
+    instructions: "Pokaż instrukcję",
     close: "Zamknij",
+    shrink: "Zwiń do ikony",
+    expand: "Rozwiń",
+    move: "Przesuń",
+    closeWidget: "Zamknij pasek",
     variant: (id) => variantPl[id],
     variantLine: (id) => `Tekst · ${variantPl[id]}`,
-    visuals: "Wygląd i wygoda przeglądania",
-    visualsLow: "Ciężko się patrzy",
+    visuals: "Wygląd i wygoda",
+    visualsLow: "Męcząco",
     visualsHigh: "Spokojnie i czytelnie",
     clarity: "Zrozumiałość przekazu",
     clarityQuestion: "Czy po przewinięciu rozumiesz, czym się zajmuję?",
     clarityLow: "Nadal nie wiem",
     clarityHigh: "Wiem od razu",
-    tone: "Naturalność i styl tekstów",
+    tone: "Brzmienie i styl tekstów",
     toneQuestion: "Jak czyta Ci się te teksty?",
-    toneHint: "Chodzi o angielskie wersje.",
-    toneLow: "Sztywno",
+    toneHint: "Dotyczy wersji angielskich.",
+    toneLow: "Sztucznie",
     toneHigh: "Naturalnie",
-    favorite: "Ulubiona wersja",
-    favoriteOne: "Tylko jedną oglądałem/am",
-    words: "Parę słów od siebie",
-    wordsPlaceholder: "Wystarczy zdanie albo dwa.",
+    favorite: "Która wersja najbardziej Ci leży?",
+    favoriteOne: "Oglądałem/am tylko jedną",
+    words: "Kilka słów od siebie",
+    wordsPlaceholder: "Wystarczy zdanie albo dwa – co przykuło uwagę, a co zgrzyta?",
     signature: "Podpis",
-    send: "Wyślij notatkę",
-    missingScores: "Zaznacz ocenę na każdej z trzech skal.",
-    sendFailed: "Nie poszło. Spróbuj za chwilę.",
-    thanks: "Dzięki. Zostaje w rogu, więc po zmianie wersji możesz dopisać kolejną notatkę.",
+    send: "Wyślij opinię",
+    missingScores: "Zaznacz ocenę na wszystkich trzech skalach.",
+    sendFailed: "Nie udało się wysłać. Spróbuj za chwilę.",
+    thanks:
+      "Dzięki! Pasek zostaje w rogu – jeśli przełączysz wersję tekstu, możesz dorzucić kolejną opinię.",
     thanksNamed: (name) =>
-      `Dzięki, ${name}. Zostaje w rogu, więc po zmianie wersji możesz dopisać kolejną notatkę.`,
+      `Dzięki, ${name}! Pasek zostaje w rogu – jeśli przełączysz wersję tekstu, możesz dorzucić kolejną opinię.`,
   },
 }

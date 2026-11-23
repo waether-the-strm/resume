@@ -247,6 +247,17 @@ export type BudgetMetric = FinishedMetric | TourMetric
  * paint stayed with the ceiling: `/` 2049.6, 2059.5, 2054.5; `/pl/` 2041.2,
  * 2040.8, 2027.3. The round above was `/` 1987.7, 1981.8, 1982.6 and `/pl/`
  * 1970.8, 1975.4, 1950.7. About 4% apart.
+ *
+ * Measured again on 23 Nov 2026, once the bar can shrink, move, or close,
+ * and the Polish is Jan's. Three cold loads. Script 25361 (+1291) on every
+ * load: the testing script transfers 8652 B. Document `/` 10799 (+43) and
+ * `/pl/` 11108 (+43) stayed inside the margin, so those baselines stay.
+ * CSS 6910 and font 49656 did not move. Finished layout shift stayed 0.
+ * One tour load scored 0.0008 and the other five scored 0, inside the
+ * margin, so it is not a new baseline. Finished paint stayed with the
+ * ceiling: `/` 2084.7, 2099.4, 2086.1; `/pl/` 2037.2, 2040.0, 2028.6.
+ * The round above was `/` 2049.6, 2059.5, 2054.5 and `/pl/` 2041.2, 2040.8,
+ * 2027.3. About 2% apart.
  */
 export const firstMeasurement: {
   finished: Record<PagePath, FinishedSample>
@@ -257,8 +268,8 @@ export const firstMeasurement: {
     "/pl/": { finishedPaintMs: 1904, cls: 0, document: 10433, css: 6910, font: 49656 },
   },
   tour: {
-    "/": { cls: 0, script: 24070 },
-    "/pl/": { cls: 0, script: 24070 },
+    "/": { cls: 0, script: 25361 },
+    "/pl/": { cls: 0, script: 25361 },
   },
 }
 

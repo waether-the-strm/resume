@@ -31,7 +31,9 @@ test.describe("the testing layer", () => {
       .click()
     await expect(page.locator("html")).toHaveAttribute("lang", "en")
     await expect(page.locator(".message .headline")).toContainText("clear at a glance")
-    await expect(page.locator("[data-testing='modal']")).toContainText("To szkic nowej strony.")
+    await expect(page.locator("[data-testing='modal']")).toContainText(
+      "To szkic mojej nowej strony."
+    )
     await expect(page.locator("[data-testing='modal']")).toContainText("Oceń stronę")
     await expect(page).toHaveURL(/feedbackLang=pl/)
     await page
@@ -132,10 +134,90 @@ test.describe("the testing layer", () => {
         if ((request.postData() ?? "").includes("feedback_submitted")) posts += 1
       }
     })
-    await drawer.getByRole("button", { name: "Wyślij notatkę" }).click()
-    await expect(drawer).toContainText("Zaznacz ocenę na każdej z trzech skal.")
+    await drawer.getByRole("button", { name: "Wyślij opinię" }).click()
+    await expect(drawer).toContainText("Zaznacz ocenę na wszystkich trzech skalach.")
     await expect(drawer).not.toContainText("Dzięki.")
     expect(posts).toBe(0)
+  })
+
+  test("the widget can shrink, move, and close, and a reload brings it back", async ({ page }) => {
+    await page.goto("/")
+    const modal = page.locator("[data-testing='modal']")
+    await expect(modal).toContainText(
+      "You can shrink this feedback bar to an icon, move it, or close it. If you close it, refresh the page and it comes back."
+    )
+    await modal.getByRole("button", { name: "Got it" }).click()
+    const bar = page.locator("[data-testing='bar']")
+
+    await bar.getByRole("button", { name: "Leave feedback" }).click()
+    await page
+      .locator("[data-testing='drawer']")
+      .getByRole("button", { name: "Close", exact: true })
+      .click()
+    await expect(bar.getByRole("button", { name: "Shrink to an icon" })).toBeVisible()
+
+    await bar.getByRole("button", { name: "Shrink to an icon" }).click()
+    await expect(bar.getByRole("button", { name: "Expand" })).toBeVisible()
+    await expect(bar.getByRole("button", { name: "Leave feedback" })).toHaveCount(0)
+
+    const before = await bar.boundingBox()
+    const grip = await bar.getByRole("button", { name: "Move" }).boundingBox()
+    if (!before || !grip) throw new Error("the widget has no box")
+    const startX = grip.x + grip.width / 2
+    const startY = grip.y + grip.height / 2
+    await page.mouse.move(startX, startY)
+    await page.mouse.down()
+    await page.mouse.move(startX - 180, startY + 160, { steps: 12 })
+    await page.mouse.up()
+
+    const moved = await bar.boundingBox()
+    if (!moved) throw new Error("the widget has no box")
+    expect(moved.x).toBeLessThan(before.x - 100)
+    expect(moved.y).toBeGreaterThan(before.y + 100)
+
+    await page.reload()
+    await expect(bar.getByRole("button", { name: "Expand" })).toBeVisible()
+    const restored = await bar.boundingBox()
+    if (!restored) throw new Error("the widget has no box")
+    expect(Math.abs(restored.x - moved.x)).toBeLessThan(2)
+    expect(Math.abs(restored.y - moved.y)).toBeLessThan(2)
+
+    await bar.getByRole("button", { name: "Expand" }).click()
+    await expect(bar.getByRole("button", { name: "Leave feedback" })).toBeVisible()
+    const expanded = await bar.boundingBox()
+    await page.reload()
+    await expect(bar.getByRole("button", { name: "Shrink to an icon" })).toBeVisible()
+    const expandedAgain = await bar.boundingBox()
+    if (!expanded || !expandedAgain) throw new Error("the widget has no box")
+    expect(Math.abs(expandedAgain.x - expanded.x)).toBeLessThan(2)
+    expect(Math.abs(expandedAgain.y - expanded.y)).toBeLessThan(2)
+
+    await bar.getByRole("button", { name: "Close the bar" }).click()
+    await expect(bar).toHaveCount(0)
+    const stored = await page.evaluate(() => sessionStorage.getItem("strm.testing.place"))
+    await page.reload()
+    await expect(bar).toBeVisible()
+    await expect(bar.getByRole("button", { name: "Leave feedback" })).toBeVisible()
+    expect(await page.evaluate(() => sessionStorage.getItem("strm.testing.place"))).toBe(stored)
+  })
+
+  test("Polish names the widget controls, and Zamknij still closes the drawer", async ({
+    page,
+  }) => {
+    await page.goto("/?feedbackLang=pl")
+    const modal = page.locator("[data-testing='modal']")
+    await expect(modal).toContainText(
+      "Ten pasek z opinią możesz zwinąć do ikony, przesunąć albo zamknąć. Jeśli go zamkniesz, wystarczy odświeżyć stronę, żeby wrócił."
+    )
+    await modal.getByRole("button", { name: "Jasne" }).click()
+    const bar = page.locator("[data-testing='bar']")
+    await expect(bar.getByRole("button", { name: "Zwiń do ikony" })).toBeVisible()
+    await expect(bar.getByRole("button", { name: "Przesuń" })).toBeVisible()
+    await expect(bar.getByRole("button", { name: "Zamknij pasek" })).toBeVisible()
+    await bar.getByRole("button", { name: "Oceń stronę" }).click()
+    await expect(
+      page.locator("[data-testing='drawer']").getByRole("button", { name: "Zamknij", exact: true })
+    ).toBeVisible()
   })
 })
 

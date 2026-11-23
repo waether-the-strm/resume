@@ -13,6 +13,8 @@ export const testingKeys = {
   started: "strm.testing.started",
   variant: "strm.testing.variant",
   milestones: "strm.testing.milestones",
+  place: "strm.testing.place",
+  minimized: "strm.testing.minimized",
 } as const
 
 export interface Memory {
@@ -120,6 +122,32 @@ export function writeLang(memory: Memory, lang: FeedbackLang): void {
 
 export function writeWelcomed(memory: Memory, welcomed: boolean): void {
   memory.setItem(testingKeys.welcomed, welcomed ? "1" : "0")
+}
+
+export interface WidgetPlace {
+  x: number
+  y: number
+}
+
+/** The last place the bar was dropped, or null when it still sits in the corner. */
+export function readPlace(memory: Memory): WidgetPlace | null {
+  const raw = memory.getItem(testingKeys.place)
+  if (!raw) return null
+  const match = /^(-?\d{1,5}),(-?\d{1,5})$/.exec(raw)
+  if (!match || match[1] === undefined || match[2] === undefined) return null
+  return { x: Number(match[1]), y: Number(match[2]) }
+}
+
+export function writePlace(memory: Memory, x: number, y: number): void {
+  memory.setItem(testingKeys.place, `${Math.round(x)},${Math.round(y)}`)
+}
+
+export function readMinimized(memory: Memory): boolean {
+  return memory.getItem(testingKeys.minimized) === "1"
+}
+
+export function writeMinimized(memory: Memory, minimized: boolean): void {
+  memory.setItem(testingKeys.minimized, minimized ? "1" : "0")
 }
 
 /**

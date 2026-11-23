@@ -46,6 +46,22 @@
   padding: var(--space-tight) var(--space-snug);
 }
 
+.testing-chrome {
+  display: flex;
+  gap: var(--space-hair);
+}
+
+.testing-chrome-button {
+  min-width: var(--space-loose);
+  min-height: var(--space-loose);
+  color: var(--ink-mute);
+}
+
+.testing-grip {
+  cursor: grab;
+  touch-action: none;
+}
+
 .testing-variant,
 .testing-hint,
 .testing-change,

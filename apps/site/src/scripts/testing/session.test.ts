@@ -5,10 +5,14 @@ import {
   createMemory,
   langFromSearch,
   readIdentity,
+  readMinimized,
+  readPlace,
   testerFromSearch,
   testingKeys,
   tourOwnsProgress,
   writeLang,
+  writeMinimized,
+  writePlace,
   writeWelcomed,
 } from "./session.ts"
 
@@ -66,6 +70,21 @@ test("an empty tester clears a stored name, and an unknown copy is the default",
   const again = readIdentity("", memory, id)
   assert.equal(again.lang, "en")
   assert.equal(again.welcomed, true)
+})
+
+test("the widget remembers where it was dropped, and whether it was minimized", () => {
+  const memory = createMemory()
+  assert.equal(readPlace(memory), null)
+  assert.equal(readMinimized(memory), false)
+  writePlace(memory, 12.4, 40.6)
+  writeMinimized(memory, true)
+  assert.deepEqual(readPlace(memory), { x: 12, y: 41 })
+  assert.equal(readMinimized(memory), true)
+  assert.equal(memory.getItem("strm.testing.closed"), null)
+  memory.setItem(testingKeys.place, "nope")
+  assert.equal(readPlace(memory), null)
+  writeMinimized(memory, false)
+  assert.equal(readMinimized(memory), false)
 })
 
 test("a name drops control characters and stays short", () => {
